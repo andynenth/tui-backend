@@ -132,7 +132,7 @@ class GameStateMachine:
             GamePhase.SCORING: ScoringState(),
             GamePhase.GAME_OVER: GameOverState()
         }
-        
+
         self.valid_transitions = {
             GamePhase.WAITING: [GamePhase.PREPARATION],
             GamePhase.PREPARATION: [GamePhase.DECLARATION],
@@ -161,19 +161,19 @@ class GameState(ABC):
     @abstractmethod
     async def _setup_phase(self):
         """Initialize phase-specific data"""
-        
+
     @abstractmethod
     async def _handle_action(self, action: GameAction):
         """Process player action"""
-        
+
     @abstractmethod
     def _validate_action(self, action: GameAction) -> bool:
         """Validate action is legal in current context"""
-        
+
     @abstractmethod
     def check_transition_conditions(self) -> Optional[GamePhase]:
         """Return next phase if transition conditions met"""
-        
+
     async def update_phase_data(self, updates: dict, reason: str):
         """Enterprise method - automatic broadcasting"""
 ```
@@ -183,20 +183,20 @@ class GameState(ABC):
 ```python
 async def process_action(self, action: GameAction):
     """Main state machine processing loop"""
-    
+
     # 1. Validate action
     if not self.current_state._validate_action(action):
         await self.broadcast_error(action.player_name, "Invalid action")
         return
-    
+
     # 2. Process action
     await self.current_state._handle_action(action)
-    
+
     # 3. Check for phase transition
     next_phase = self.current_state.check_transition_conditions()
     if next_phase:
         await self.transition_to_phase(next_phase)
-    
+
     # 4. Process any bot actions
     await self.process_bot_actions()
 ```
@@ -269,13 +269,13 @@ class SocketManager:
     def __init__(self):
         self.rooms = {}  # room_id -> set of websockets
         self.broadcast_queues = {}  # room_id -> asyncio.Queue
-        
+
     async def register_socket(self, room_id: str, websocket: WebSocket):
         """Add socket to room and start processing"""
-        
+
     async def broadcast_to_room(self, room_id: str, event: str, data: dict):
         """Queue message for room broadcast"""
-        
+
     async def process_broadcast_queue(self, room_id: str):
         """Background task processing outgoing messages"""
 ```
@@ -311,7 +311,7 @@ The frontend NetworkService implements automatic heartbeat monitoring for all We
 // frontend/src/services/NetworkService.ts
 class NetworkService {
   private heartbeatInterval: NodeJS.Timeout | null = null;
-  
+
   private startHeartbeat(roomId: string): void {
     this.heartbeatInterval = setInterval(() => {
       if (this.isConnected(roomId)) {
@@ -440,15 +440,15 @@ await self.broadcast_custom_event({
 class GameService {
     private state: GameState;
     private eventHandlers: Map<string, (data: any) => void>;
-    
+
     // State management
     updateGameState(updates: Partial<GameState>): void
     getGameState(): GameState
-    
-    // Action processing  
+
+    // Action processing
     makeDeclaration(value: number): Promise<void>
     playPieces(indices: number[]): Promise<void>
-    
+
     // Event handling
     handlePhaseChange(data: any): void
     handleRoomUpdate(data: any): void
@@ -463,7 +463,7 @@ class GameService {
 const GameContainer = () => {
     const gameState = useGameState();
     const gameActions = useGameActions();
-    
+
     // Phase-specific component selection
     const renderPhaseComponent = () => {
         switch (gameState.phase) {
@@ -474,7 +474,7 @@ const GameContainer = () => {
             // ... other phases
         }
     };
-    
+
     return (
         <Layout>
             {renderPhaseComponent()}
@@ -491,11 +491,11 @@ const GameContainer = () => {
 async playPieces(indices) {
     // 1. Optimistic update
     this.updateLocalState({ selectedPieces: indices });
-    
+
     try {
         // 2. Send to server
         await this.networkService.sendAction('play', { pieces: indices });
-        
+
         // 3. Server will broadcast authoritative update
     } catch (error) {
         // 4. Rollback on error
@@ -554,7 +554,7 @@ UI Re-render
 ```python
 # Complete audit trail enables:
 - Game replay functionality
-- Debugging complex issues  
+- Debugging complex issues
 - State recovery after crashes
 - Analytics and behavior analysis
 - Fraud detection
@@ -587,10 +587,10 @@ class NetworkService {
     async handleDisconnect() {
         // 1. Attempt immediate reconnection
         await this.reconnect();
-        
+
         // 2. Request state synchronization
         await this.requestSync();
-        
+
         // 3. Resume normal operation
         this.isConnected = true;
     }
@@ -640,7 +640,7 @@ class NetworkService {
 // Memoized components prevent unnecessary re-renders
 const TurnUI = React.memo(({ gameState, gameActions }) => {
     const { myHand, currentPlayer, turnNumber } = gameState;
-    
+
     // Only re-render when relevant props change
     return <div>...</div>;
 });

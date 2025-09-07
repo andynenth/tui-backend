@@ -118,7 +118,7 @@ action = GameAction(
 async def handle_action(self, action: GameAction):
     # Process the declaration
     self.game.players[0].declared = 3
-    
+
     # Update phase data (automatically stores event)
     await self.update_phase_data({
         "declarations": {"Alice": 3}
@@ -145,10 +145,10 @@ await self.state_machine.action_queue.store_state_event(
 
 ```sql
 INSERT INTO game_events (
-    sequence, room_id, event_type, payload, 
+    sequence, room_id, event_type, payload,
     player_id, timestamp, created_at
 ) VALUES (
-    42, 'ABC123', 'phase_data_update', 
+    42, 'ABC123', 'phase_data_update',
     '{"phase": "declaration", ...}',
     NULL, 1753237375.546, '2025-07-22T19:22:55'
 );
@@ -161,7 +161,7 @@ INSERT INTO game_events (
 ```python
 async def replay_room_state(self, room_id: str) -> Dict[str, Any]:
     """Reconstruct game state by replaying all events"""
-    
+
     # Start with empty state
     state = {
         "room_id": room_id,
@@ -171,14 +171,14 @@ async def replay_room_state(self, room_id: str) -> Dict[str, Any]:
         "phase_data": {},
         "actions": []
     }
-    
+
     # Get all events for room
     events = await self.get_room_events(room_id)
-    
+
     # Apply each event in sequence
     for event in events:
         state = self._apply_event_to_state(state, event)
-    
+
     state["events_processed"] = len(events)
     return state
 ```
@@ -188,22 +188,22 @@ async def replay_room_state(self, room_id: str) -> Dict[str, Any]:
 ```python
 def _apply_event_to_state(self, state: Dict, event: GameEvent) -> Dict:
     """Apply a single event to reconstruct state"""
-    
+
     if event.event_type == "phase_change":
         state["phase"] = event.payload["new_phase"]
-        
+
     elif event.event_type == "player_joined":
         state["players"][event.payload["player_name"]] = {
             "score": 0,
             "is_bot": event.payload["player_data"]["is_bot"]
         }
-        
+
     elif event.event_type == "round_scoring":
         for player, score in event.payload["scores"].items():
             state["players"][player]["score"] += score
-            
+
     # ... handle other event types
-    
+
     return state
 ```
 
@@ -214,7 +214,7 @@ def _apply_event_to_state(self, state: Dict, event: GameEvent) -> Dict:
 ```sql
 CREATE TABLE game_events (
     sequence INTEGER PRIMARY KEY,    -- Global sequence number
-    room_id TEXT NOT NULL,          -- Game room identifier  
+    room_id TEXT NOT NULL,          -- Game room identifier
     event_type TEXT NOT NULL,       -- Type of event
     payload TEXT NOT NULL,          -- JSON event data
     player_id TEXT,                 -- Optional player who triggered event
@@ -236,13 +236,13 @@ The enterprise architecture ensures events are automatically captured:
 # In BaseState
 async def update_phase_data(self, updates: Dict[str, Any], reason: str):
     """Update phase data with automatic event storage"""
-    
+
     # Update in-memory state
     self.phase_data.update(updates)
-    
+
     # Automatically store event
     await self._store_state_transition_event(updates, reason)
-    
+
     # Automatically broadcast to clients
     await self._broadcast_phase_change()
 ```
@@ -307,7 +307,7 @@ events = await event_store.get_room_events("ABC123")
 
 # Get events by type
 phase_changes = await event_store.get_events_by_type(
-    "ABC123", 
+    "ABC123",
     "phase_change"
 )
 
@@ -320,24 +320,24 @@ recent = await event_store.get_events_since("ABC123", sequence=100)
 ```python
 async def recover_game_after_crash(room_id: str):
     """Recover game state after server crash"""
-    
+
     # Replay all events
     state = await event_store.replay_room_state(room_id)
-    
+
     # Recreate game objects
     game = Game()
     game.round_number = state["round_number"]
-    
+
     # Restore players
     for name, data in state["players"].items():
         player = Player(name)
         player.score = data["score"]
         game.players.append(player)
-    
+
     # Resume from current phase
     state_machine = GameStateMachine(game, broadcast_callback)
     state_machine.current_phase = GamePhase[state["phase"].upper()]
-    
+
     return state_machine
 ```
 

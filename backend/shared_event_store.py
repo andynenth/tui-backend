@@ -13,7 +13,9 @@ logger = logging.getLogger(__name__)
 # MigrationAdapter provides the interface to the v2 OptimizedEventStore
 event_store = MigrationAdapter()
 
-logger.info("Shared event store initialized as MigrationAdapter (v2 OptimizedEventStore)")
+logger.info(
+    "Shared event store initialized as MigrationAdapter (v2 OptimizedEventStore)"
+)
 
 # Export for easy importing
 __all__ = ["event_store"]

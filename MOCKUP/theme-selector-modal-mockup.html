@@ -436,7 +436,7 @@
                     </svg>
                 </button>
             </div>
-            
+
             <div class="modal-body">
                 <!-- Theme Selection Section -->
                 <div class="settings-section">
@@ -457,7 +457,7 @@
                                 </svg>
                             </div>
                         </div>
-                        
+
                         <div class="theme-option" data-theme="modern">
                             <div class="theme-option-preview">
                                 <span class="piece-char" style="color: #0d6efd;">帥</span>
@@ -485,7 +485,7 @@
                     </div>
                 </div>
             </div>
-            
+
             <div class="modal-footer">
                 <button class="btn-modal btn-cancel" onclick="closeSettings()">Cancel</button>
                 <button class="btn-modal btn-apply" onclick="applySettings()">Apply Changes</button>
@@ -502,21 +502,21 @@
                 <path d="M12 1v6m0 6v6m9-9h-6m-6 0H3m16.36-6.36l-4.24 4.24M7.88 7.88L3.64 3.64m16.72 16.72l-4.24-4.24m-8.24 0l-4.24 4.24"></path>
             </svg>
         </button>
-        
+
         <div class="sp-game-icon">
             <div class="sp-icon-circle">將</div>
         </div>
-        
+
         <h1 class="sp-game-title">Welcome to Liap TUI</h1>
         <p class="sp-game-subtitle">Enter your player name to start playing</p>
-        
+
         <form>
             <div class="sp-input-wrapper">
                 <label class="sp-input-label">Player Name</label>
                 <input type="text" class="sp-glowing-input" placeholder="Enter your name..." value="Andy">
                 <p class="sp-input-helper-text">2-20 characters, letters and numbers only</p>
             </div>
-            
+
             <button type="submit" class="btn btn-primary">Enter Lobby</button>
         </form>
     </div>
@@ -541,10 +541,10 @@
             // Save the selected theme
             localStorage.setItem('liap-tui-theme', selectedTheme);
             console.log('Theme saved:', selectedTheme);
-            
+
             // Close modal
             closeSettings();
-            
+
             // In real implementation, this would trigger theme update
             alert(`Theme changed to: ${selectedTheme}`);
         }
@@ -556,7 +556,7 @@
                 document.querySelectorAll('.theme-option').forEach(opt => {
                     opt.classList.remove('active');
                 });
-                
+
                 // Add active to clicked
                 this.classList.add('active');
                 selectedTheme = this.dataset.theme;

@@ -12,19 +12,19 @@ graph TB
         Services[Service Layer]
         WebSocketClient[WebSocket Client]
     end
-    
+
     subgraph Backend
         FastAPI[FastAPI Server]
         WebSocketHandler[WebSocket Handler]
         StateMachine[State Machine]
         GameEngine[Game Engine]
     end
-    
+
     subgraph DataFlow
         Events[(Game Events)]
         State[(Game State)]
     end
-    
+
     React --> Components
     Components --> Services
     Services --> WebSocketClient
@@ -131,4 +131,3 @@ sequenceDiagram
     end
 
 ```
-

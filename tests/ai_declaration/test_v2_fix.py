@@ -48,7 +48,7 @@ for test in test_cases:
         part = part.strip()
         if part:
             hand.append(Piece(part))
-    
+
     # Run test
     result = choose_declare_strategic_v2(
         hand=hand,
@@ -58,15 +58,15 @@ for test in test_cases:
         must_declare_nonzero=False,
         verbose=False
     )
-    
+
     # Check result
     passed = (result == test['expected'])
     status = '✅ PASS' if passed else '❌ FAIL'
-    
+
     print(f'\n{status} {test["name"]}:')
     print(f'  Description: {test["description"]}')
     print(f'  Position: {test["position"]}, Previous: {test["prev_decl"]}')
     print(f'  Expected: {test["expected"]}, Got: {result}')
-    
+
 print('\n' + '=' * 60)
 print('All tests completed!')

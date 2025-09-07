@@ -21,7 +21,7 @@ class TelemetryErrorBoundary extends React.Component {
   componentDidCatch(error, errorInfo) {
     // Log error to telemetry service
     telemetryService.trackComponentError(error, errorInfo, this.props.componentName || 'Unknown');
-    
+
     // Store error details in state
     this.setState({
       error,
@@ -42,10 +42,10 @@ class TelemetryErrorBoundary extends React.Component {
     });
 
     // Reset error state
-    this.setState({ 
-      hasError: false, 
-      error: null, 
-      errorInfo: null 
+    this.setState({
+      hasError: false,
+      error: null,
+      errorInfo: null
     });
   };
 
@@ -69,7 +69,7 @@ class TelemetryErrorBoundary extends React.Component {
           <h2 style={{ margin: '0 0 10px 0', fontSize: '18px' }}>
             🚨 Component Error
           </h2>
-          
+
           <p style={{ margin: '0 0 15px 0' }}>
             {this.props.componentName || 'A component'} encountered an error and couldn't render.
           </p>
@@ -114,7 +114,7 @@ class TelemetryErrorBoundary extends React.Component {
             >
               🔄 Try Again
             </button>
-            
+
             <button
               onClick={() => window.location.reload()}
               style={{
@@ -132,11 +132,11 @@ class TelemetryErrorBoundary extends React.Component {
           </div>
 
           {this.props.showTelemetryInfo !== false && (
-            <p style={{ 
-              margin: '15px 0 0 0', 
-              fontSize: '12px', 
+            <p style={{
+              margin: '15px 0 0 0',
+              fontSize: '12px',
               color: '#666',
-              fontStyle: 'italic' 
+              fontStyle: 'italic'
             }}>
               📊 Error details have been automatically reported for analysis
             </p>

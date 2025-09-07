@@ -59,7 +59,7 @@ RUN npm ci
 COPY frontend/ ./
 RUN npm run build
 
-# Python production stage  
+# Python production stage
 FROM python:3.11-slim
 WORKDIR /app
 
@@ -373,7 +373,7 @@ curl http://localhost:5050/api/health
 
 ## 🚀 CI/CD Integration
 
-**Automatic Deployment**: 
+**Automatic Deployment**:
 - GitHub Actions uses `Dockerfile.prod` for AWS deployment
 - You develop with `./start.sh`, CI/CD handles production builds
 - No manual Docker commands needed for deployment!

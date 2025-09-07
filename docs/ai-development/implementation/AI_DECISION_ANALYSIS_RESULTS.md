@@ -13,7 +13,7 @@ Based on analysis of all 18 test scenarios using existing verbose output from th
 
 **Pattern Observed**: Frequent "Found X combos, 0 viable" in non-starter positions
 - **Example 2**: Found 1 combos, 0 viable (weak field, no room)
-- **Example 5**: Found 1 combos, 0 viable (weak field, no opportunity)  
+- **Example 5**: Found 1 combos, 0 viable (weak field, no opportunity)
 - **Example 12**: Found 7 combos, 0 viable (strong field, no control)
 - **Example 14**: Found 1 combos, 0 viable (normal field, no opportunity)
 
@@ -23,7 +23,7 @@ Based on analysis of all 18 test scenarios using existing verbose output from th
 
 **Observed Ranges**:
 - No opener: 0.0 (Examples 4, 6, 9, 11, 12, 15)
-- Weak opener: 0.7-1.0 (Examples 3, 13, 14, 16, 17)  
+- Weak opener: 0.7-1.0 (Examples 3, 13, 14, 16, 17)
 - Strong opener: 1.7-1.85 (Examples 1, 2, 7, 8, 18)
 
 **Pattern**: Opener scores correlate well with final declarations, suggesting this logic is working effectively.
@@ -35,7 +35,7 @@ Based on analysis of all 18 test scenarios using existing verbose output from th
 - Example 10: No opener, weak field → declares 2 (takes advantage)
 - Example 17: GENERAL_RED + weak field → declares 5 (excellent)
 
-**Strong Fields**: AI becomes conservative  
+**Strong Fields**: AI becomes conservative
 - Example 3: Strong field, no pile room → declares 0 (correct)
 - Example 12: Strong field, many combos → declares 0 (appropriate caution)
 
@@ -55,7 +55,7 @@ Based on analysis of all 18 test scenarios using existing verbose output from th
 
 **Last Player Constraint**: Handles sum≠8 rule correctly
 - Example 8: [2,1,3] → declares 1 (avoids forbidden 2)
-- Example 13: [3,2,1] → declares 1 (avoids forbidden 2) 
+- Example 13: [3,2,1] → declares 1 (avoids forbidden 2)
 - Example 18: [2,2,1] → declares 2 (avoids forbidden 3)
 
 ## 🎯 Identified Improvement Opportunities
@@ -104,7 +104,7 @@ Based on analysis of all 18 test scenarios using existing verbose output from th
 3. Consider less conservative filtering for weak field scenarios
 4. Test changes against all 18 scenarios to ensure no regressions
 
-### Phase 2: Edge Case Testing  
+### Phase 2: Edge Case Testing
 1. Create additional test scenarios for borderline cases
 2. Focus on pile room = 1-3 scenarios (limited room pressure)
 3. Test marginal opener scenarios (8-10 point pieces)

@@ -58,7 +58,7 @@ backend/
 ```python
 class InMemoryLogBuffer:
     """Thread-safe circular buffer for storing log entries"""
-    
+
     def __init__(self, max_size: int = 2000)
     def add_entry(self, entry: Dict[str, Any])
     def get_entries(self, limit, level, logger_filter, since_minutes, search) -> List[Dict]
@@ -76,7 +76,7 @@ class InMemoryLogBuffer:
 ```python
 class LogBufferHandler(logging.Handler):
     """Custom logging handler that captures logs to the buffer"""
-    
+
     def emit(self, record: logging.LogRecord)
 ```
 
@@ -235,7 +235,7 @@ async def get_debug_logs(
 ):
     # Implementation details
 
-@router.get("/logs/stats") 
+@router.get("/logs/stats")
 async def get_log_stats():
     # Buffer statistics
 
@@ -592,7 +592,7 @@ from enum import Enum
 
 class LogLevel(str, Enum):
     DEBUG = "DEBUG"
-    INFO = "INFO" 
+    INFO = "INFO"
     WARNING = "WARNING"
     ERROR = "ERROR"
     CRITICAL = "CRITICAL"
@@ -602,26 +602,26 @@ class InMemoryLogBuffer:
         self.max_size = max_size
         self.buffer = deque(maxlen=max_size)
         self.lock = Lock()
-    
+
     def add_entry(self, entry: Dict[str, Any]):
         with self.lock:
             self.buffer.append(entry)
-    
+
     def get_entries(self, limit=None, level=None, logger_filter=None, since_minutes=None, search=None):
         with self.lock:
             entries = list(self.buffer)
-        
+
         # Apply filters...
         # Sort by timestamp...
         # Apply limit...
-        
+
         return entries
 
 class LogBufferHandler(logging.Handler):
     def __init__(self, log_buffer: InMemoryLogBuffer):
         super().__init__()
         self.log_buffer = log_buffer
-    
+
     def emit(self, record: logging.LogRecord):
         try:
             entry = {
@@ -663,7 +663,7 @@ async def get_debug_logs(
             since_minutes=since_minutes,
             search=search
         )
-        
+
         return {
             "success": True,
             "data": entries,
@@ -738,8 +738,8 @@ async def get_debug_logs(
 
 ---
 
-*Document Version: 1.0*  
-*Created: December 2024*  
-*Last Updated: December 2024*  
-*Next Review: Post-Implementation*  
+*Document Version: 1.0*
+*Created: December 2024*
+*Last Updated: December 2024*
+*Next Review: Post-Implementation*
 *Owner: Backend Team*

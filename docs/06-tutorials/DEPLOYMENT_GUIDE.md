@@ -42,7 +42,7 @@ This guide walks through deploying Liap Tui to AWS EC2 step-by-step. By the end,
    curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
    unzip awscliv2.zip
    sudo ./aws/install
-   
+
    # Configure credentials
    aws configure
    # Enter your AWS Access Key ID
@@ -712,7 +712,7 @@ Parameters:
 Resources:
   ECSService:
     Type: AWS::ECS::Service
-    DependsOn: 
+    DependsOn:
       - ALBListener
       - NLBListener
     Properties:
@@ -787,21 +787,21 @@ server {
 server {
     listen 443 ssl http2;
     server_name yourdomain.com www.yourdomain.com;
-    
+
     ssl_certificate /etc/letsencrypt/live/yourdomain.com/fullchain.pem;
     ssl_certificate_key /etc/letsencrypt/live/yourdomain.com/privkey.pem;
-    
+
     # SSL configuration
     ssl_protocols TLSv1.2 TLSv1.3;
     ssl_ciphers HIGH:!aNULL:!MD5;
     ssl_prefer_server_ciphers on;
-    
+
     # Security headers
     add_header Strict-Transport-Security "max-age=31536000" always;
     add_header X-Frame-Options "SAMEORIGIN" always;
     add_header X-Content-Type-Options "nosniff" always;
     add_header X-XSS-Protection "1; mode=block" always;
-    
+
     # Rest of configuration...
 }
 ```
@@ -1143,13 +1143,13 @@ aws sns subscribe \
    ```bash
    # SSH into server
    ssh -i liap-tui-key.pem ec2-user@$PUBLIC_IP
-   
+
    # Navigate to application
    cd /home/ec2-user/liap-tui
-   
+
    # Start application
    docker-compose up -d
-   
+
    # Check logs
    docker-compose logs -f
    ```
@@ -1158,10 +1158,10 @@ aws sns subscribe \
    ```bash
    # Check health endpoint
    curl https://yourdomain.com/api/health
-   
+
    # Check Docker status
    docker ps
-   
+
    # Check resource usage
    docker stats liap-tui
    ```
@@ -1215,10 +1215,10 @@ aws sns subscribe \
    ```bash
    # Check application health
    curl https://yourdomain.com/api/health
-   
+
    # Check disk space
    df -h
-   
+
    # Check Docker logs
    docker-compose logs --tail=100
    ```
@@ -1227,10 +1227,10 @@ aws sns subscribe \
    ```bash
    # Update system packages
    sudo yum update -y
-   
+
    # Check for Docker updates
    docker version
-   
+
    # Review backup files
    ls -la /home/ec2-user/liap-tui/backups/
    ```
@@ -1240,10 +1240,10 @@ aws sns subscribe \
    # Rotate logs
    docker-compose logs > logs/archive-$(date +%Y%m).log
    docker-compose logs --tail=0 -f > logs/current.log &
-   
+
    # Update SSL certificate (auto-renews)
    sudo certbot renew --dry-run
-   
+
    # Review costs in AWS console
    ```
 
@@ -1255,12 +1255,12 @@ When you need to scale:
    ```bash
    # Stop instance
    aws ec2 stop-instances --instance-ids $INSTANCE_ID
-   
+
    # Change instance type
    aws ec2 modify-instance-attribute \
      --instance-id $INSTANCE_ID \
      --instance-type t2.small
-   
+
    # Start instance
    aws ec2 start-instances --instance-ids $INSTANCE_ID
    ```
@@ -1276,10 +1276,10 @@ When you need to scale:
    ```bash
    # Check container logs
    docker-compose logs app
-   
+
    # Check container status
    docker ps -a
-   
+
    # Rebuild if needed
    docker-compose build --no-cache
    docker-compose up -d
@@ -1289,10 +1289,10 @@ When you need to scale:
    ```bash
    # Check if port is open
    sudo netstat -tlnp | grep 8000
-   
+
    # Check nginx config
    docker exec liap-tui cat /etc/nginx/nginx.conf
-   
+
    # Test WebSocket locally
    wscat -c ws://localhost:8000/ws/test
    ```
@@ -1301,10 +1301,10 @@ When you need to scale:
    ```bash
    # Check resource usage
    docker stats
-   
+
    # Check process inside container
    docker exec liap-tui top
-   
+
    # Restart if needed
    docker-compose restart
    ```
@@ -1315,7 +1315,7 @@ When you need to scale:
    ```bash
    # Backup database
    sqlite3 game_events.db ".backup game_events_backup_$(date +%Y%m%d).db"
-   
+
    # Backup entire application
    tar -czf liap-tui-backup-$(date +%Y%m%d).tar.gz \
      game_events.db docker-compose.yml .env.production
@@ -1325,10 +1325,10 @@ When you need to scale:
    ```bash
    # Stop application
    docker-compose down
-   
+
    # Restore database
    cp game_events_backup_20240115.db game_events.db
-   
+
    # Start application
    docker-compose up -d
    ```
@@ -1344,7 +1344,7 @@ When you need to scale:
 
 ### After Free Tier
 - **t2.micro**: ~$8.50/month
-- **30GB EBS**: ~$3/month  
+- **30GB EBS**: ~$3/month
 - **Elastic IP**: Free when attached
 - **Data Transfer**: $0.09/GB after 15GB
 - **Estimated Total**: ~$15-20/month

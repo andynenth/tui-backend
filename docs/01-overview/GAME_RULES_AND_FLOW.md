@@ -38,7 +38,7 @@ The game uses 32 traditional Chinese chess pieces:
 
 #### Red Pieces (16 total)
 - **1 General** (帥) - 14 points
-- **2 Advisors** (仕) - 12 points each  
+- **2 Advisors** (仕) - 12 points each
 - **2 Elephants** (相) - 10 points each
 - **2 Horses** (傌) - 6 points each
 - **2 Chariots** (俥) - 8 points each
@@ -48,7 +48,7 @@ The game uses 32 traditional Chinese chess pieces:
 #### Black Pieces (16 total)
 - **1 General** (將) - 13 points
 - **2 Advisors** (士) - 11 points each
-- **2 Elephants** (象) - 9 points each  
+- **2 Elephants** (象) - 9 points each
 - **2 Horses** (馬) - 5 points each
 - **2 Chariots** (車) - 7 points each
 - **2 Cannons** (炮) - 3 points each
@@ -67,22 +67,22 @@ The game uses 32 traditional Chinese chess pieces:
 ```
 🏠 WAITING (Room Setup)
     ↓ All 4 players ready
-    
+
 🎯 PREPARATION (Deal Cards)
     ↓ Cards dealt, weak hands checked
-    
-📋 DECLARATION (Declare Targets)  
+
+📋 DECLARATION (Declare Targets)
     ↓ All players declare pile counts
-    
+
 🎮 TURN (Play Pieces)
     ↓ Players play pieces in turns
-    
+
 📊 TURN_RESULTS (Show Results)
     ↓ 7-second display, auto-continue
-    
+
 ⚖️ SCORING (Calculate Points)
     ↓ Compare declared vs actual piles
-    
+
 🏆 GAME_OVER (Final Results)
 ```
 
@@ -90,7 +90,7 @@ The game uses 32 traditional Chinese chess pieces:
 
 ## Phase Details
 
-### 1. WAITING Phase 
+### 1. WAITING Phase
 **Room Setup and Player Management**
 
 **What Happens:**
@@ -163,7 +163,7 @@ The game uses 32 traditional Chinese chess pieces:
 2. **PAIR** (2 pieces) - Two pieces of same name and color
 3. **THREE_OF_A_KIND** (3 pieces) - Three soldiers of same color
 4. **STRAIGHT** (3 pieces) - Three pieces from same color group
-5. **FOUR_OF_A_KIND** (4 pieces) - Four soldiers of same color  
+5. **FOUR_OF_A_KIND** (4 pieces) - Four soldiers of same color
 6. **EXTENDED_STRAIGHT** (4 pieces) - Four pieces with one duplicate
 7. **EXTENDED_STRAIGHT_5** (5 pieces) - Five pieces with two duplicates
 8. **FIVE_OF_A_KIND** (5 pieces) - Five soldiers of same color
@@ -297,7 +297,7 @@ Each round, players earn points based on accuracy of their declarations:
 
 ### Advanced Tactics
 - **Pile counting**: Track who needs what pile counts
-- **Hand deduction**: Guess opponents' hands from their plays  
+- **Hand deduction**: Guess opponents' hands from their plays
 - **Timing decisions**: When to use strong vs weak pieces
 - **Risk assessment**: Balance safety vs potential gain
 
@@ -346,7 +346,7 @@ While the official rules are implemented in the digital version, players sometim
 - **Open declarations**: All declarations visible immediately
 - **Blind declarations**: Declare before seeing your hand
 
-### Scoring Variants  
+### Scoring Variants
 - **No zero bonus**: Remove the +3 bonus for perfect zero
 - **Progressive bonus**: Bonus increases with declaration size
 - **Penalty cap**: Limit negative scores per round
@@ -365,7 +365,7 @@ While the official rules are implemented in the digital version, players sometim
 Liap Tui combines strategic thinking, risk assessment, and tactical play in a fast-paced multiplayer environment. Success requires:
 
 - **Accurate self-assessment** of your hand strength
-- **Strategic declaration** based on risk tolerance  
+- **Strategic declaration** based on risk tolerance
 - **Tactical piece play** to achieve your declared goals
 - **Adaptability** to changing game situations
 

@@ -23,7 +23,7 @@ class DeclarationContext:
 def calculate_pile_room(previous_declarations: List[int]) -> int:
     """
     Calculate maximum piles available in this round.
-    
+
     Returns:
         int: Available pile room (0-8)
     """
@@ -35,15 +35,15 @@ def calculate_pile_room(previous_declarations: List[int]) -> int:
 def assess_field_strength(previous_declarations: List[int]) -> str:
     """
     Categorize the overall field strength based on declarations.
-    
+
     Returns:
         str: "weak", "normal", or "strong"
     """
     if not previous_declarations:
         return "normal"  # No info yet
-        
+
     avg = sum(previous_declarations) / len(previous_declarations)
-    
+
     if avg <= 1.0:
         return "weak"  # Opponents have poor hands
     elif avg >= 3.5:
@@ -55,23 +55,23 @@ def assess_field_strength(previous_declarations: List[int]) -> str:
 def analyze_opponent_patterns(previous_declarations: List[int]) -> Dict:
     """
     Analyze what opponent declarations reveal about their hands.
-    
+
     Returns:
         Dict with:
         - low_declarers: int (count of 0-1 declarations)
-        - high_declarers: int (count of 4+ declarations)  
+        - high_declarers: int (count of 4+ declarations)
         - combo_opportunity: bool (might opponents play 3+ pieces?)
         - likely_singles_only: bool (all opponents playing singles?)
     """
     low_count = sum(1 for d in previous_declarations if d <= 1)
     high_count = sum(1 for d in previous_declarations if d >= 4)
-    
+
     # If all previous players declared 0-1, they have NO combos
     likely_singles_only = (low_count == len(previous_declarations))
-    
+
     # Combo opportunity exists if someone might play combos
     combo_opportunity = high_count > 0 or any(d >= 3 for d in previous_declarations)
-    
+
     return {
         'low_declarers': low_count,
         'high_declarers': high_count,
@@ -83,7 +83,7 @@ def analyze_opponent_patterns(previous_declarations: List[int]) -> Dict:
 def evaluate_opener_reliability(piece, field_strength: str) -> float:
     """
     Evaluate how reliable an opener is given field strength.
-    
+
     Returns:
         float: Reliability score (0.0 - 1.0)
     """
@@ -100,28 +100,28 @@ def evaluate_opener_reliability(piece, field_strength: str) -> float:
         return 0.0  # Not an opener
 
 
-def filter_viable_combos(combos: List[Tuple], context: DeclarationContext, 
+def filter_viable_combos(combos: List[Tuple], context: DeclarationContext,
                         has_reliable_opener: bool) -> List[Tuple]:
     """
     Filter combos to only those that are actually playable.
-    
+
     Args:
         combos: List of (combo_type, pieces) tuples
         context: Declaration context
         has_reliable_opener: Whether hand has 11+ point piece
-        
+
     Returns:
         List of viable combos
     """
     viable = []
-    
+
     for combo_type, pieces in combos:
         combo_size = len(pieces)
-        
+
         # Check 1: Pile room constraint
         if combo_size > context.pile_room:
             continue  # Can't play if not enough room
-            
+
         # Check 2: Playability without control
         if context.is_starter or has_reliable_opener or context.has_general_red:
             # Have control or can get it
@@ -132,13 +132,13 @@ def filter_viable_combos(combos: List[Tuple], context: DeclarationContext,
                 # Opponents might create opportunity
                 # But check combo strength
                 total_points = sum(p.point for p in pieces)
-                
+
                 if combo_type == "STRAIGHT" and total_points < 21:
                     # Weak straight, unlikely to win even with opportunity
                     continue
-                    
+
                 viable.append((combo_type, pieces))
-    
+
     return viable
 ```
 
@@ -166,14 +166,14 @@ def choose_declare_strategic(
         has_general_red=any(p.name == "GENERAL" and p.point == 14 for p in hand),
         opponent_patterns=analyze_opponent_patterns(previous_declarations)
     )
-    
+
     # Phase 2: Find and filter combos
     all_combos = find_all_valid_combos(hand)
     strong_combos = [c for c in all_combos if c[0] in {
-        "THREE_OF_A_KIND", "STRAIGHT", "FOUR_OF_A_KIND", 
+        "THREE_OF_A_KIND", "STRAIGHT", "FOUR_OF_A_KIND",
         "EXTENDED_STRAIGHT", "FIVE_OF_A_KIND", "DOUBLE_STRAIGHT"
     }]
-    
+
     # Phase 3: Evaluate openers
     opener_score = 0
     has_reliable_opener = False
@@ -183,15 +183,15 @@ def choose_declare_strategic(
             if reliability > 0:
                 has_reliable_opener = True
                 opener_score += reliability
-    
+
     # Phase 4: Filter viable combos
     viable_combos = filter_viable_combos(
         strong_combos, context, has_reliable_opener
     )
-    
+
     # Phase 5: Calculate base score
     score = 0
-    
+
     # Add piles from viable combos
     for combo_type, pieces in viable_combos:
         if combo_type in ["THREE_OF_A_KIND", "STRAIGHT"]:
@@ -202,10 +202,10 @@ def choose_declare_strategic(
             score += 5
         elif combo_type == "DOUBLE_STRAIGHT":
             score += 6
-    
+
     # Add opener piles
     score += int(opener_score)
-    
+
     # Phase 6: Apply GENERAL_RED game changer
     if context.has_general_red and context.field_strength == "weak":
         # Recalculate with all combos viable
@@ -214,32 +214,32 @@ def choose_declare_strategic(
         )
         # Take maximum of current score or GENERAL_RED enabled score
         score = max(score, min(all_combo_piles + 1, context.pile_room))
-    
+
     # Phase 7: Apply constraints
     # Pile room is absolute ceiling
     score = min(score, context.pile_room)
-    
+
     # Valid range
     score = max(0, min(score, 8))
-    
+
     # Phase 8: Handle forbidden values
     forbidden_declares = set()
-    
+
     # Last player can't make sum = 8
     if position_in_order == 3:
         total_so_far = sum(previous_declarations)
         forbidden = 8 - total_so_far
         if 0 <= forbidden <= 8:
             forbidden_declares.add(forbidden)
-    
+
     # Must declare non-zero rule
     if must_declare_nonzero:
         forbidden_declares.add(0)
-    
+
     # Find best valid alternative if needed
     if score in forbidden_declares:
         valid_options = [d for d in range(0, 9) if d not in forbidden_declares]
-        
+
         # Strategy: Pick closest valid option
         if valid_options:
             # Find closest to our ideal score
@@ -247,7 +247,7 @@ def choose_declare_strategic(
         else:
             # Shouldn't happen, but defensive
             score = 1
-    
+
     # Phase 9: Debug output
     if verbose:
         print(f"\\n🎯 STRATEGIC DECLARATION ANALYSIS")
@@ -260,7 +260,7 @@ def choose_declare_strategic(
         print(f"Found {len(strong_combos)} combos, {len(viable_combos)} viable")
         print(f"Opener score: {opener_score}")
         print(f"Final declaration: {score}")
-    
+
     return score
 ```
 

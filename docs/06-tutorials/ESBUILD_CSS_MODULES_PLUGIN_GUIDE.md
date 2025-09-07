@@ -116,10 +116,10 @@ const Button = ({ variant = 'primary', size, children }) => {
 cssModulesPlugin({
   // Inject styles into page (default: true)
   inject: true,
-  
+
   // How to handle CSS class names
   localsConvention: 'camelCase', // 'camelCase' | 'camelCaseOnly' | 'dashes' | 'dashesOnly'
-  
+
   // Pattern for generating scoped names
   generateScopedName: '[name]__[local]___[hash:base64:5]',
   // Other patterns:
@@ -127,10 +127,10 @@ cssModulesPlugin({
   // '[path][name]__[local]' - Include path
   // '[folder]__[local]___[hash:base64:5]' - Include folder
   // Custom function also supported
-  
+
   // CSS Modules behavior
   mode: 'local', // 'local' | 'global' | 'pure'
-  
+
   // PostCSS plugins
   postcss: {
     plugins: [
@@ -138,16 +138,16 @@ cssModulesPlugin({
       require('postcss-nested')
     ]
   },
-  
+
   // File pattern matching
   pattern: /\.module\.css$/,
-  
+
   // Root directory for resolving paths
   rootDir: process.cwd(),
-  
+
   // Export globals
   exportGlobals: false,
-  
+
   // Custom resolver for @import and composes
   resolve: {
     alias: {
@@ -223,7 +223,7 @@ generateScopedName: (name, filename, css) => {
   .header {
     background: white;
   }
-  
+
   body {
     margin: 0;
   }
@@ -326,7 +326,7 @@ import styles from './Component.module.css';
 function Component({ state, size }) {
   // Using template literals
   const className = `${styles.base} ${styles[`state-${state}`]} ${styles[size]}`;
-  
+
   // Using classnames library
   import cx from 'classnames';
   const className = cx(
@@ -337,7 +337,7 @@ function Component({ state, size }) {
       [styles.active]: state === 'active'
     }
   );
-  
+
   return <div className={className} />;
 }
 ```
@@ -493,7 +493,7 @@ declare module '*.module.css' {
    ```javascript
    // Before
    import './Button.css';
-   
+
    // After
    import styles from './Button.module.css';
    ```
@@ -502,7 +502,7 @@ declare module '*.module.css' {
    ```javascript
    // Before
    <button className="button primary large">
-   
+
    // After
    <button className={`${styles.button} ${styles.primary} ${styles.large}`}>
    ```
@@ -514,14 +514,14 @@ declare module '*.module.css' {
    // Script to extract and prefix classes
    const postcss = require('postcss');
    const fs = require('fs');
-   
+
    const css = fs.readFileSync('Button.module.css', 'utf8');
    const result = postcss.parse(css);
-   
+
    result.walkRules(rule => {
      rule.selector = rule.selector.replace(/\.(\w+)/g, '.button-$1');
    });
-   
+
    fs.writeFileSync('Button.css', result.toString());
    ```
 
@@ -536,7 +536,7 @@ declare module '*.module.css' {
    ```javascript
    // Before
    <button className={styles.button}>
-   
+
    // After
    <button className="button-button">
    ```

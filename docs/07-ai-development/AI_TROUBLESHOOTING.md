@@ -39,8 +39,8 @@ class BugReport:
 ### 1. Declaration Phase Bugs
 
 #### Over-Aggressive Declaration
-**Symptoms**: Bot declares high (6+) with weak hand  
-**Detection**: 
+**Symptoms**: Bot declares high (6+) with weak hand
+**Detection**:
 ```python
 if final_declaration >= 6 and openers + combos < 3:
     # Bug detected
@@ -48,7 +48,7 @@ if final_declaration >= 6 and openers + combos < 3:
 **Fix**: Validate hand strength before high declarations
 
 #### Zero Declaration with Strong Hand
-**Symptoms**: Bot declares 0 despite having openers  
+**Symptoms**: Bot declares 0 despite having openers
 **Detection**:
 ```python
 if final_declaration == 0 and openers >= 2 and zero_streak < 2:
@@ -57,7 +57,7 @@ if final_declaration == 0 and openers >= 2 and zero_streak < 2:
 **Fix**: Check zero streak rule enforcement
 
 #### Pile Room Violation
-**Symptoms**: Declaration exceeds available pile room  
+**Symptoms**: Declaration exceeds available pile room
 **Detection**:
 ```python
 if final_declaration > pile_room:
@@ -68,7 +68,7 @@ if final_declaration > pile_room:
 ### 2. Turn Play Bugs
 
 #### Never-Win Combo Play
-**Symptoms**: Bot plays combos that can never win  
+**Symptoms**: Bot plays combos that can never win
 **Examples**:
 - All-BLACK straight (3+5+7 points minimum)
 - SOLDIER_BLACK pairs (1+1=2 points minimum)
@@ -88,27 +88,27 @@ def is_never_win_combo(combo_type: str, pieces: List[Piece]) -> bool:
 **Fix**: Filter out never-win combos in responder strategy
 
 #### Overcapture Risk
-**Symptoms**: Bot wins too many piles exceeding declaration  
-**Detection**: Monitor captured vs declared ratio  
+**Symptoms**: Bot wins too many piles exceeding declaration
+**Detection**: Monitor captured vs declared ratio
 **Fix**: Implement overcapture constraints
 
 #### Wrong Piece Count
-**Symptoms**: Bot plays wrong number of pieces  
-**Detection**: Compare played vs required pieces  
+**Symptoms**: Bot plays wrong number of pieces
+**Detection**: Compare played vs required pieces
 **Fix**: Validate piece count before play
 
 ## Historical Bug Fixes
 
 ### Fix #1: Combo Preservation When Declaring 0
-**Problem**: Bot preserved combos despite declaring 0  
-**Root Cause**: AI assigned combos regardless of target_remaining  
-**Solution**: Only preserve combos if target_remaining > 0  
+**Problem**: Bot preserved combos despite declaring 0
+**Root Cause**: AI assigned combos regardless of target_remaining
+**Solution**: Only preserve combos if target_remaining > 0
 **Test**: `test_combo_preservation_fix.py`
 
 ### Fix #2: Combo Rank Priority
-**Problem**: Bot played high singles over lower-ranked combos  
-**Root Cause**: Critical urgency maximized points not rank  
-**Solution**: Prioritize combo rank over point value  
+**Problem**: Bot played high singles over lower-ranked combos
+**Root Cause**: Critical urgency maximized points not rank
+**Solution**: Prioritize combo rank over point value
 ```python
 # Sort by combo rank first, then points
 combos.sort(key=lambda x: (
@@ -118,17 +118,17 @@ combos.sort(key=lambda x: (
 ```
 
 ### Fix #3: Opener Assignment Scaling
-**Problem**: Fixed opener count regardless of declaration  
-**Root Cause**: Hard-coded max 2 openers for 4+ declarations  
-**Solution**: Scale openers with target_remaining  
+**Problem**: Fixed opener count regardless of declaration
+**Root Cause**: Hard-coded max 2 openers for 4+ declarations
+**Solution**: Scale openers with target_remaining
 ```python
 openers_needed = min(target_remaining, 4, len(all_openers))
 ```
 
 ### Fix #4: Smart Opener Assignment
-**Problem**: Assigned openers without considering combos  
-**Root Cause**: Independent opener and combo counting  
-**Solution**: Count secured wins from combos first  
+**Problem**: Assigned openers without considering combos
+**Root Cause**: Independent opener and combo counting
+**Solution**: Count secured wins from combos first
 ```python
 # Count wins from non-opener combos
 secured_wins = sum(1 for combo in combos if no_openers_in_combo)
@@ -136,9 +136,9 @@ openers_needed = max(0, target_remaining - secured_wins)
 ```
 
 ### Fix #5: Random Opener Play
-**Problem**: Predictable opener selection  
-**Root Cause**: Always selected max(openers)  
-**Solution**: Random selection when urgency is low  
+**Problem**: Predictable opener selection
+**Root Cause**: Always selected max(openers)
+**Solution**: Random selection when urgency is low
 ```python
 if urgency == "low":
     chosen = [random.choice(openers)]
@@ -147,17 +147,17 @@ else:
 ```
 
 ### Fix #6: Object Comparison
-**Problem**: Disposal strategy failed to find pieces  
-**Root Cause**: Object identity vs equality comparison  
-**Solution**: Compare by piece.kind not object  
+**Problem**: Disposal strategy failed to find pieces
+**Root Cause**: Object identity vs equality comparison
+**Solution**: Compare by piece.kind not object
 ```python
 # OLD: if p in context.my_hand  # Object comparison
 # NEW: if p.kind in hand_kinds  # Type comparison
 ```
 
 ### Fix #7: Zero Streak Rule
-**Problem**: Bot declared 0 despite zero streak  
-**Root Cause**: Early returns bypassed validation  
+**Problem**: Bot declared 0 despite zero streak
+**Root Cause**: Early returns bypassed validation
 **Solution**: Centralize forbidden value checking
 
 ## Diagnostic Workflow
@@ -203,13 +203,13 @@ def test_bug_reproduction():
         ("ADVISOR_RED", 2),
         ("SOLDIER_BLACK", 3)
     ])
-    
+
     context = create_context(
         declared=0,
         zero_streak=2,
         must_declare_nonzero=True
     )
-    
+
     result = choose_declare(hand, context)
     assert result > 0, "Must declare non-zero with streak"
 ```
@@ -327,7 +327,7 @@ declaration = min(declaration, pile_room, 8)
 ```python
 if bugs_per_game > 5:
     alert("High bug rate detected")
-    
+
 if critical_bugs > 0:
     alert("Critical AI bug detected", urgent=True)
 ```

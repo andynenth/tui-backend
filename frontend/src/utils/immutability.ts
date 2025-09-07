@@ -19,7 +19,7 @@ export function deepFreeze<T>(obj: T): Readonly<T> {
       frozen[key] = deepFreeze(obj[key]);
     }
   }
-  
+
   return Object.freeze(frozen) as Readonly<T>;
 }
 
@@ -40,15 +40,15 @@ export function isFrozen(obj: any): boolean {
   if (obj === null || obj === undefined || typeof obj !== 'object') {
     return true;
   }
-  
+
   if (!Object.isFrozen(obj)) {
     return false;
   }
-  
+
   if (Array.isArray(obj)) {
     return obj.every(item => isFrozen(item));
   }
-  
+
   for (const key in obj) {
     if (Object.prototype.hasOwnProperty.call(obj, key)) {
       if (!isFrozen(obj[key])) {
@@ -56,6 +56,6 @@ export function isFrozen(obj: any): boolean {
       }
     }
   }
-  
+
   return true;
 }

@@ -75,7 +75,7 @@ if [ -z "$CONTAINER_STATUS" ]; then
     echo -e "${RED}❌ Container not running${NC}"
 else
     echo -e "${GREEN}✅ ${CONTAINER_STATUS}${NC}"
-    
+
     # Container Resources
     CONTAINER_STATS=$(run_remote "docker stats --no-stream --format 'CPU: {{.CPUPerc}} | Memory: {{.MemUsage}}' liap-tui-game")
     echo -e "Resources: ${CONTAINER_STATS}"
@@ -106,7 +106,7 @@ DB_MODIFIED=$(run_remote "ls -l /home/ubuntu/liap-tui-data/game_events.db 2>/dev
 if [ "$DB_SIZE" != "N/A" ]; then
     echo -e "Database Size: ${DB_SIZE}"
     echo -e "Last Modified: ${DB_MODIFIED}"
-    
+
     # Recent game activity (if accessible)
     RECENT_ROOMS=$(run_remote "docker exec liap-tui-game sqlite3 /app/data/game_events.db \"SELECT COUNT(DISTINCT room_id) FROM game_summaries WHERE datetime(started_at, 'unixepoch') > datetime('now', '-1 day')\" 2>/dev/null" || echo "N/A")
     if [ "$RECENT_ROOMS" != "N/A" ]; then
@@ -125,7 +125,7 @@ if [ ! -z "$LATEST_BACKUP" ]; then
     BACKUP_NAME=$(basename "$LATEST_BACKUP")
     BACKUP_SIZE=$(run_remote "ls -lh $LATEST_BACKUP | awk '{print \$5}'")
     echo -e "Latest: ${BACKUP_NAME} (${BACKUP_SIZE})"
-    
+
     BACKUP_COUNT=$(run_remote "ls /home/ubuntu/backups/game_backup_*.tar.gz 2>/dev/null | wc -l")
     echo -e "Total Backups: ${BACKUP_COUNT}"
 else
@@ -184,20 +184,20 @@ echo -e "\n${BLUE}=================================${NC}"
 # Suggestions
 if [ "$STATUS" != "healthy" ]; then
     echo -e "\n${YELLOW}💡 Suggestions:${NC}"
-    
+
     if [ "$DOCKER_COUNT" -eq 0 ]; then
         echo -e "  - Start container: ssh to EC2 and run 'docker-compose up -d'"
     fi
-    
+
     if [ "$HTTP_CODE" != "200" ]; then
         echo -e "  - Check container logs: docker logs liap-tui-game"
         echo -e "  - Restart container: docker-compose restart"
     fi
-    
+
     if [ "$DB_SIZE" = "N/A" ]; then
         echo -e "  - Check database permissions: ls -la /home/ubuntu/liap-tui-data/"
     fi
-    
+
     if [ "$HEALTH_LOG_COUNT" -gt 0 ]; then
         echo -e "  - Review health check logs: tail -50 /home/ubuntu/logs/health-check.log"
     fi

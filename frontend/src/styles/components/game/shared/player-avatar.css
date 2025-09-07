@@ -111,7 +111,7 @@
 .player-avatar--bot.thinking {
   position: relative;
   border: 2px solid transparent;
-  background: 
+  background:
     linear-gradient(145deg, #f3f4f6 0%, #e5e7eb 100%) padding-box,
     conic-gradient(from 0deg, transparent 0deg, rgba(107, 114, 128, 0.6) 90deg, transparent 180deg) border-box;
 }

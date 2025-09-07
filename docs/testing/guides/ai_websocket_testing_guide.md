@@ -55,7 +55,7 @@ Test each game phase systematically:
 - Refresh during card dealing
 - Check if UI shows correct state
 
-#### B. Declaration Phase Testing  
+#### B. Declaration Phase Testing
 - Navigate to declaration phase
 - Refresh before declaring
 - Make declaration
@@ -110,9 +110,9 @@ Here's a complete test automation flow using Playwright MCP:
 await mcp__playwright__browser_navigate({ url: "http://localhost:5050" })
 
 // 2. Create new game
-await mcp__playwright__browser_click({ 
-  element: "Create Game button", 
-  ref: "button:has-text('Create Game')" 
+await mcp__playwright__browser_click({
+  element: "Create Game button",
+  ref: "button:has-text('Create Game')"
 })
 
 // 3. Fill player name
@@ -136,8 +136,8 @@ await mcp__playwright__browser_navigate_back()  // Simulate refresh
 await mcp__playwright__browser_navigate({ url: currentUrl })
 
 // 7. Take screenshots for evidence
-await mcp__playwright__browser_take_screenshot({ 
-  filename: "refresh-test-turn-phase.png" 
+await mcp__playwright__browser_take_screenshot({
+  filename: "refresh-test-turn-phase.png"
 })
 ```
 
@@ -159,7 +159,7 @@ Document your findings in a structured format:
 - ✅ Refresh during dealing: PASS
 - ✅ State maintained: PASS
 
-### Declaration Phase  
+### Declaration Phase
 - ✅ Refresh before declare: PASS
 - ✅ Refresh after declare: PASS
 

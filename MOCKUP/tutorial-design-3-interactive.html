@@ -44,7 +44,7 @@
             background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%);
             border-radius: 24px;
             overflow: hidden;
-            box-shadow: 
+            box-shadow:
                 0 25px 50px rgba(0, 0, 0, 0.5),
                 inset 0 1px 0 rgba(255, 255, 255, 0.1);
             display: flex;
@@ -960,7 +960,7 @@
                 <h2 style="color: white; font-size: 18px; margin-bottom: 12px; text-align: center;">
                     🎊 Training Complete!
                 </h2>
-                
+
                 <div style="background: linear-gradient(135deg, #334155, #1e293b); border-radius: 16px; padding: 20px; text-align: center; margin-bottom: 20px;">
                     <div style="font-size: 48px; margin-bottom: 12px;">🏅</div>
                     <h3 style="color: var(--gold); font-size: 16px; margin-bottom: 8px;">Castellan Apprentice</h3>
@@ -993,7 +993,7 @@
             <button class="nav-btn" onclick="prevSlide()" disabled>
                 ← Back
             </button>
-            
+
             <div class="progress-dots">
                 <div class="dot active"></div>
                 <div class="dot"></div>
@@ -1003,7 +1003,7 @@
                 <div class="dot"></div>
                 <div class="dot"></div>
             </div>
-            
+
             <button class="nav-btn primary" onclick="nextSlide()">
                 Next →
             </button>
@@ -1020,7 +1020,7 @@
         function updateSlide() {
             const slides = document.querySelectorAll('.slide');
             const dots = document.querySelectorAll('.dot');
-            
+
             slides.forEach((slide, index) => {
                 slide.classList.toggle('active', index === currentSlide);
             });
@@ -1076,7 +1076,7 @@
                 discovered++;
                 document.getElementById('discovered').textContent = discovered;
                 addCoins(2);
-                
+
                 if (discovered === 16) {
                     showAchievement('All Pieces Discovered! +20 Coins');
                     addCoins(18);
@@ -1087,7 +1087,7 @@
         function battle(piece, symbol, value) {
             const pieces = document.querySelectorAll('.battle-piece');
             pieces.forEach(p => p.classList.remove('winner'));
-            
+
             setTimeout(() => {
                 if (value > 5) {
                     pieces[0].classList.add('winner');
@@ -1103,7 +1103,7 @@
             const declared = parseInt(document.getElementById('declared').value);
             const won = parseInt(document.getElementById('won').value);
             const result = document.getElementById('scoreResult');
-            
+
             if (declared === won) {
                 const score = declared === 0 ? 3 : declared + 5;
                 result.textContent = `+${score} Points!`;
@@ -1125,7 +1125,7 @@
             const achievement = document.getElementById('achievement');
             achievement.textContent = `🏆 ${text}`;
             achievement.classList.add('show');
-            
+
             setTimeout(() => {
                 achievement.classList.remove('show');
             }, 3000);

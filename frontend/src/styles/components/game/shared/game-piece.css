@@ -25,7 +25,7 @@
   font-weight: bold;
   border: none;
   font-family: 'SimSun', '宋体', var(--font-display), serif;
-  box-shadow: 
+  box-shadow:
     /* Multi-layer border effect */
     0 0 0 0.5px rgba(200, 190, 180, 0.9),
     0 0 0 1px rgba(255, 255, 245, 0.4),
@@ -71,7 +71,7 @@
 /* Color variants (not applied to table variant - colors only show on front face) */
 .game-piece:not(.game-piece--table).piece-red,
 .game-piece:not(.game-piece--table).red {
-  box-shadow: 
+  box-shadow:
     /* Red-tinted border layers */
     0 0 0 0.5px color-mix(in srgb, var(--piece-color-red, #dc3545) 30%, #c8beb4),
     0 0 0 1px rgba(255, 245, 245, 0.4),
@@ -89,7 +89,7 @@
 
 .game-piece:not(.game-piece--table).piece-black,
 .game-piece:not(.game-piece--table).black {
-  box-shadow: 
+  box-shadow:
     /* Black-tinted border layers */
     0 0 0 0.5px
       color-mix(in srgb, var(--piece-color-black, #495057) 30%, #c8beb4),
@@ -237,7 +237,7 @@
 
 .game-piece--selectable:hover {
   transform: translateY(-2px);
-  box-shadow: 
+  box-shadow:
     /* Enhanced border on hover */
     0 0 0 0.5px rgba(13, 110, 253, 0.6),
     0 0 0 1px rgba(255, 255, 255, 0.5),
@@ -277,7 +277,7 @@
   position: relative;
   z-index: 10;
   /* Solid background to prevent texture bleed-through */
-  background: 
+  background:
     /* Solid ivory base */
     #fffff0,
     /* Main ivory gradient */
@@ -346,7 +346,7 @@
   align-items: center;
   justify-content: center;
   border: none;
-  box-shadow: 
+  box-shadow:
     /* Multi-layer border effect */
     0 0 0 0.5px rgba(200, 190, 180, 0.9),
     0 0 0 1px rgba(255, 255, 245, 0.4),
@@ -373,7 +373,7 @@
       transparent 50%
     );
   border: none;
-  box-shadow: 
+  box-shadow:
     /* Muted border layers for back */
     0 0 0 0.5px rgba(190, 180, 170, 0.8),
     0 0 0 1px rgba(250, 248, 243, 0.3),

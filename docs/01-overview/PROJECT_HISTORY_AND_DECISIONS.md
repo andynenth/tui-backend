@@ -287,7 +287,7 @@ class BotManager:
 class RoomManager:
     def __init__(self):
         self.rooms = {}  # room_id -> Room instance
-        
+
     def get_room(self, room_id: str) -> Room:
         return self.rooms.get(room_id)
 ```

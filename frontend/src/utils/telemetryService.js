@@ -10,10 +10,10 @@ class TelemetryService {
     this.batchSize = 10;
     this.flushInterval = 30000; // 30 seconds
     this.sessionStart = Date.now();
-    
+
     // Inherit session from initial page load telemetry
     this.sessionId = window.telemetry?.sessionId || Math.random().toString(36).substring(7);
-    
+
     // Initialize tracking
     this.init();
   }
@@ -24,7 +24,7 @@ class TelemetryService {
     this.trackUnhandledErrors();
     this.trackLongTasks();
     this.trackResourceLoading();
-    
+
     console.log('📊 React Telemetry Service initialized');
   }
 
@@ -70,7 +70,7 @@ class TelemetryService {
 
   isCriticalEvent(event) {
     return [
-      'app_error', 'component_error', 'chunk_load_failed', 
+      'app_error', 'component_error', 'chunk_load_failed',
       'websocket_error', 'game_error', 'fatal_error'
     ].includes(event);
   }
@@ -135,9 +135,9 @@ class TelemetryService {
 
   trackRouteChanges() {
     let currentRoute = window.location.pathname;
-    
+
     // Track initial route
-    this.track('route_visit', { 
+    this.track('route_visit', {
       route: currentRoute,
       isInitial: true
     });
@@ -157,16 +157,16 @@ class TelemetryService {
 
     // Multiple ways to detect route changes
     window.addEventListener('popstate', trackRoute);
-    
+
     // Override pushState and replaceState to catch programmatic navigation
     const originalPushState = history.pushState;
     const originalReplaceState = history.replaceState;
-    
+
     history.pushState = function(...args) {
       originalPushState.apply(history, args);
       setTimeout(trackRoute, 0);
     };
-    
+
     history.replaceState = function(...args) {
       originalReplaceState.apply(history, args);
       setTimeout(trackRoute, 0);
@@ -211,7 +211,7 @@ class TelemetryService {
             }
           }
         });
-        
+
         observer.observe({ entryTypes: ['longtask'] });
       } catch (error) {
         console.warn('Long task observer not supported:', error);
@@ -228,7 +228,7 @@ class TelemetryService {
             const chunkName = this.extractChunkName(entry.name);
             this.trackChunkLoad(chunkName, entry.duration, true);
           }
-          
+
           // Track slow resources (> 2s)
           if (entry.duration > 2000) {
             this.track('slow_resource', {
@@ -240,7 +240,7 @@ class TelemetryService {
           }
         }
       });
-      
+
       observer.observe({ entryTypes: ['resource'] });
     }
   }
@@ -276,7 +276,7 @@ class TelemetryService {
     // Use sendBeacon if available (more reliable for page unload)
     if (navigator.sendBeacon) {
       const success = navigator.sendBeacon(
-        '/api/telemetry', 
+        '/api/telemetry',
         JSON.stringify(payload)
       );
       if (success) return;
@@ -297,7 +297,7 @@ class TelemetryService {
 
   startBatchTimer() {
     setInterval(() => this.flush(), this.flushInterval);
-    
+
     // Flush before page unload
     window.addEventListener('beforeunload', () => {
       this.track('react_app_unload', {
@@ -312,7 +312,7 @@ class TelemetryService {
   trackMobileInteractions() {
     if (this.isMobile()) {
       let touchStart = null;
-      
+
       document.addEventListener('touchstart', (e) => {
         touchStart = {
           timestamp: Date.now(),
@@ -325,7 +325,7 @@ class TelemetryService {
         if (touchStart) {
           const touchDuration = Date.now() - touchStart.timestamp;
           const touchEnd = e.changedTouches[0];
-          
+
           this.track('mobile_touch', {
             duration: touchDuration,
             startX: touchStart.x,
@@ -333,7 +333,7 @@ class TelemetryService {
             endX: touchEnd.clientX,
             endY: touchEnd.clientY,
             distance: Math.sqrt(
-              Math.pow(touchEnd.clientX - touchStart.x, 2) + 
+              Math.pow(touchEnd.clientX - touchStart.x, 2) +
               Math.pow(touchEnd.clientY - touchStart.y, 2)
             )
           });

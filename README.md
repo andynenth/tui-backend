@@ -2,13 +2,13 @@
 
 <div align="center">
   <img src="docs/assets/gameplay.gif" alt="Castellan Game" width="300">
-  
+
   [![Build Status](https://img.shields.io/github/actions/workflow/status/andynenth/castellan/ci.yml?branch=main)](https://github.com/andynenth/castellan/actions)
   [![Discord](https://img.shields.io/discord/1234567890?color=7289da&logo=discord&logoColor=white)](https://discord.gg/castellan)
   [![Good First Issues](https://img.shields.io/github/issues/andynenth/castellan/good%20first%20issue)](https://github.com/andynenth/castellan/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22)
 </div>
 
-> **Real-time multiplayer board game** inspired by Liap Tui, a traditional Chinese-Thai game.  
+> **Real-time multiplayer board game** inspired by Liap Tui, a traditional Chinese-Thai game.
 > Built with **FastAPI** (Python) + **React 19** (TypeScript) + **WebSockets**.
 
 ---
@@ -76,7 +76,7 @@ castellan/
 │   ├── src/          # React components and game logic
 │   └── network/      # WebSocket client
 ├── backend/          # FastAPI + Python 3.11
-│   ├── engine/       # Core game logic & state machine  
+│   ├── engine/       # Core game logic & state machine
 │   ├── api/          # WebSocket handlers & REST endpoints
 │   └── ai/           # Bot players and strategies
 └── docs/             # Comprehensive documentation
@@ -144,7 +144,7 @@ pytest tests/test_game_engine.py    # Game logic tests
 npm test Button.test.tsx            # Component tests
 ```
 
-**Current Coverage**: Frontend 82%, Backend 78%  
+**Current Coverage**: Frontend 82%, Backend 78%
 **Goal**: Maintain >80% coverage
 
 ---
@@ -192,6 +192,6 @@ MIT © [Andy Nenthong](https://github.com/andynenth). See [LICENSE](LICENSE).
 
 <div align="center">
   <strong>Ready to contribute? Let's build something awesome together! 🚀</strong>
-  
+
   [Get Started](#-quick-start-2-minutes) • [Browse Issues](https://github.com/andynenth/castellan/issues) • [Join Discord](https://discord.gg/castellan)
 </div>

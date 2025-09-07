@@ -126,20 +126,20 @@ services:
       - WORKERS=2
       - MAX_CONNECTIONS=200
       - CONNECTION_TIMEOUT=30
-      
+
       # Enable response compression
       - ENABLE_COMPRESSION=true
       - COMPRESSION_LEVEL=6
-      
+
       # Optimize event buffer
       - EVENT_BUFFER_ENABLED=true
       - EVENT_BUFFER_SIZE=50
       - EVENT_BUFFER_FLUSH_INTERVAL=5.0
-      
+
       # Database optimizations
       - SQLITE_SYNCHRONOUS=NORMAL
       - SQLITE_JOURNAL_MODE=WAL
-      
+
     # Resource limits
     deploy:
       resources:
@@ -149,7 +149,7 @@ services:
         reservations:
           cpus: '0.25'
           memory: 256M
-    
+
     # Logging optimization
     logging:
       driver: json-file
@@ -184,20 +184,20 @@ run_remote "sudo tee /etc/nginx/sites-available/liap-tui > /dev/null << 'EOF'
 server {
     listen 8080;
     server_name _;
-    
+
     # Gzip compression
     gzip on;
     gzip_vary on;
     gzip_min_length 1024;
     gzip_types text/plain text/css text/xml text/javascript application/x-javascript application/xml application/json application/javascript;
-    
+
     # Cache static files
     location ~* \.(jpg|jpeg|png|gif|ico|css|js|woff|woff2|ttf|svg)$ {
         proxy_pass http://localhost:5050;
         expires 30d;
         add_header Cache-Control \"public, immutable\";
     }
-    
+
     # WebSocket support
     location /ws {
         proxy_pass http://localhost:5050;
@@ -208,14 +208,14 @@ server {
         proxy_set_header X-Real-IP \$remote_addr;
         proxy_read_timeout 86400;
     }
-    
+
     # API endpoints
     location /api {
         proxy_pass http://localhost:5050;
         proxy_set_header Host \$host;
         proxy_set_header X-Real-IP \$remote_addr;
         proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
-        
+
         # API response caching for read-only endpoints
         location ~* /api/(health|rooms|stats) {
             proxy_pass http://localhost:5050;
@@ -223,14 +223,14 @@ server {
             add_header X-Cache-Status \$upstream_cache_status;
         }
     }
-    
+
     # Default location
     location / {
         proxy_pass http://localhost:5050;
         proxy_set_header Host \$host;
         proxy_set_header X-Real-IP \$remote_addr;
     }
-    
+
     # Security headers
     add_header X-Frame-Options \"SAMEORIGIN\" always;
     add_header X-Content-Type-Options \"nosniff\" always;

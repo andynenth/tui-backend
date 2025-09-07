@@ -57,7 +57,7 @@ else
         --region $AWS_REGION \
         --query 'Addresses[0].InstanceId' \
         --output text 2>/dev/null || echo "none")
-    
+
     if [ "$INSTANCE_ATTACHED" = "None" ] || [ "$INSTANCE_ATTACHED" = "" ]; then
         echo -e "${RED}✗ Allocated but not attached (costing $3.60/month)${NC}"
     else

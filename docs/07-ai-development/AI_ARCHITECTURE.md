@@ -154,7 +154,7 @@ The turn play system uses strategic planning:
 1. **Urgency Calculation**
    - Based on piles needed vs. turns remaining
    - Factors in hand strength and combo availability
-   
+
 2. **Overcapture Avoidance**
    ```python
    @dataclass

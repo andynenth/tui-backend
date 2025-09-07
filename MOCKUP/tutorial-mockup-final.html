@@ -493,7 +493,7 @@
             <!-- Page 1: Game Overview & Components -->
             <div class="tutorial-page active" id="page1">
                 <h2 class="page-title">Game Overview & Components</h2>
-                
+
                 <div class="content-section">
                     <div class="highlight-box">
                         <h3>🎯 What is Liap?</h3>
@@ -516,7 +516,7 @@
                 <div class="content-section">
                     <h3>📦 Game Components</h3>
                     <p style="margin-bottom: 1rem;"><strong>32 Game Pieces Total:</strong></p>
-                    
+
                     <div class="components-grid">
                         <div class="component-card">
                             <div class="piece-display">
@@ -599,7 +599,7 @@
             <!-- Page 2: Piece Values & Hierarchy -->
             <div class="tutorial-page" id="page2">
                 <h2 class="page-title">Know Your Army</h2>
-                
+
                 <div class="content-section">
                     <div class="piece-hierarchy">
                         <div class="hierarchy-row">
@@ -743,7 +743,7 @@
             <!-- Page 3: Game Setup & Flow -->
             <div class="tutorial-page" id="page3">
                 <h2 class="page-title">How to Play</h2>
-                
+
                 <div class="content-section">
                     <div class="flow-diagram">
                         <div class="flow-step">
@@ -766,7 +766,7 @@
 
                 <div class="content-section">
                     <h3>📋 Each Round Consists of 3 Phases:</h3>
-                    
+
                     <div class="highlight-box">
                         <h3>1. 🃏 Preparation Phase</h3>
                         <ul style="margin-top: 1rem; padding-left: 2rem;">
@@ -794,7 +794,7 @@
                                 <li>Others must play EXACT same number of pieces</li>
                                 <li>Non-starters can play invalid combinations (forfeit play)</li>
                             </ul>
-                            
+
                             <h4><strong>Battle Resolution:</strong></h4>
                             <ul style="padding-left: 2rem; margin: 0.5rem 0;">
                                 <li><strong>Winner Takes All:</strong> Highest value/type wins all played pieces</li>
@@ -836,7 +836,7 @@
             <!-- Page 4: Scoring System -->
             <div class="tutorial-page" id="page4">
                 <h2 class="page-title">Scoring Mastery</h2>
-                
+
                 <div class="content-section">
                     <div class="highlight-box">
                         <h3>📊 Basic Scoring Formula</h3>
@@ -946,7 +946,7 @@
             <!-- Page 5: Basic Strategy -->
             <div class="tutorial-page" id="page5">
                 <h2 class="page-title">Your First Games</h2>
-                
+
                 <div class="content-section">
                     <div class="strategy-tips">
                         <div class="tip-card">
@@ -1053,7 +1053,7 @@
             <!-- Page 6: Special Rules -->
             <div class="tutorial-page" id="page6">
                 <h2 class="page-title">Advanced Rules</h2>
-                
+
                 <div class="content-section">
                     <div class="highlight-box">
                         <h3>💎 Weak Hand Rule</h3>
@@ -1157,7 +1157,7 @@
             <!-- Page 7: Quick Reference -->
             <div class="tutorial-page" id="page7">
                 <h2 class="page-title">Quick Reference</h2>
-                
+
                 <div class="content-section">
                     <div class="quick-ref">
                         <div class="ref-section">
@@ -1266,15 +1266,15 @@
             for (let i = 1; i <= totalSlides; i++) {
                 document.getElementById(`page${i}`).classList.remove('active');
             }
-            
+
             // Show current page
             document.getElementById(`page${currentSlide}`).classList.add('active');
-            
+
             // Update navigation
             document.getElementById('pageIndicator').textContent = `Page ${currentSlide} of ${totalSlides}`;
             document.getElementById('prevBtn').disabled = currentSlide === 1;
             document.getElementById('nextBtn').disabled = currentSlide === totalSlides;
-            
+
             // Update progress bar
             const progress = (currentSlide / totalSlides) * 100;
             document.getElementById('progressBar').style.width = `${progress}%`;
@@ -1301,9 +1301,9 @@
             const declared = parseInt(document.getElementById('declared').value);
             const won = parseInt(document.getElementById('won').value);
             const resultDiv = document.getElementById('scoreResult');
-            
+
             let score, explanation;
-            
+
             if (declared === won) {
                 if (declared === 0) {
                     score = 3;
@@ -1321,7 +1321,7 @@
                     explanation = `Missed target. |${declared} - ${won}| = ${Math.abs(declared - won)} = ${score} points`;
                 }
             }
-            
+
             const color = score > 0 ? '#28a745' : '#dc3545';
             resultDiv.innerHTML = `
                 <strong style="color: ${color};">Score: ${score > 0 ? '+' : ''}${score} points</strong><br>

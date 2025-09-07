@@ -26,7 +26,7 @@ if player:
     # Store original state for ALL players (both human and bot)
     player.original_is_bot = player.is_bot
     player.original_avatar_color = getattr(player, 'avatar_color', None)
-    
+
     # Only process human players for disconnect
     if not player.is_bot:
         player.is_connected = False
@@ -47,11 +47,11 @@ if room.started and room.game:
         # Restore original bot state
         if hasattr(game_player, 'original_is_bot'):
             game_player.is_bot = game_player.original_is_bot
-        
+
         # Restore avatar color
         if hasattr(game_player, 'original_avatar_color'):
             game_player.avatar_color = game_player.original_avatar_color
-    
+
     # Now handle the reconnecting player specifically
     player = next((p for p in room.game.players if p.name == player_name), None)
     if player and hasattr(player, 'original_is_bot') and not player.original_is_bot:

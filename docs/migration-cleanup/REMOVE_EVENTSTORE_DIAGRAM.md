@@ -92,7 +92,7 @@
 ### BEFORE: Many endpoints that don't work with v2
 ```
 /api/recovery/events/{room_id}/{since_sequence}  ← Fails with AttributeError
-/api/recovery/state/{room_id}                    ← Fails with AttributeError  
+/api/recovery/state/{room_id}                    ← Fails with AttributeError
 /api/event-store/room/{room_id}/events          ← Fails with AttributeError
 /api/debug/events/{room_id}                      ← Fails with AttributeError
 /api/debug/replay/{room_id}                      ← Fails with AttributeError

@@ -74,8 +74,8 @@ export const initializeIOSDebugger = () => {
         margin: 2px 0;
         padding: 2px;
         border-left: 3px solid ${
-          level === 'error' ? 'red' : 
-          level === 'warn' ? 'yellow' : 
+          level === 'error' ? 'red' :
+          level === 'warn' ? 'yellow' :
           level === 'info' ? 'blue' : 'green'
         };
         padding-left: 6px;

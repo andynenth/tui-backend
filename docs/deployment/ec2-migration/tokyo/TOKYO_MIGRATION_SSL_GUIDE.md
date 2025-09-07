@@ -53,7 +53,7 @@ Migrating your Liap Tui game from US-East (34.233.7.20) to Tokyo (ap-northeast-1
    ```bash
    # Build the image locally
    docker-compose -f docker-compose.prod-local.yml build
-   
+
    # Deploy to Tokyo
    ./deploy-ec2-ssl-tokyo-no-rebuild.sh
    ```
@@ -86,10 +86,10 @@ Migrating your Liap Tui game from US-East (34.233.7.20) to Tokyo (ap-northeast-1
    ```bash
    # Stop any services on port 80
    sudo docker-compose down
-   
+
    # Get certificate
    sudo certbot certonly --standalone -d castellan.andynenth.dev
-   
+
    # Start services again
    docker-compose up -d
    exit

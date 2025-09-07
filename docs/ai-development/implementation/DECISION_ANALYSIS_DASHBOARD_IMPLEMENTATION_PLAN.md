@@ -37,11 +37,11 @@ Final declaration: 4
 
 ---
 
-## **PHASE 1: Backend Foundation** 
+## **PHASE 1: Backend Foundation**
 **Timeline**: Week 1 (5 days)
 **Goal**: Extend existing debug infrastructure to capture and serve bot decision data
 
-### **Task 1.1: Enhanced Bot Decision Logging** 
+### **Task 1.1: Enhanced Bot Decision Logging**
 **Estimated Time**: 1.5 days
 
 #### **Subtask 1.1.1: Create BotDecisionCapture Class**
@@ -73,9 +73,9 @@ class BotDecisionData:
 ```python
 # Integration point in _bot_declare() after line 440
 decision_data = BotDecisionCapture.capture_declaration(
-    bot=bot, 
-    declared_value=value, 
-    context=context, 
+    bot=bot,
+    declared_value=value,
+    context=context,
     timing_ms=elapsed_time
 )
 # Store in event store for dashboard access
@@ -83,7 +83,7 @@ decision_data = BotDecisionCapture.capture_declaration(
 
 #### **Subtask 1.1.3: Extend Event Store Schema**
 - [ ] **File**: `backend/api/services/event_store.py` (MODIFY)
-- [ ] **Location**: Add new event type `bot_decision` 
+- [ ] **Location**: Add new event type `bot_decision`
 - [ ] **Integration**: Extend existing event types in lines 67-76
 - [ ] Add bot decision event storage methods
 - [ ] **Safety**: Additive only, no schema changes to existing events
@@ -114,7 +114,7 @@ async def get_bot_analysis_data(room_id: str):
 - [ ] **Data Source**: Event store with `bot_decision` events
 - [ ] **Integration**: Use existing event store methods
 
-- [ ] **Endpoint**: `GET /api/dashboard/performance/{bot_id}`  
+- [ ] **Endpoint**: `GET /api/dashboard/performance/{bot_id}`
 - [ ] **Function**: Bot performance metrics over time
 - [ ] **Data Source**: Aggregate bot decision timings
 - [ ] **Integration**: Extend existing event filtering
@@ -183,9 +183,9 @@ async def dashboard_websocket(websocket: WebSocket, room_id: str):
 - [ ] **Safety**: Optional route - doesn't affect existing game routes
 
 ```jsx
-<Route 
-  path="/dashboard/:roomId?" 
-  element={<DashboardPage />} 
+<Route
+  path="/dashboard/:roomId?"
+  element={<DashboardPage />}
 />
 ```
 
@@ -289,7 +289,7 @@ async def dashboard_websocket(websocket: WebSocket, room_id: str):
 ---
 
 ## **PHASE 4: Integration & Access Control**
-**Timeline**: Week 5 (5 days)  
+**Timeline**: Week 5 (5 days)
 **Goal**: Seamless integration without disrupting game flow
 
 ### **Task 4.1: Settings Integration**
@@ -327,7 +327,7 @@ async def dashboard_websocket(websocket: WebSocket, room_id: str):
 
 #### **Subtask 4.3.1: Dashboard Error Boundaries**
 - [ ] **File**: `frontend/src/components/dashboard/DashboardErrorBoundary.jsx` (NEW)
-- [ ] **Pattern**: Follow existing `ErrorBoundary.jsx` 
+- [ ] **Pattern**: Follow existing `ErrorBoundary.jsx`
 - [ ] **Function**: Isolate dashboard errors from game functionality
 - [ ] **Safety**: Dashboard failures don't affect game
 
@@ -419,7 +419,7 @@ async def dashboard_websocket(websocket: WebSocket, room_id: str):
 
 ### **Phase 1 Success**
 - [ ] Bot decisions captured and stored in event store
-- [ ] Dashboard API endpoints return bot decision data  
+- [ ] Dashboard API endpoints return bot decision data
 - [ ] WebSocket delivers real-time bot decision updates
 - [ ] No impact on existing game performance
 
@@ -446,7 +446,7 @@ async def dashboard_websocket(websocket: WebSocket, room_id: str):
 
 ### **Performance Monitoring**
 - [ ] Track dashboard API response times
-- [ ] Monitor WebSocket connection stability  
+- [ ] Monitor WebSocket connection stability
 - [ ] Measure impact on game performance
 - [ ] Alert on dashboard-related errors
 

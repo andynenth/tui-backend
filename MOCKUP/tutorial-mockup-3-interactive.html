@@ -10,7 +10,7 @@
             padding: 0;
             box-sizing: border-box;
         }
-        
+
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
@@ -18,13 +18,13 @@
             color: white;
             overflow: hidden;
         }
-        
+
         .game-tutorial {
             height: 100vh;
             display: flex;
             flex-direction: column;
         }
-        
+
         /* Header */
         .tutorial-nav {
             background: rgba(0, 0, 0, 0.3);
@@ -35,13 +35,13 @@
             align-items: center;
             border-bottom: 1px solid rgba(255, 255, 255, 0.1);
         }
-        
+
         .progress-indicator {
             display: flex;
             align-items: center;
             gap: 10px;
         }
-        
+
         .step-dot {
             width: 8px;
             height: 8px;
@@ -49,18 +49,18 @@
             background: rgba(255, 255, 255, 0.3);
             transition: all 0.3s ease;
         }
-        
+
         .step-dot.active {
             width: 30px;
             height: 8px;
             border-radius: 4px;
             background: #ffc107;
         }
-        
+
         .step-dot.completed {
             background: #28a745;
         }
-        
+
         .skip-btn {
             background: rgba(255, 255, 255, 0.1);
             border: 1px solid rgba(255, 255, 255, 0.2);
@@ -71,11 +71,11 @@
             transition: all 0.3s ease;
             font-size: 14px;
         }
-        
+
         .skip-btn:hover {
             background: rgba(255, 255, 255, 0.2);
         }
-        
+
         /* Main Game Area */
         .game-board {
             flex: 1;
@@ -85,7 +85,7 @@
             justify-content: center;
             padding: 20px;
         }
-        
+
         .table-area {
             width: 100%;
             max-width: 500px;
@@ -98,7 +98,7 @@
             align-items: center;
             justify-content: center;
         }
-        
+
         .center-pile {
             width: 150px;
             height: 150px;
@@ -111,12 +111,12 @@
             justify-content: center;
             gap: 10px;
         }
-        
+
         .pile-pieces {
             display: flex;
             gap: -20px;
         }
-        
+
         .game-piece {
             width: 50px;
             height: 50px;
@@ -132,12 +132,12 @@
             position: relative;
             z-index: 1;
         }
-        
+
         .game-piece:hover {
             transform: translateY(-10px);
             z-index: 10;
         }
-        
+
         .piece-general { background: #dc3545; }
         .piece-advisor { background: #fd7e14; }
         .piece-elephant { background: #ffc107; color: #212529; }
@@ -145,7 +145,7 @@
         .piece-chariot { background: #17a2b8; }
         .piece-cannon { background: #6610f2; }
         .piece-soldier { background: #6c757d; }
-        
+
         /* Player Positions */
         .player-spot {
             position: absolute;
@@ -154,12 +154,12 @@
             align-items: center;
             gap: 10px;
         }
-        
+
         .player-spot.bottom { bottom: -60px; left: 50%; transform: translateX(-50%); }
         .player-spot.top { top: -60px; left: 50%; transform: translateX(-50%); }
         .player-spot.left { left: -60px; top: 50%; transform: translateY(-50%); }
         .player-spot.right { right: -60px; top: 50%; transform: translateY(-50%); }
-        
+
         .player-avatar {
             width: 50px;
             height: 50px;
@@ -172,21 +172,21 @@
             border: 3px solid transparent;
             transition: all 0.3s ease;
         }
-        
+
         .player-avatar.active {
             border-color: #ffc107;
             box-shadow: 0 0 20px rgba(255, 193, 7, 0.5);
         }
-        
+
         .player-avatar.you {
             background: #007bff;
         }
-        
+
         .player-name {
             font-size: 12px;
             opacity: 0.8;
         }
-        
+
         /* Hand Area */
         .hand-area {
             position: absolute;
@@ -201,7 +201,7 @@
             border-radius: 20px;
             border: 1px solid rgba(255, 255, 255, 0.1);
         }
-        
+
         .hand-piece {
             width: 60px;
             height: 60px;
@@ -215,17 +215,17 @@
             transition: all 0.3s ease;
             position: relative;
         }
-        
+
         .hand-piece:hover {
             transform: translateY(-10px) scale(1.1);
         }
-        
+
         .hand-piece.selected {
             transform: translateY(-20px) scale(1.1);
             box-shadow: 0 10px 30px rgba(255, 193, 7, 0.5);
             border: 3px solid #ffc107;
         }
-        
+
         /* Tutorial Overlay */
         .tutorial-overlay {
             position: absolute;
@@ -236,7 +236,7 @@
             pointer-events: none;
             z-index: 100;
         }
-        
+
         .spotlight {
             position: absolute;
             border-radius: 50%;
@@ -244,12 +244,12 @@
             animation: pulse 2s ease-in-out infinite;
             pointer-events: none;
         }
-        
+
         @keyframes pulse {
             0%, 100% { transform: scale(1); }
             50% { transform: scale(1.05); }
         }
-        
+
         .tutorial-tooltip {
             position: absolute;
             background: white;
@@ -260,14 +260,14 @@
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
             pointer-events: all;
         }
-        
+
         .tooltip-arrow {
             position: absolute;
             width: 0;
             height: 0;
             border-style: solid;
         }
-        
+
         .tooltip-arrow.top {
             bottom: -10px;
             left: 50%;
@@ -275,7 +275,7 @@
             border-width: 10px 10px 0 10px;
             border-color: white transparent transparent transparent;
         }
-        
+
         .tooltip-arrow.bottom {
             top: -10px;
             left: 50%;
@@ -283,21 +283,21 @@
             border-width: 0 10px 10px 10px;
             border-color: transparent transparent white transparent;
         }
-        
+
         .tooltip-title {
             font-size: 18px;
             font-weight: 600;
             margin-bottom: 10px;
             color: #212529;
         }
-        
+
         .tooltip-content {
             font-size: 14px;
             line-height: 1.5;
             color: #495057;
             margin-bottom: 15px;
         }
-        
+
         .tooltip-action {
             background: #007bff;
             color: white;
@@ -309,12 +309,12 @@
             cursor: pointer;
             transition: all 0.3s ease;
         }
-        
+
         .tooltip-action:hover {
             background: #0056b3;
             transform: translateY(-2px);
         }
-        
+
         /* Interactive Elements */
         .declaration-panel {
             position: absolute;
@@ -328,20 +328,20 @@
             text-align: center;
             box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
         }
-        
+
         .declaration-title {
             font-size: 24px;
             font-weight: 600;
             margin-bottom: 20px;
         }
-        
+
         .declaration-options {
             display: flex;
             gap: 15px;
             justify-content: center;
             margin-bottom: 20px;
         }
-        
+
         .declare-btn {
             width: 60px;
             height: 60px;
@@ -353,19 +353,19 @@
             cursor: pointer;
             transition: all 0.3s ease;
         }
-        
+
         .declare-btn:hover {
             border-color: #007bff;
             background: #e7f3ff;
             transform: scale(1.1);
         }
-        
+
         .declare-btn.selected {
             background: #007bff;
             color: white;
             border-color: #007bff;
         }
-        
+
         /* Score Display */
         .score-popup {
             position: absolute;
@@ -380,35 +380,35 @@
             box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
             max-width: 400px;
         }
-        
+
         .score-title {
             font-size: 28px;
             font-weight: 700;
             margin-bottom: 20px;
             color: #28a745;
         }
-        
+
         .score-breakdown {
             background: #f8f9fa;
             padding: 20px;
             border-radius: 12px;
             margin-bottom: 20px;
         }
-        
+
         .score-row {
             display: flex;
             justify-content: space-between;
             margin: 10px 0;
             font-size: 16px;
         }
-        
+
         .score-total {
             font-size: 36px;
             font-weight: 700;
             color: #28a745;
             margin: 20px 0;
         }
-        
+
         /* Mobile Responsive */
         @media (max-width: 600px) {
             .table-area {
@@ -417,18 +417,18 @@
                 max-width: 400px;
                 max-height: 400px;
             }
-            
+
             .hand-area {
                 gap: 5px;
                 padding: 15px;
             }
-            
+
             .hand-piece {
                 width: 50px;
                 height: 50px;
                 font-size: 20px;
             }
-            
+
             .tutorial-tooltip {
                 max-width: 250px;
                 padding: 15px 20px;
@@ -449,7 +449,7 @@
             </div>
             <button class="skip-btn">Skip Tutorial</button>
         </div>
-        
+
         <!-- Game Board -->
         <div class="game-board">
             <div class="table-area">
@@ -470,7 +470,7 @@
                     <div class="player-avatar">Bot</div>
                     <div class="player-name">Practice Bot</div>
                 </div>
-                
+
                 <!-- Center Pile -->
                 <div class="center-pile">
                     <div class="pile-pieces">
@@ -480,7 +480,7 @@
                     <div style="font-size: 14px; opacity: 0.7;">Current Pile</div>
                 </div>
             </div>
-            
+
             <!-- Player Hand -->
             <div class="hand-area">
                 <div class="hand-piece piece-general">G</div>
@@ -490,24 +490,24 @@
                 <div class="hand-piece piece-soldier">2</div>
             </div>
         </div>
-        
+
         <!-- Tutorial Overlay -->
         <div class="tutorial-overlay">
             <!-- Spotlight on hand -->
             <div class="spotlight" style="width: 400px; height: 120px; bottom: 10px; left: 50%; transform: translateX(-50%);"></div>
-            
+
             <!-- Tutorial Tooltip -->
             <div class="tutorial-tooltip" style="bottom: 160px; left: 50%; transform: translateX(-50%);">
                 <div class="tooltip-arrow top"></div>
                 <h3 class="tooltip-title">Your Hand</h3>
                 <p class="tooltip-content">
-                    These are your pieces! Click to select one or more pieces to play. 
+                    These are your pieces! Click to select one or more pieces to play.
                     The <strong>General (G)</strong> is your strongest piece at 11 points.
                 </p>
                 <button class="tooltip-action">Got it!</button>
             </div>
         </div>
-        
+
         <!-- Declaration Panel (Hidden by default) -->
         <div class="declaration-panel" style="display: none;">
             <h2 class="declaration-title">How many piles will you win?</h2>
@@ -522,7 +522,7 @@
             </p>
             <button class="tooltip-action" style="width: 200px;">Confirm Declaration</button>
         </div>
-        
+
         <!-- Score Popup (Hidden by default) -->
         <div class="score-popup" style="display: none;">
             <h2 class="score-title">Perfect Hit! 🎯</h2>
@@ -548,7 +548,7 @@
             <button class="tooltip-action" style="width: 200px;">Continue</button>
         </div>
     </div>
-    
+
     <script>
         // Simple interaction demo
         document.querySelectorAll('.hand-piece').forEach(piece => {
@@ -558,14 +558,14 @@
                 this.classList.add('selected');
             });
         });
-        
+
         document.querySelectorAll('.declare-btn').forEach(btn => {
             btn.addEventListener('click', function() {
                 document.querySelectorAll('.declare-btn').forEach(b => b.classList.remove('selected'));
                 this.classList.add('selected');
             });
         });
-        
+
         // Tutorial flow simulation
         let currentStep = 1;
         document.querySelector('.tooltip-action').addEventListener('click', () => {

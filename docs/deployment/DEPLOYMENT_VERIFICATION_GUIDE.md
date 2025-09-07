@@ -21,7 +21,7 @@ Complete checklist to verify your Liap Tui deployment on EC2.
 curl -k https://34.233.7.20/api/health
 # Expected: {"status":"healthy","timestamp":...}
 
-# Detailed health  
+# Detailed health
 curl -k https://34.233.7.20/api/health/detailed
 # Expected: Detailed system info including database paths
 ```
@@ -115,7 +115,7 @@ openssl s_client -connect 34.233.7.20:443 -servername 34.233.7.20 < /dev/null
 time curl -k https://34.233.7.20/api/health
 
 # Load test (be gentle!)
-for i in {1..10}; do 
+for i in {1..10}; do
   curl -k -s -o /dev/null -w "%{time_total}\n" https://34.233.7.20/api/health
 done | awk '{sum+=$1} END {print "Average response time: " sum/NR "s"}'
 ```
@@ -132,7 +132,7 @@ done | awk '{sum+=$1} END {print "Average response time: " sum/NR "s"}'
 
 ### Issue: Telemetry Not Recording
 - **Check**: Database file exists and has write permissions
-- **Fix**: 
+- **Fix**:
   ```bash
   sudo docker-compose exec backend ls -la /app/data/
   # If permission issues:
@@ -162,13 +162,13 @@ sudo netstat -tlnp
 
 ## Success Criteria
 
-✅ All health endpoints return 200 OK  
-✅ Game loads and is playable  
-✅ WebSocket connections work  
-✅ Telemetry dashboard shows data  
-✅ Databases are being written to  
-✅ No errors in docker logs  
-✅ Response times < 1 second  
+✅ All health endpoints return 200 OK
+✅ Game loads and is playable
+✅ WebSocket connections work
+✅ Telemetry dashboard shows data
+✅ Databases are being written to
+✅ No errors in docker logs
+✅ Response times < 1 second
 
 ## Next Steps
 

@@ -67,7 +67,7 @@ logger = logging.getLogger(__name__)
     summary="Get complete play history for a room",
     description="""
     Retrieve comprehensive play history for all rounds in a game room.
-    
+
     This endpoint provides detailed information about game progression including:
     - Player information and types (human vs AI)
     - Initial game state and starter determination
@@ -76,15 +76,15 @@ logger = logging.getLogger(__name__)
     - Turn-by-turn play history with hand states
     - Scoring calculations and cumulative scores
     - AI decision analysis and reasoning (optional)
-    
+
     **Performance Notes:**
     - Alerts trigger if response time exceeds 1s (warning) or 3s (critical)
     - Use `format=compact` for reduced response size
     - Use `include_hands=false` to exclude hand details
     - Use `include_ai_analysis=false` to exclude AI reasoning
-    
+
     **Authentication:** None required (public endpoint)
-    
+
     **Rate Limiting:** 100 requests per minute per IP
     """,
 )
@@ -161,7 +161,7 @@ async def get_play_history(
 
     # Get play history in simplified frontend format
     simplified_data = await play_history_db_service.get_play_history(room_id)
-    
+
     if not simplified_data:
         error_response, status_code = create_error_response(
             code=ErrorCodes.ROOM_NOT_FOUND,
@@ -170,10 +170,8 @@ async def get_play_history(
             context={"room_id": room_id},
             path=str(request.url.path),
         )
-        raise HTTPException(
-            status_code=status_code, detail=error_response.model_dump()
-        )
-    
+        raise HTTPException(status_code=status_code, detail=error_response.model_dump())
+
     # Return simplified format directly
     return simplified_data
 
@@ -228,22 +226,22 @@ async def get_round_history(
     summary="Get play history for a specific range of rounds",
     description="""
     Retrieve play history for a specific range of rounds in a game.
-    
+
     This endpoint is optimized for fetching historical data for specific rounds,
     useful for reviewing particular game segments or analyzing specific rounds.
-    
+
     **Usage Examples:**
     - Get rounds 1-5: `/api/rooms/ROOM123/play-history/rounds?from=1&to=5`
     - Get single round: `/api/rooms/ROOM123/play-history/rounds?from=3&to=3`
     - Get compact format: Add `&format=compact`
-    
+
     **Performance Notes:**
     - More efficient than filtering with the main endpoint for large games
     - Missing rounds within the range are silently skipped
     - Alerts trigger if response time exceeds thresholds
-    
+
     **Authentication:** None required (public endpoint)
-    
+
     **Rate Limiting:** 100 requests per minute per IP
     """,
 )

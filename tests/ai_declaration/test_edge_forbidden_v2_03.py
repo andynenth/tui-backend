@@ -8,7 +8,7 @@ from backend.engine.ai import choose_declare_strategic_v2
 
 # Test edge_forbidden_v2_03
 # Hand: [ELEPHANT_RED, ELEPHANT_BLACK, CHARIOT_RED, CHARIOT_BLACK, HORSE_RED, HORSE_BLACK, CANNON_RED, CANNON_BLACK]
-# Position: 3 (Last player) 
+# Position: 3 (Last player)
 # Previous declarations: [1, 3, 3]
 # Expected: 1, Actual: 0
 

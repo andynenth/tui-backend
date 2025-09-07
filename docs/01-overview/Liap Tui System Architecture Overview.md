@@ -7,7 +7,7 @@ graph TB
     subgraph "Client Layer"
         U[User]
         B[Browser]
-        
+
         subgraph "Frontend Application"
             UI[React UI Components]
             GS[GameService<br/>State Management]
@@ -16,23 +16,23 @@ graph TB
             SI[ServiceIntegration<br/>Orchestration]
         end
     end
-    
+
     subgraph "Network Layer"
         WS1[WebSocket<br/>Lobby Connection]
         WS2[WebSocket<br/>Game Connection]
         HTTP[HTTP/REST API]
     end
-    
+
     subgraph "Backend Application"
         subgraph "API Layer"
             WSAPI[WebSocket Routes<br/>ws.py]
             RESTAPI[REST Routes<br/>routes.py]
             SM[Socket Manager<br/>Connection Handler]
         end
-        
+
         subgraph "Business Logic"
             RM[Room Manager<br/>Game Rooms]
-            
+
             subgraph "State Machine"
                 GSM[Game State Machine]
                 PS[Preparation State]
@@ -40,63 +40,63 @@ graph TB
                 TS[Turn State]
                 SS[Scoring State]
             end
-            
+
             BM[Bot Manager<br/>AI Players]
             GE[Game Engine<br/>Core Logic]
         end
-        
+
         subgraph "Enterprise Services"
             ES[Event Store<br/>Event Sourcing]
             HM[Health Monitor<br/>System Health]
             RM2[Recovery Manager<br/>Fault Recovery]
         end
     end
-    
+
     subgraph "Infrastructure"
         DB[(SQLite DB<br/>Event Storage)]
         LOG[Structured Logging]
         MON[Monitoring<br/>Metrics]
     end
-    
+
     %% User interactions
     U --> B
     B --> UI
-    
+
     %% Frontend connections
     UI --> GS
     GS --> NS
     NS --> SI
     RS --> SI
-    
+
     %% Network connections
     NS --> WS1
     NS --> WS2
     UI --> HTTP
-    
+
     %% Backend connections
     WS1 --> WSAPI
     WS2 --> WSAPI
     HTTP --> RESTAPI
-    
+
     WSAPI --> SM
     RESTAPI --> RM
-    
+
     SM --> GSM
     RM --> GSM
-    
+
     GSM --> PS
     GSM --> DS
     GSM --> TS
     GSM --> SS
-    
+
     GSM --> BM
     GSM --> GE
     GSM --> ES
-    
+
     ES --> DB
     HM --> MON
     RM2 --> ES
-    
+
     GSM --> LOG
 ```
 
@@ -350,7 +350,7 @@ sequenceDiagram
     Frontend->>NetworkService: connectToLobby()
     NetworkService->>LobbyWS: Connect ws://localhost:5050/ws/lobby
     LobbyWS-->>NetworkService: Connection established
-    
+
     NetworkService->>LobbyWS: send("client_ready", {})
     LobbyWS->>Backend: Process client_ready
     Backend->>RoomManager: list_rooms()
@@ -379,21 +379,21 @@ sequenceDiagram
     NetworkService->>Backend: WebSocket message
     Backend->>Backend: room_manager.create_room("Alice")
     Backend-->>NetworkService: send("room_created", {room_id: "ABC123"})
-    
+
     Frontend->>NetworkService: connectToRoom("ABC123")
     NetworkService->>GameWS: Connect ws://localhost:5050/ws/ABC123
     GameWS-->>NetworkService: Connection established
-    
+
     User->>Frontend: Add bots and start game
     Frontend->>NetworkService: send("add_bot", {slot_id: 2})
     Frontend->>NetworkService: send("add_bot", {slot_id: 3})
     Frontend->>NetworkService: send("add_bot", {slot_id: 4})
-    
+
     Frontend->>NetworkService: send("start_game", {})
     NetworkService->>Backend: Start game request
     Backend->>StateMachine: Initialize & start(PREPARATION)
     StateMachine->>BotManager: Register game
-    
+
     StateMachine->>Backend: broadcast("phase_change", {phase: "preparation", ...})
     Backend-->>NetworkService: Phase change event
     NetworkService-->>Frontend: Update game state
@@ -413,23 +413,23 @@ sequenceDiagram
     StateMachine->>PreparationState: Enter PREPARATION phase
     PreparationState->>PreparationState: Deal 8 cards to each player
     PreparationState->>PreparationState: Check for weak hands
-    
+
     alt Weak hands found
         PreparationState->>Backend: update_phase_data({weak_players: ["Bot 2"], ...})
         Backend->>NetworkService: broadcast("phase_change", {phase_data: {weak_players: [...]}})
         NetworkService-->>Frontend: Display weak hand notification
-        
+
         PreparationState->>BotManager: handle_game_event("redeal_decision_needed")
         BotManager->>BotManager: Bot decides (70% decline)
         BotManager->>StateMachine: handle_action(REDEAL_RESPONSE, {accept: false})
-        
+
         Backend->>NetworkService: broadcast("phase_change", {updated state})
         NetworkService-->>Frontend: Update UI
     else No weak hands
         PreparationState->>PreparationState: Determine starter (GENERAL_RED holder)
         PreparationState->>Backend: update_phase_data({round_starter: "Bot 2"})
     end
-    
+
     PreparationState->>StateMachine: Transition to DECLARATION
     StateMachine->>Backend: broadcast("phase_change", {phase: "declaration", ...})
 ```
@@ -449,7 +449,7 @@ sequenceDiagram
     Backend->>NetworkService: broadcast("phase_change", {phase: "declaration", current_declarer: "Bot 2"})
     NetworkService->>GameService: Process phase change
     GameService-->>Frontend: Update UI (show declaration phase)
-    
+
     loop For each player in declaration order
         alt Bot player's turn
             DeclarationState->>BotManager: Bot's turn to declare
@@ -467,10 +467,10 @@ sequenceDiagram
             Backend->>DeclarationState: handle_action(DECLARE, {value: 3})
             DeclarationState->>Backend: broadcast_custom_event("declare", {player: "Alice", value: 3})
         end
-        
+
         DeclarationState->>DeclarationState: Update declarations & check total
     end
-    
+
     DeclarationState->>StateMachine: All declared, transition to TURN
     StateMachine->>Backend: broadcast("phase_change", {phase: "turn", ...})
 ```
@@ -488,16 +488,16 @@ sequenceDiagram
 
     Backend->>NetworkService: broadcast("phase_change", {phase: "turn", current_player: "Alice"})
     NetworkService-->>Frontend: Update to turn phase
-    
+
     Note over Frontend: Alice (starter) plays first, sets piece count
-    
+
     User->>Frontend: Select 2 pieces to play
     Frontend->>NetworkService: send("play", {player_name: "Alice", piece_indices: [0, 1]})
     NetworkService->>Backend: Play pieces message
     Backend->>TurnState: handle_action(PLAY_PIECES, {pieces: [...]})
     TurnState->>TurnState: Validate play, set required_piece_count = 2
     TurnState->>Backend: broadcast_custom_event("play", {player: "Alice", pieces: [...], required_count: 2})
-    
+
     loop For remaining players
         alt Bot's turn
             BotManager->>BotManager: Select best 2 pieces (AI logic)
@@ -507,14 +507,14 @@ sequenceDiagram
             User->>Frontend: Select pieces
             Frontend->>NetworkService: send("play", {...})
         end
-        
+
         TurnState->>Backend: broadcast_custom_event("play", {player data})
     end
-    
+
     TurnState->>TurnState: Determine winner (highest play value)
     TurnState->>Backend: broadcast_custom_event("turn_complete", {winner: "Alice", ...})
     Backend-->>Frontend: Show turn results
-    
+
     alt More pieces in hands
         TurnState->>TurnState: Start next turn
     else All hands empty
@@ -534,13 +534,13 @@ sequenceDiagram
 
     StateMachine->>ScoringState: Enter SCORING phase
     ScoringState->>ScoringState: Calculate scores for each player
-    
+
     Note over ScoringState: Score calculation:<br/>Declared 0, got 0: +3 points<br/>Declared X, got X: X+5 points<br/>Declared X, got Y: penalty<br/>Apply redeal multiplier
 
     ScoringState->>Backend: update_phase_data({<br/>round_scores: {...},<br/>total_scores: {...},<br/>game_over: false<br/>})
     Backend->>NetworkService: broadcast("phase_change", {phase: "scoring", ...})
     NetworkService-->>Frontend: Display scoring UI
-    
+
     alt Game not over (no one reached 50 points)
         ScoringState->>ScoringState: Increment round number
         ScoringState->>StateMachine: Transition to PREPARATION
@@ -566,11 +566,11 @@ sequenceDiagram
     NetworkService->>NetworkService: Detect disconnect
     NetworkService->>RecoveryService: Connection lost
     RecoveryService->>RecoveryService: Start recovery procedure
-    
+
     loop Exponential backoff retry
         RecoveryService->>NetworkService: Attempt reconnection
         NetworkService->>Backend: Connect WebSocket
-        
+
         alt Connection successful
             Backend-->>NetworkService: Connected
             NetworkService->>Backend: send("sync_request", {last_sequence: 123})
@@ -583,7 +583,7 @@ sequenceDiagram
             NetworkService-->>RecoveryService: Retry with backoff
         end
     end
-    
+
     Note over Frontend: UI shows connection status throughout
 ```
 
@@ -598,23 +598,23 @@ sequenceDiagram
     participant Backend
 
     Note over BotManager: Bots act independently of frontend
-    
+
     StateMachine->>Backend: broadcast("phase_change", {phase: "turn", current_player: "Bot 2"})
     Backend->>BotManager: Phase change notification
     BotManager->>BotManager: Check if current player is bot
-    
+
     alt Bot's turn
         BotManager->>BotAI: Calculate best move
         BotAI->>BotAI: Analyze hand, game state
         BotAI-->>BotManager: Recommended action
-        
+
         BotManager->>StateMachine: handle_action(PLAY_PIECES, {pieces: [...]})
         StateMachine->>GameState: Process bot action
         GameState->>Backend: broadcast_custom_event("play", {player: "Bot 2", ...})
-        
+
         Note over Backend: Bot actions broadcast same as human actions
     end
-    
+
     Backend-->>Frontend: Bot action events (for display only)
 ```
 
@@ -997,18 +997,18 @@ graph LR
         GS[GameService<br/>State Management]
         RS[RecoveryService<br/>Error Recovery]
     end
-    
+
     subgraph "WebSocket Connections"
         LWS[Lobby WebSocket<br/>ws://host/ws/lobby]
         GWS[Game WebSocket<br/>ws://host/ws/roomId]
     end
-    
+
     subgraph "Backend Systems"
         SM[State Machine<br/>Game Logic]
         BM[Bot Manager<br/>AI Players]
         ES[Event Store<br/>Event Sourcing]
     end
-    
+
     NS <--> LWS
     NS <--> GWS
     LWS <--> SM

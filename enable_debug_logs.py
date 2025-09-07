@@ -49,11 +49,11 @@ for name in loggers_to_debug:
 if __name__ == "__main__":
     import uvicorn
     from backend.api.main import app
-    
+
     print("\n🚀 Starting backend with debug logging...")
     print(f"📄 Logs will be written to: {DEBUG_LOG_FILE}")
     print("💡 Run 'tail -f debug_websocket.log' in another terminal to monitor\n")
-    
+
     uvicorn.run(
         app,
         host="0.0.0.0",

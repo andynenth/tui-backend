@@ -341,7 +341,7 @@ if not validation["valid"]:
     # Check for gaps
     for gap in validation["gaps"]:
         logger.error(f"Sequence gap: expected {gap['expected']}, got {gap['actual']}")
-    
+
     # Check for duplicates
     for dup in validation["duplicate_sequences"]:
         logger.error(f"Duplicate sequence {dup} found")

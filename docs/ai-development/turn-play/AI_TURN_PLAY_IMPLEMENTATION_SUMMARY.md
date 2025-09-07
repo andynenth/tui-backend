@@ -101,7 +101,7 @@ To see the feature in action:
 - `current_plays` in context is empty (TODO in bot_manager.py)
 - Would allow bots to see what others played this turn
 
-### Revealed Pieces Tracking  
+### Revealed Pieces Tracking
 - `revealed_pieces` in context is empty (TODO in bot_manager.py)
 - Would track all face-up pieces from previous turns
 - Requires turn history integration

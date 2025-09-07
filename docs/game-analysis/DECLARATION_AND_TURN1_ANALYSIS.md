@@ -107,7 +107,7 @@ Burden pieces: [ADVISOR(11), ELEPHANT(9), CHARIOT(7), CANNON(3), SOLDIER(2), SOL
 - **No aggressive zero declaration**: Weak hands still declare based on opener count
 - **Field strength assessment**: Based only on previous declarations, not hand quality
 
-### 2. Turn Play Issues  
+### 2. Turn Play Issues
 - **No responder strategy**: All non-starters use basic AI
 - **Basic AI maximizes value**: Always plays strongest valid combination
 - **No burden disposal logic**: Basic AI doesn't understand strategic disposal

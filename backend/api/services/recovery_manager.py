@@ -82,9 +82,9 @@ class RecoveryManager:
     def __init__(self):
         self.recovery_procedures = self._define_recovery_procedures()
         self.recovery_history: List[RecoveryAttempt] = []
-        self.procedure_attempts: Dict[str, List[float]] = (
-            {}
-        )  # procedure_name -> timestamps
+        self.procedure_attempts: Dict[
+            str, List[float]
+        ] = {}  # procedure_name -> timestamps
         self.max_history = 1000
         self.is_active = False
 

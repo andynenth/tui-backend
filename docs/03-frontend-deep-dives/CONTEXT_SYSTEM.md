@@ -54,22 +54,22 @@ graph TB
         Game[GameProvider]
         Network[NetworkProvider]
     end
-    
+
     subgraph "Consumers"
         Pages[Page Components]
         GameComp[Game Components]
         Shared[Shared Components]
     end
-    
+
     Error --> Theme
     Theme --> App
     App --> Game
     Game --> Network
-    
+
     Network --> Pages
     Network --> GameComp
     Network --> Shared
-    
+
     style App fill:#4CAF50
     style Game fill:#2196F3
     style Theme fill:#FF9800
@@ -95,7 +95,7 @@ const App = () => {
 
 const AppWithProviders = () => {
   const { currentRoomId } = useApp();
-  
+
   // Conditional providers based on app state
   if (currentRoomId) {
     return (
@@ -106,7 +106,7 @@ const AppWithProviders = () => {
       </GameProvider>
     );
   }
-  
+
   return <AppRouter />;
 };
 ```
@@ -121,20 +121,20 @@ interface AppContextType {
   // Player data
   playerName: string | null;
   setPlayerName: (name: string) => void;
-  
+
   // Room management
   currentRoomId: string | null;
   setCurrentRoomId: (roomId: string | null) => void;
-  
+
   // Session management
   sessionId: string;
   isAuthenticated: boolean;
-  
+
   // UI state
   isMobile: boolean;
   isLoading: boolean;
   setIsLoading: (loading: boolean) => void;
-  
+
   // Error handling
   error: AppError | null;
   setError: (error: AppError | null) => void;
@@ -152,32 +152,32 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   const [playerName, setPlayerNameState] = useState<string | null>(() => {
     return localStorage.getItem('player-name');
   });
-  
+
   // Session state
   const [currentRoomId, setCurrentRoomId] = useState<string | null>(null);
   const [sessionId] = useState(() => generateSessionId());
-  
+
   // UI state
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<AppError | null>(null);
-  
+
   // Derived state
   const isMobile = useMediaQuery('(max-width: 768px)');
   const isAuthenticated = !!playerName;
-  
+
   // Enhanced setters with side effects
   const setPlayerName = useCallback((name: string) => {
     setPlayerNameState(name);
     localStorage.setItem('player-name', name);
-    
+
     // Track user
     analytics.identify(sessionId, { playerName: name });
   }, [sessionId]);
-  
+
   const clearError = useCallback(() => {
     setError(null);
   }, []);
-  
+
   // Global error handler
   useEffect(() => {
     const handleError = (event: ErrorEvent) => {
@@ -187,11 +187,11 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
         timestamp: Date.now()
       });
     };
-    
+
     window.addEventListener('error', handleError);
     return () => window.removeEventListener('error', handleError);
   }, []);
-  
+
   const value = useMemo(() => ({
     playerName,
     setPlayerName,
@@ -215,7 +215,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     isLoading,
     error
   ]);
-  
+
   return (
     <AppContext.Provider value={value}>
       {children}
@@ -239,7 +239,7 @@ export const useApp = () => {
 // Usage in components
 const Header = () => {
   const { playerName, isAuthenticated } = useApp();
-  
+
   return (
     <header>
       {isAuthenticated ? (
@@ -272,21 +272,21 @@ interface GameContextType {
   // State
   gameState: GameState | null;
   isGameActive: boolean;
-  
+
   // Player info
   myPlayer: Player | null;
   isMyTurn: boolean;
-  
+
   // Actions
   playPieces: (pieceIds: string[]) => Promise<void>;
   declare: (pileCount: number) => Promise<void>;
   acceptRedeal: () => Promise<void>;
   declineRedeal: () => Promise<void>;
-  
+
   // UI state
   selectedPieces: string[];
   setSelectedPieces: (pieces: string[]) => void;
-  
+
   // Network state
   connectionStatus: 'connected' | 'disconnected' | 'reconnecting';
   lastError: GameError | null;
@@ -296,32 +296,32 @@ interface GameContextType {
 ### GameProvider Implementation
 
 ```jsx
-export const GameProvider: React.FC<{ roomId: string; children: ReactNode }> = ({ 
-  roomId, 
-  children 
+export const GameProvider: React.FC<{ roomId: string; children: ReactNode }> = ({
+  roomId,
+  children
 }) => {
   const { playerName } = useApp();
   const networkService = useRef(NetworkService.getInstance());
-  
+
   // Game state
   const [gameState, setGameState] = useState<GameState | null>(null);
   const [connectionStatus, setConnectionStatus] = useState<ConnectionStatus>('disconnected');
   const [lastError, setLastError] = useState<GameError | null>(null);
-  
+
   // UI state
   const [selectedPieces, setSelectedPieces] = useState<string[]>([]);
-  
+
   // Connect to game room
   useEffect(() => {
     const service = networkService.current;
-    
+
     // Connect
     service.connectToRoom(roomId);
-    
+
     // Event handlers
     const handlePhaseChange = (event: CustomEvent) => {
       const { phase, phase_data, game_state } = event.detail.data;
-      
+
       setGameState(prev => ({
         ...prev,
         phase,
@@ -329,20 +329,20 @@ export const GameProvider: React.FC<{ roomId: string; children: ReactNode }> = (
         ...game_state
       }));
     };
-    
+
     const handleHandUpdate = (event: CustomEvent) => {
       const { pieces } = event.detail.data;
-      
+
       setGameState(prev => ({
         ...prev!,
         myHand: pieces
       }));
     };
-    
+
     const handleConnectionChange = (event: CustomEvent) => {
       setConnectionStatus(event.detail.status);
     };
-    
+
     const handleError = (event: CustomEvent) => {
       setLastError({
         code: event.detail.code,
@@ -350,13 +350,13 @@ export const GameProvider: React.FC<{ roomId: string; children: ReactNode }> = (
         timestamp: Date.now()
       });
     };
-    
+
     // Register listeners
     service.on('phase_change', handlePhaseChange);
     service.on('hand_updated', handleHandUpdate);
     service.on('connection_status', handleConnectionChange);
     service.on('error', handleError);
-    
+
     // Cleanup
     return () => {
       service.off('phase_change', handlePhaseChange);
@@ -366,42 +366,42 @@ export const GameProvider: React.FC<{ roomId: string; children: ReactNode }> = (
       service.disconnect(roomId);
     };
   }, [roomId]);
-  
+
   // Derived state
   const myPlayer = useMemo(() => {
     if (!gameState || !playerName) return null;
     return gameState.players.find(p => p.name === playerName) || null;
   }, [gameState, playerName]);
-  
+
   const isMyTurn = useMemo(() => {
     if (!gameState || !myPlayer) return false;
     return gameState.phaseData?.current_player === myPlayer.name;
   }, [gameState, myPlayer]);
-  
+
   const isGameActive = !!gameState && gameState.phase !== 'GAME_OVER';
-  
+
   // Actions
   const playPieces = useCallback(async (pieceIds: string[]) => {
     if (!isMyTurn) {
       throw new Error('Not your turn');
     }
-    
+
     await networkService.current.send(roomId, 'play', {
       player_name: playerName,
       piece_ids: pieceIds
     });
-    
+
     // Clear selection after play
     setSelectedPieces([]);
   }, [roomId, playerName, isMyTurn]);
-  
+
   const declare = useCallback(async (pileCount: number) => {
     await networkService.current.send(roomId, 'declare', {
       player_name: playerName,
       declaration: pileCount
     });
   }, [roomId, playerName]);
-  
+
   const value = useMemo(() => ({
     gameState,
     isGameActive,
@@ -410,13 +410,13 @@ export const GameProvider: React.FC<{ roomId: string; children: ReactNode }> = (
     playPieces,
     declare,
     acceptRedeal: async () => {
-      await networkService.current.send(roomId, 'accept_redeal', { 
-        player_name: playerName 
+      await networkService.current.send(roomId, 'accept_redeal', {
+        player_name: playerName
       });
     },
     declineRedeal: async () => {
-      await networkService.current.send(roomId, 'decline_redeal', { 
-        player_name: playerName 
+      await networkService.current.send(roomId, 'decline_redeal', {
+        player_name: playerName
       });
     },
     selectedPieces,
@@ -436,7 +436,7 @@ export const GameProvider: React.FC<{ roomId: string; children: ReactNode }> = (
     roomId,
     playerName
   ]);
-  
+
   return (
     <GameContext.Provider value={value}>
       {children}
@@ -459,29 +459,29 @@ export const useGame = () => {
 
 // Usage in game components
 const PlayerHand = () => {
-  const { 
-    gameState, 
-    myPlayer, 
+  const {
+    gameState,
+    myPlayer,
     isMyTurn,
     selectedPieces,
     setSelectedPieces,
     playPieces
   } = useGame();
-  
+
   if (!gameState || !myPlayer) {
     return <div>Loading...</div>;
   }
-  
+
   const handlePieceClick = (pieceId: string) => {
     if (!isMyTurn) return;
-    
-    setSelectedPieces(prev => 
+
+    setSelectedPieces(prev =>
       prev.includes(pieceId)
         ? prev.filter(id => id !== pieceId)
         : [...prev, pieceId]
     );
   };
-  
+
   const handlePlay = async () => {
     try {
       await playPieces(selectedPieces);
@@ -489,7 +489,7 @@ const PlayerHand = () => {
       console.error('Play failed:', error);
     }
   };
-  
+
   return (
     <div className="player-hand">
       <div className="pieces">
@@ -503,7 +503,7 @@ const PlayerHand = () => {
           />
         ))}
       </div>
-      
+
       <Button
         onClick={handlePlay}
         disabled={!isMyTurn || selectedPieces.length === 0}
@@ -540,10 +540,10 @@ export const ThemeProvider: React.FC<{ children: ReactNode }> = ({ children }) =
     const saved = localStorage.getItem('theme') as Theme;
     return saved || 'system';
   });
-  
+
   // System theme detection
   const prefersDark = useMediaQuery('(prefers-color-scheme: dark)');
-  
+
   // Calculate effective theme
   const effectiveTheme = useMemo(() => {
     if (theme === 'system') {
@@ -551,44 +551,44 @@ export const ThemeProvider: React.FC<{ children: ReactNode }> = ({ children }) =
     }
     return theme;
   }, [theme, prefersDark]);
-  
+
   // Apply theme to document
   useEffect(() => {
     const root = document.documentElement;
-    
+
     // Remove old theme
     root.classList.remove('theme-light', 'theme-dark');
-    
+
     // Add new theme
     root.classList.add(`theme-${effectiveTheme}`);
-    
+
     // Update meta theme-color
     const metaThemeColor = document.querySelector('meta[name="theme-color"]');
     if (metaThemeColor) {
       metaThemeColor.content = effectiveTheme === 'dark' ? '#1a1a1a' : '#ffffff';
     }
   }, [effectiveTheme]);
-  
+
   // Enhanced setter
   const setTheme = useCallback((newTheme: Theme) => {
     setThemeState(newTheme);
     localStorage.setItem('theme', newTheme);
-    
+
     // Track preference
     analytics.track('theme_changed', { theme: newTheme });
   }, []);
-  
+
   const toggleTheme = useCallback(() => {
     setTheme(effectiveTheme === 'light' ? 'dark' : 'light');
   }, [effectiveTheme, setTheme]);
-  
+
   const value = useMemo(() => ({
     theme,
     setTheme,
     effectiveTheme,
     toggleTheme
   }), [theme, setTheme, effectiveTheme, toggleTheme]);
-  
+
   return (
     <ThemeContext.Provider value={value}>
       {children}
@@ -603,7 +603,7 @@ export const ThemeProvider: React.FC<{ children: ReactNode }> = ({ children }) =
 // Theme switcher component
 const ThemeSwitcher = () => {
   const { theme, setTheme, effectiveTheme } = useTheme();
-  
+
   return (
     <div className="theme-switcher">
       <button
@@ -613,7 +613,7 @@ const ThemeSwitcher = () => {
       >
         <SunIcon />
       </button>
-      
+
       <button
         onClick={() => setTheme('dark')}
         className={theme === 'dark' ? 'active' : ''}
@@ -621,7 +621,7 @@ const ThemeSwitcher = () => {
       >
         <MoonIcon />
       </button>
-      
+
       <button
         onClick={() => setTheme('system')}
         className={theme === 'system' ? 'active' : ''}
@@ -646,7 +646,7 @@ export const useGameSession = () => {
   const app = useApp();
   const game = useGame();
   const theme = useTheme();
-  
+
   return {
     // Combined state
     isReady: app.isAuthenticated && game.isGameActive,
@@ -655,13 +655,13 @@ export const useGameSession = () => {
       isHost: game.myPlayer?.isHost,
       score: game.myPlayer?.score
     },
-    
+
     // Combined actions
     leaveGame: async () => {
       await game.leaveGame();
       app.setCurrentRoomId(null);
     },
-    
+
     // UI preferences
     isDarkMode: theme.effectiveTheme === 'dark'
   };
@@ -682,14 +682,14 @@ export const useGamePhase = () => {
 export const useMyScore = () => {
   const { gameState } = useGame();
   const { playerName } = useApp();
-  
+
   return gameState?.scores?.[playerName!] || 0;
 };
 
 // Usage - only re-renders when phase changes
 const PhaseIndicator = () => {
   const phase = useGamePhase();
-  
+
   return <div>Current Phase: {phase}</div>;
 };
 ```
@@ -703,17 +703,17 @@ Ensure context requirements:
 const RequireGame: React.FC<{ children: ReactNode }> = ({ children }) => {
   const { isGameActive } = useGame();
   const navigate = useNavigate();
-  
+
   useEffect(() => {
     if (!isGameActive) {
       navigate('/lobby');
     }
   }, [isGameActive, navigate]);
-  
+
   if (!isGameActive) {
     return <LoadingScreen />;
   }
-  
+
   return <>{children}</>;
 };
 
@@ -751,19 +751,19 @@ Use memoization to prevent unnecessary re-renders:
 ```jsx
 const GameProvider = ({ children }) => {
   const [gameState, setGameState] = useState(null);
-  
+
   // ❌ Bad: New object every render
   const value = {
     gameState,
     updateGame: (data) => setGameState(data)
   };
-  
+
   // ✅ Good: Memoized value
   const value = useMemo(() => ({
     gameState,
     updateGame: (data) => setGameState(data)
   }), [gameState]);
-  
+
   return (
     <GameContext.Provider value={value}>
       {children}
@@ -780,7 +780,7 @@ Use lazy initial state for expensive computations:
 const AppProvider = ({ children }) => {
   // ❌ Bad: Runs on every render
   const [state, setState] = useState(expensiveComputation());
-  
+
   // ✅ Good: Runs only once
   const [state, setState] = useState(() => expensiveComputation());
 };
@@ -812,12 +812,12 @@ describe('GameContext', () => {
       roundNumber: 1,
       players: []
     };
-    
+
     const TestComponent = () => {
       const { gameState } = useGame();
       return <div>{gameState?.phase}</div>;
     };
-    
+
     const { getByText } = renderWithProviders(
       <TestComponent />,
       {
@@ -826,7 +826,7 @@ describe('GameContext', () => {
         }
       }
     );
-    
+
     expect(getByText('TURN')).toBeInTheDocument();
   });
 });
@@ -918,12 +918,12 @@ const usePersistentState = <T,>(
     const saved = localStorage.getItem(key);
     return saved ? JSON.parse(saved) : defaultValue;
   });
-  
+
   const setPersistentState = useCallback((value: T) => {
     setState(value);
     localStorage.setItem(key, JSON.stringify(value));
   }, [key]);
-  
+
   return [state, setPersistentState];
 };
 
@@ -944,7 +944,7 @@ const gameReducer = (state: GameState, action: GameAction): GameState => {
   switch (action.type) {
     case 'PHASE_CHANGED':
       return { ...state, phase: action.payload.phase };
-      
+
     case 'PIECES_PLAYED':
       return {
         ...state,
@@ -952,7 +952,7 @@ const gameReducer = (state: GameState, action: GameAction): GameState => {
           p => !action.payload.pieceIds.includes(p.id)
         )
       };
-      
+
     default:
       return state;
   }
@@ -960,7 +960,7 @@ const gameReducer = (state: GameState, action: GameAction): GameState => {
 
 const GameProvider = ({ children }) => {
   const [state, dispatch] = useReducer(gameReducer, initialGameState);
-  
+
   // Actions
   const actions = useMemo(() => ({
     updatePhase: (phase: GamePhase) => {
@@ -970,7 +970,7 @@ const GameProvider = ({ children }) => {
       dispatch({ type: 'PIECES_PLAYED', payload: { pieceIds } });
     }
   }), []);
-  
+
   return (
     <GameContext.Provider value={{ ...state, ...actions }}>
       {children}
@@ -985,7 +985,7 @@ const GameProvider = ({ children }) => {
 // Context that adapts based on conditions
 const DynamicGameProvider = ({ roomId, children }) => {
   const [isSpectator, setIsSpectator] = useState(false);
-  
+
   // Different context based on role
   if (isSpectator) {
     return (
@@ -994,7 +994,7 @@ const DynamicGameProvider = ({ roomId, children }) => {
       </SpectatorGameContext.Provider>
     );
   }
-  
+
   return (
     <PlayerGameContext.Provider value={playerValue}>
       {children}

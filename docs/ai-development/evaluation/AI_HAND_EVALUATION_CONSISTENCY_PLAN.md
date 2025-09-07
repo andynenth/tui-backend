@@ -75,7 +75,7 @@ This plan addresses inconsistencies between hand evaluation in the declaration p
 - [x] Create function: `is_combo_viable(combo_type: str, pieces: List[Piece], field_strength: str) -> bool`
 - [x] Implement pair viability logic:
   - Weak field: pairs ≥10 points viable
-  - Normal field: pairs ≥14 points viable  
+  - Normal field: pairs ≥14 points viable
   - Strong field: pairs ≥18 points viable
 - [x] THREE_OF_A_KIND and above always viable
 - [x] Test: Verify SOLDIER pair not viable, HORSE pair viable in weak field
@@ -132,7 +132,7 @@ This plan addresses inconsistencies between hand evaluation in the declaration p
   ```python
   # Check if plan is opener-only
   opener_only_plan = len(plan.assigned_combos) == 0
-  
+
   if context.required_piece_count == 1 and plan.assigned_openers:
       if opener_only_plan:
           # Opener-only plan: play more freely throughout the game
@@ -143,7 +143,7 @@ This plan addresses inconsistencies between hand evaluation in the declaration p
               chance = 0.40  # 40% chance mid-game
           else:
               chance = 0.50  # 50% chance late game
-              
+
           if random.random() < chance:
               return [plan.assigned_openers[0]]
       else:

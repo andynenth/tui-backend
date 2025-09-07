@@ -93,20 +93,20 @@ services:
     environment:
       # Database
       - DATABASE_PATH=/app/data/game_events.db
-      
+
       # Application settings
       - API_HOST=0.0.0.0
       - API_PORT=5050
       - DEBUG=false
-      
+
       # Game settings
       - MAX_SCORE=50
       - MAX_ROUNDS=20
       - BOT_ENABLED=true
-      
+
       # CORS (update with your domain later)
       - ALLOWED_ORIGINS=http://localhost,http://YOUR_EC2_IP
-      
+
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:5050/api/health"]
@@ -163,19 +163,19 @@ echo -e "${GREEN}🔄 Deploying on EC2...${NC}"
 ssh -i ${KEY_PATH} ${EC2_USER}@${EC2_HOST} << 'ENDSSH'
   # Load Docker image
   docker load < liap-tui-latest.tar.gz
-  
+
   # Create data directory if not exists
   mkdir -p /home/ubuntu/liap-tui-data
-  
+
   # Stop existing container
   docker-compose down || true
-  
+
   # Start new container
   docker-compose up -d
-  
+
   # Cleanup
   rm liap-tui-latest.tar.gz
-  
+
   echo "✅ Deployment complete!"
 ENDSSH
 

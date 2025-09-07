@@ -129,7 +129,7 @@ def calculate_pile_room(previous_declarations, has_general_red):
         total = previous_declarations[0]
     else:
         total = sum(previous_declarations)
-    
+
     # Handle overflow
     if total > 8:
         if has_general_red:
@@ -137,7 +137,7 @@ def calculate_pile_room(previous_declarations, has_general_red):
         else:
             # Ignore last declaration that caused overflow
             total = sum(previous_declarations[:-1])
-    
+
     return max(0, 8 - total)
 ```
 
@@ -177,7 +177,7 @@ The strategic turn play considers:
 def choose_best_play(hand, required_count):
     best_play = None
     best_score = -1
-    
+
     # Check all valid combinations of required size
     for combo in combinations(hand, required_count):
         if is_valid_play(combo):
@@ -185,11 +185,11 @@ def choose_best_play(hand, required_count):
             if total > best_score:
                 best_score = total
                 best_play = combo
-    
+
     # Fallback: discard lowest pieces if no valid play
     if not best_play:
         best_play = sorted(hand, key=lambda p: p.point)[:required_count]
-    
+
     return best_play
 ```
 
@@ -202,7 +202,7 @@ This maximizes point value while respecting game rules.
 ```python
 STRONG_COMBO_TYPES = {
     "THREE_OF_A_KIND",
-    "STRAIGHT", 
+    "STRAIGHT",
     "FOUR_OF_A_KIND",
     "EXTENDED_STRAIGHT",
     "EXTENDED_STRAIGHT_5",
@@ -345,20 +345,20 @@ The AI balances these factors to make optimal declarations that maximize expecte
 1. Find strong combos iteratively:
    - STRAIGHT found: [SOLDIER_RED(2), CANNON_RED(4), HORSE_RED(6)] = 3 pieces
    - PAIR found: [GENERAL_RED(14), GENERAL_BLACK(13)] = 2 pieces (27 points > 12 threshold)
-   
+
 2. Choose largest combo first: STRAIGHT (3 pieces)
    - Add to play_list, remove from hand
-   
+
 3. Find more combos in remaining hand:
    - PAIR still available: [GENERAL_RED(14), GENERAL_BLACK(13)]
    - Add to play_list
-   
+
 4. Total so far: 3 + 2 = 5 pieces, room left = 3
 
 5. Add individual strong pieces:
    - ADVISOR_RED(12) ≥ 11 → add to play_list
    - Room left = 2
-   
+
 6. **Final declaration: 6 piles**
 
 ### Example 2: Non-Starter with Limited Pile Room

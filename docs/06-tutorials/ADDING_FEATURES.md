@@ -52,7 +52,7 @@ Let's add a "Lucky Seven" bonus: players get 7 extra points when capturing exact
 # backend/engine/constants.py
 class GameConstants:
     # Existing constants...
-    
+
     # Lucky Seven bonus
     LUCKY_SEVEN_ENABLED = True
     LUCKY_SEVEN_PIECE_COUNT = 7
@@ -68,38 +68,38 @@ from .constants import GameConstants
 
 class ScoringEngine:
     def calculate_turn_bonus(
-        self, 
-        pieces_captured: int, 
+        self,
+        pieces_captured: int,
         player_name: str
     ) -> Tuple[int, str]:
         """Calculate bonus points for special captures."""
         bonus = 0
         bonus_reason = ""
-        
+
         # Lucky Seven bonus
-        if (GameConstants.LUCKY_SEVEN_ENABLED and 
+        if (GameConstants.LUCKY_SEVEN_ENABLED and
             pieces_captured == GameConstants.LUCKY_SEVEN_PIECE_COUNT):
             bonus = GameConstants.LUCKY_SEVEN_BONUS_POINTS
             bonus_reason = "Lucky Seven!"
-            
+
         return bonus, bonus_reason
-    
+
     def calculate_round_scores(
-        self, 
-        players: List['Player'], 
+        self,
+        players: List['Player'],
         pile_counts: Dict[str, int]
     ) -> Dict[str, int]:
         """Calculate scores with bonuses."""
         scores = {}
-        
+
         for player in players:
             base_score = self._calculate_base_score(player)
-            
+
             # Check for Lucky Seven bonus
             if pile_counts.get(player.name, 0) == 7:
                 bonus, reason = self.calculate_turn_bonus(7, player.name)
                 scores[player.name] = base_score + bonus
-                
+
                 # Log bonus for UI notification
                 player.bonuses_earned.append({
                     'type': 'lucky_seven',
@@ -108,7 +108,7 @@ class ScoringEngine:
                 })
             else:
                 scores[player.name] = base_score
-                
+
         return scores
 ```
 
@@ -119,17 +119,17 @@ class ScoringEngine:
 class TurnState(GameState):
     async def handle_play(self, action: GameAction) -> None:
         # Existing play logic...
-        
+
         # After determining turn winner
         if self.phase_data['turn_winner']:
             pile_count = self.phase_data['current_pile_count']
-            
+
             # Check for Lucky Seven
             bonus, reason = self.game.scoring_engine.calculate_turn_bonus(
-                pile_count, 
+                pile_count,
                 self.phase_data['turn_winner']
             )
-            
+
             if bonus > 0:
                 # Broadcast special bonus event
                 await self.broadcast_custom_event(
@@ -143,7 +143,7 @@ class TurnState(GameState):
                     },
                     f"{self.phase_data['turn_winner']} earned {reason}"
                 )
-                
+
                 # Update player score immediately
                 winner_player = self.game.get_player(self.phase_data['turn_winner'])
                 winner_player.score += bonus
@@ -171,14 +171,14 @@ export const BonusAnimation: React.FC<BonusAnimationProps> = ({
     message
 }) => {
     const [isVisible, setIsVisible] = useState(true);
-    
+
     useEffect(() => {
         const timer = setTimeout(() => setIsVisible(false), 3000);
         return () => clearTimeout(timer);
     }, []);
-    
+
     if (bonusType !== 'lucky_seven') return null;
-    
+
     return (
         <AnimatePresence>
             {isVisible && (
@@ -230,7 +230,7 @@ import { BonusAnimation } from '../components/BonusAnimation';
 
 export const TurnPhase: React.FC = () => {
     const [bonusAnimation, setBonusAnimation] = useState(null);
-    
+
     useEffect(() => {
         const handleSpecialBonus = (data) => {
             setBonusAnimation({
@@ -239,24 +239,24 @@ export const TurnPhase: React.FC = () => {
                 bonusPoints: data.bonus_points,
                 message: data.message
             });
-            
+
             // Play sound effect
             if (data.bonus_type === 'lucky_seven') {
                 new Audio('/sounds/lucky-seven.mp3').play();
             }
         };
-        
+
         NetworkService.on('special_bonus', handleSpecialBonus);
-        
+
         return () => {
             NetworkService.off('special_bonus', handleSpecialBonus);
         };
     }, []);
-    
+
     return (
         <div className="turn-phase">
             {/* Existing turn UI */}
-            
+
             {bonusAnimation && (
                 <BonusAnimation {...bonusAnimation} />
             )}
@@ -273,15 +273,15 @@ from pydantic import BaseSettings
 
 class FeatureFlags(BaseSettings):
     """Feature toggles for gradual rollout."""
-    
+
     # Game features
     lucky_seven_enabled: bool = True
     lucky_seven_bonus_points: int = 7
-    
+
     # UI features
     enable_animations: bool = True
     enable_sound_effects: bool = True
-    
+
     class Config:
         env_prefix = "FEATURE_"
 ```
@@ -313,24 +313,24 @@ interface Stats {
     luckySevenCount: number;
 }
 
-export const PlayerStats: React.FC<PlayerStatsProps> = ({ 
-    playerName, 
-    onClose 
+export const PlayerStats: React.FC<PlayerStatsProps> = ({
+    playerName,
+    onClose
 }) => {
     const [stats, setStats] = useState<Stats | null>(null);
     const [loading, setLoading] = useState(true);
-    
+
     useEffect(() => {
         fetchPlayerStats();
     }, [playerName]);
-    
+
     const fetchPlayerStats = async () => {
         try {
             // Request stats via WebSocket
-            NetworkService.send('get_player_stats', { 
-                player_name: playerName 
+            NetworkService.send('get_player_stats', {
+                player_name: playerName
             });
-            
+
             // Listen for response
             const handleStats = (data) => {
                 if (data.player_name === playerName) {
@@ -338,9 +338,9 @@ export const PlayerStats: React.FC<PlayerStatsProps> = ({
                     setLoading(false);
                 }
             };
-            
+
             NetworkService.on('player_stats', handleStats);
-            
+
             return () => {
                 NetworkService.off('player_stats', handleStats);
             };
@@ -349,7 +349,7 @@ export const PlayerStats: React.FC<PlayerStatsProps> = ({
             setLoading(false);
         }
     };
-    
+
     return (
         <motion.div
             className="player-stats-overlay"
@@ -368,7 +368,7 @@ export const PlayerStats: React.FC<PlayerStatsProps> = ({
                     <h2>{playerName}'s Statistics</h2>
                     <button className="close-btn" onClick={onClose}>×</button>
                 </div>
-                
+
                 {loading ? (
                     <div className="loading">Loading...</div>
                 ) : stats ? (
@@ -392,7 +392,7 @@ export const PlayerStats: React.FC<PlayerStatsProps> = ({
                                 <span>{stats.highestScore}</span>
                             </div>
                         </div>
-                        
+
                         <div className="stat-group">
                             <h3>Achievements</h3>
                             <div className="achievement-list">
@@ -406,7 +406,7 @@ export const PlayerStats: React.FC<PlayerStatsProps> = ({
                                 </div>
                             </div>
                         </div>
-                        
+
                         <div className="win-rate-chart">
                             <h3>Win Rate Progress</h3>
                             <WinRateChart data={stats.winRateHistory} />
@@ -423,7 +423,7 @@ export const PlayerStats: React.FC<PlayerStatsProps> = ({
 // Sub-component for win rate visualization
 const WinRateChart: React.FC<{ data: number[] }> = ({ data }) => {
     const maxValue = Math.max(...data, 1);
-    
+
     return (
         <div className="chart">
             {data.map((value, index) => (
@@ -455,14 +455,14 @@ async def handle_get_player_stats(
 ) -> None:
     """Handle player statistics request."""
     player_name = data.get('player_name')
-    
+
     if not player_name:
         await send_error(websocket, "MISSING_PLAYER_NAME", "Player name required")
         return
-    
+
     # Get stats from cache or database
     stats = await get_player_statistics(player_name)
-    
+
     # Send response
     await websocket.send_json({
         'event': 'player_stats',
@@ -485,13 +485,13 @@ async def get_player_statistics(player_name: str) -> PlayerStats:
     # Check cache first
     cache_key = f"player_stats:{player_name}"
     cached = await redis_client.get(cache_key)
-    
+
     if cached:
         return PlayerStats.parse_raw(cached)
-    
+
     # Calculate from game history
     stats = PlayerStats(player_name=player_name)
-    
+
     # In production, this would query the database
     # For now, generate sample data
     import random
@@ -501,7 +501,7 @@ async def get_player_statistics(player_name: str) -> PlayerStats:
     stats.highest_score = random.randint(50, 120)
     stats.perfect_declarations = random.randint(0, stats.games_won)
     stats.lucky_seven_count = random.randint(0, stats.games_played // 5)
-    
+
     # Generate win rate history
     stats.win_rate_history = []
     wins = 0
@@ -509,14 +509,14 @@ async def get_player_statistics(player_name: str) -> PlayerStats:
         if random.random() < stats.win_rate:
             wins += 1
         stats.win_rate_history.append(wins / i)
-    
+
     # Cache for 5 minutes
     await redis_client.setex(
         cache_key,
         300,
         stats.json()
     )
-    
+
     return stats
 ```
 
@@ -528,7 +528,7 @@ from .handlers import stats_handler
 
 MESSAGE_HANDLERS = {
     # Existing handlers...
-    
+
     # Statistics
     'get_player_stats': stats_handler.handle_get_player_stats,
 }
@@ -542,7 +542,7 @@ import { PlayerStats } from './PlayerStats';
 
 export const PlayerList: React.FC = ({ players }) => {
     const [selectedPlayer, setSelectedPlayer] = useState<string | null>(null);
-    
+
     return (
         <div className="player-list">
             <h3>Players</h3>
@@ -559,7 +559,7 @@ export const PlayerList: React.FC = ({ players }) => {
                     </button>
                 </div>
             ))}
-            
+
             {selectedPlayer && (
                 <PlayerStats
                     playerName={selectedPlayer}
@@ -594,7 +594,7 @@ class GameReplay(BaseModel):
     final_scores: Dict[str, int]
     rounds: List['RoundReplay']
     total_duration: float
-    
+
 class RoundReplay(BaseModel):
     """Single round replay data."""
     round_number: int
@@ -603,7 +603,7 @@ class RoundReplay(BaseModel):
     declarations: Dict[str, int]
     turns: List['TurnReplay']
     scores: Dict[str, int]
-    
+
 class TurnReplay(BaseModel):
     """Single turn replay data."""
     turn_number: int
@@ -633,14 +633,14 @@ async def get_game_replay(
     """Get complete replay data for a game."""
     # Check if replay exists
     replay_data = await fetch_game_replay(game_id)
-    
+
     if not replay_data:
         raise HTTPException(status_code=404, detail="Game replay not found")
-    
+
     # Check access permissions
     if not await user_can_access_replay(user, replay_data):
         raise HTTPException(status_code=403, detail="Access denied")
-    
+
     return replay_data
 
 async def fetch_game_replay(game_id: str) -> Optional[GameReplay]:
@@ -649,36 +649,36 @@ async def fetch_game_replay(game_id: str) -> Optional[GameReplay]:
     cached = await redis_client.get(f"replay:{game_id}")
     if cached:
         return GameReplay.parse_raw(cached)
-    
+
     # In production, fetch from database
     # For now, check if we have it in memory
     if game_id in replay_storage:
         replay = replay_storage[game_id]
-        
+
         # Cache for future requests
         await redis_client.setex(
             f"replay:{game_id}",
             3600,  # 1 hour
             replay.json()
         )
-        
+
         return replay
-    
+
     return None
 
 async def user_can_access_replay(
-    user: Optional[str], 
+    user: Optional[str],
     replay: GameReplay
 ) -> bool:
     """Check if user can access this replay."""
     # Public replays after game ends
     if replay.ended_at:
         return True
-    
+
     # Players can always see their own games
     if user and user in replay.players:
         return True
-    
+
     # Otherwise, requires special permission
     return False
 
@@ -690,15 +690,15 @@ async def get_turn_replay(
 ) -> Dict[str, Any]:
     """Get specific turn data for detailed replay."""
     replay = await fetch_game_replay(game_id)
-    
+
     if not replay:
         raise HTTPException(status_code=404, detail="Game not found")
-    
+
     # Find specific turn
     try:
         round_data = replay.rounds[round_number - 1]
         turn_data = round_data.turns[turn_number - 1]
-        
+
         return {
             'game_id': game_id,
             'round': round_number,
@@ -723,11 +723,11 @@ from collections import defaultdict
 
 class ReplayRecorder:
     """Records game events for replay functionality."""
-    
+
     def __init__(self):
         self.active_recordings: Dict[str, GameReplay] = {}
         self.event_queue = asyncio.Queue()
-        
+
     async def start_recording(self, game_id: str, room_id: str, players: List[str]):
         """Start recording a new game."""
         self.active_recordings[game_id] = GameReplay(
@@ -737,12 +737,12 @@ class ReplayRecorder:
             players=[p.name for p in players],
             rounds=[]
         )
-    
+
     async def record_round_start(self, game_id: str, round_number: int, hands: Dict[str, List[Piece]]):
         """Record the start of a round."""
         if game_id not in self.active_recordings:
             return
-            
+
         round_replay = RoundReplay(
             round_number=round_number,
             initial_hands={
@@ -753,17 +753,17 @@ class ReplayRecorder:
             turns=[],
             scores={}
         )
-        
+
         self.active_recordings[game_id].rounds.append(round_replay)
-    
+
     async def record_turn(self, game_id: str, turn_data: Dict[str, Any]):
         """Record a turn."""
         if game_id not in self.active_recordings:
             return
-            
+
         replay = self.active_recordings[game_id]
         current_round = replay.rounds[-1]
-        
+
         turn_replay = TurnReplay(
             turn_number=len(current_round.turns) + 1,
             leading_player=turn_data['leading_player'],
@@ -772,23 +772,23 @@ class ReplayRecorder:
             winner=turn_data['winner'],
             pile_count=turn_data['pile_count']
         )
-        
+
         current_round.turns.append(turn_replay)
-    
+
     async def finalize_recording(self, game_id: str, winner: str, final_scores: Dict[str, int]):
         """Finalize and store the replay."""
         if game_id not in self.active_recordings:
             return
-            
+
         replay = self.active_recordings[game_id]
         replay.ended_at = datetime.utcnow()
         replay.winner = winner
         replay.final_scores = final_scores
         replay.total_duration = (replay.ended_at - replay.started_at).total_seconds()
-        
+
         # Store replay
         await store_replay(replay)
-        
+
         # Clean up
         del self.active_recordings[game_id]
 
@@ -806,7 +806,7 @@ class Game:
     async def start_new_round(self) -> None:
         """Start a new round with replay recording."""
         # Existing logic...
-        
+
         # Record for replay
         hands = {
             player.name: player.hand
@@ -838,21 +838,21 @@ export const ReplayViewer: React.FC<ReplayViewerProps> = ({ gameId }) => {
     const [currentTurn, setCurrentTurn] = useState(0);
     const [playing, setPlaying] = useState(false);
     const [speed, setSpeed] = useState(1);
-    
+
     useEffect(() => {
         loadReplay();
     }, [gameId]);
-    
+
     useEffect(() => {
         if (playing && replay) {
             const timer = setTimeout(() => {
                 advanceReplay();
             }, 2000 / speed);
-            
+
             return () => clearTimeout(timer);
         }
     }, [playing, currentRound, currentTurn, speed]);
-    
+
     const loadReplay = async () => {
         try {
             const data = await fetchReplay(gameId);
@@ -861,10 +861,10 @@ export const ReplayViewer: React.FC<ReplayViewerProps> = ({ gameId }) => {
             console.error('Failed to load replay:', error);
         }
     };
-    
+
     const advanceReplay = () => {
         if (!replay) return;
-        
+
         const round = replay.rounds[currentRound];
         if (currentTurn < round.turns.length - 1) {
             setCurrentTurn(currentTurn + 1);
@@ -875,26 +875,26 @@ export const ReplayViewer: React.FC<ReplayViewerProps> = ({ gameId }) => {
             setPlaying(false);
         }
     };
-    
+
     const getCurrentState = () => {
         if (!replay) return null;
-        
+
         const round = replay.rounds[currentRound];
         const turn = round.turns[currentTurn];
-        
+
         return {
             round: round,
             turn: turn,
             scores: calculateScoresAtPoint(replay, currentRound, currentTurn)
         };
     };
-    
+
     if (!replay) {
         return <div className="loading">Loading replay...</div>;
     }
-    
+
     const currentState = getCurrentState();
-    
+
     return (
         <div className="replay-viewer">
             <div className="replay-header">
@@ -904,20 +904,20 @@ export const ReplayViewer: React.FC<ReplayViewerProps> = ({ gameId }) => {
                     <span>Duration: {formatDuration(replay.total_duration)}</span>
                 </div>
             </div>
-            
+
             <div className="replay-controls">
                 <button onClick={() => setPlaying(!playing)}>
                     {playing ? '⏸️ Pause' : '▶️ Play'}
                 </button>
-                
+
                 <button onClick={() => setCurrentTurn(Math.max(0, currentTurn - 1))}>
                     ⏮️ Previous
                 </button>
-                
+
                 <button onClick={advanceReplay}>
                     ⏭️ Next
                 </button>
-                
+
                 <div className="speed-control">
                     <label>Speed:</label>
                     <select value={speed} onChange={(e) => setSpeed(Number(e.target.value))}>
@@ -927,19 +927,19 @@ export const ReplayViewer: React.FC<ReplayViewerProps> = ({ gameId }) => {
                         <option value={4}>4x</option>
                     </select>
                 </div>
-                
+
                 <div className="progress">
-                    Round {currentRound + 1}/{replay.rounds.length}, 
+                    Round {currentRound + 1}/{replay.rounds.length},
                     Turn {currentTurn + 1}/{currentState.round.turns.length}
                 </div>
             </div>
-            
+
             <div className="replay-game-view">
-                <GameBoard 
+                <GameBoard
                     gameState={currentState}
                     isReplay={true}
                 />
-                
+
                 <div className="replay-sidebar">
                     <h3>Current Scores</h3>
                     {Object.entries(currentState.scores).map(([player, score]) => (
@@ -948,7 +948,7 @@ export const ReplayViewer: React.FC<ReplayViewerProps> = ({ gameId }) => {
                             <span>{score}</span>
                         </div>
                     ))}
-                    
+
                     <h3>Turn Details</h3>
                     <div className="turn-details">
                         <p>Leader: {currentState.turn.leading_player}</p>
@@ -1021,13 +1021,13 @@ from engine.scoring import ScoringEngine
 def test_lucky_seven_bonus():
     engine = ScoringEngine()
     bonus, reason = engine.calculate_turn_bonus(7, "TestPlayer")
-    
+
     assert bonus == 7
     assert "Lucky Seven" in reason
 
 def test_no_bonus_for_other_counts():
     engine = ScoringEngine()
-    
+
     for count in [1, 2, 3, 4, 5, 6, 8, 9, 10]:
         bonus, reason = engine.calculate_turn_bonus(count, "TestPlayer")
         assert bonus == 0
@@ -1041,10 +1041,10 @@ async def test_lucky_seven_in_game():
     # Set up game
     game = Game(["Alice", "Bob", "Carol", "David"])
     game.start_new_round()
-    
+
     # Simulate capturing 7 pieces
     # ... game play logic ...
-    
+
     # Verify bonus applied
     assert "lucky_seven" in alice.bonuses_earned
     assert alice.score == expected_score + 7
@@ -1066,7 +1066,7 @@ test('renders lucky seven animation', () => {
             message="Lucky Seven!"
         />
     );
-    
+
     expect(screen.getByText('Lucky Seven!')).toBeInTheDocument();
     expect(screen.getByText('Alice gains +7 points!')).toBeInTheDocument();
 });

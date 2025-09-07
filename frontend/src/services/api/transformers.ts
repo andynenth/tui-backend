@@ -23,7 +23,7 @@ function transformPlayers(playersData: any): Player[] {
   if (Array.isArray(playersData)) {
     return playersData;
   }
-  
+
   // Handle object format from API
   return Object.entries(playersData).map(([name, data]: [string, any], index) => ({
     name: data.player_name || name,
@@ -52,26 +52,26 @@ function findRoundWinner(roundData: any): string {
     const scores = roundData.round_summary.scoring;
     let maxScore = -Infinity;
     let winner = 'Unknown';
-    
+
     Object.entries(scores).forEach(([player, data]: [string, any]) => {
       if (data.points > maxScore) {
         maxScore = data.points;
         winner = player;
       }
     });
-    
+
     return winner;
   }
-  
+
   return 'Unknown';
 }
 
 function transformDeclarations(roundData: any): any[] {
   const declarations = roundData.declaration_phase?.declarations || [];
-  
+
   return declarations.map((decl: any) => {
     const playerName = decl.player || decl.player_name || findPlayerName(decl.player_id, roundData);
-    
+
     return {
       player: playerName,
       declared: decl.declared,
@@ -115,7 +115,7 @@ function transformPiece(piece: any): Piece {
       color: color || 'black'
     };
   }
-  
+
   // Already in correct format
   return {
     type: piece.type,
@@ -131,7 +131,7 @@ function transformScoring(summary: any): any {
       bonuses: []
     };
   }
-  
+
   // Handle the new structure where scoring contains players and bonuses
   if (summary.scoring) {
     return {
@@ -144,10 +144,10 @@ function transformScoring(summary: any): any {
       }))
     };
   }
-  
+
   // Fallback for old structure
   const players: Record<string, any> = {};
-  
+
   if (summary.scores) {
     Object.entries(summary.scores).forEach(([playerName, score]: [string, any]) => {
       players[playerName] = {
@@ -159,7 +159,7 @@ function transformScoring(summary: any): any {
       };
     });
   }
-  
+
   return {
     players,
     bonuses: []
@@ -169,13 +169,13 @@ function transformScoring(summary: any): any {
 function findPlayerName(playerId: string, roundData: any): string {
   // Try to find player name from various sources
   const players = roundData.players || {};
-  
+
   for (const [name, data] of Object.entries(players)) {
     if (data.player_id === playerId) {
       return name;
     }
   }
-  
+
   // Fallback to player ID
   return playerId;
 }

@@ -14,10 +14,10 @@ This document tracks all AI bugs fixed and their solutions.
 
 ## Fix #2: Combo Rank Priority in Critical Urgency
 
-**Date**: 2025-08-28  
+**Date**: 2025-08-28
 **Bug**: Bot 2 with critical urgency played GENERAL_RED(14) instead of THREE_OF_A_KIND
 **Root Cause**: Critical urgency logic maximized point value instead of combo rank
-**Fix**: 
+**Fix**:
 1. Added missing EXTENDED_STRAIGHT_5 to COMBO_TYPE_RANK
 2. Updated critical urgency to prioritize combo rank over points (ai_turn_strategy.py line ~1031)
 3. Updated combo sorting to use rank-first approach (line ~1215)
@@ -73,12 +73,12 @@ openers_needed = max(0, target_remaining - secured_wins)
 
 **Date**: 2025-08-28
 **Bug**: Bots always played their strongest opener when playing singles, making them predictable
-**Root Cause**: 
+**Root Cause**:
 1. Urgency calculation didn't consider competitive pressure (room concept)
 2. Random opener play was restricted to "opener-only plan" scenarios
 3. Always selected max(openers) by point value
 
-**Fix**: 
+**Fix**:
 1. Rewrote urgency calculation to use room = remaining_turns - max_opponent_target_remaining
 2. Enable random opener play when urgency == "low" (not urgent)
 3. Use random.choice() instead of max() for opener selection
@@ -86,7 +86,7 @@ openers_needed = max(0, target_remaining - secured_wins)
 
 **Test**: `test_urgency_random_opener.py`
 
-**Impact**: 
+**Impact**:
 - Bots now understand when they have room to play flexibly vs when they must compete
 - Opener play is unpredictable - any opener can be selected randomly
 - Better simulation of human play patterns
@@ -96,13 +96,13 @@ openers_needed = max(0, target_remaining - secured_wins)
 
 **Date**: 2025-08-29
 **Bug**: Responder disposal strategy failed to identify burden pieces
-**Root Cause**: 
+**Root Cause**:
 1. Disposal strategy used `if p in context.my_hand` for object comparison
 2. Plan pieces and context.my_hand contained different Piece objects
 3. Python's `in` operator checks object identity, not equality
 4. Result: burden_in_hand was always empty, causing incorrect disposal
 
-**Fix**: 
+**Fix**:
 Changed object comparison to compare by piece.kind:
 ```python
 # OLD (broken):
@@ -121,7 +121,7 @@ Applied same fix to all disposal priorities:
 
 **Test**: `test_object_comparison_fix.py`
 
-**Impact**: 
+**Impact**:
 - Disposal strategy now correctly identifies pieces by type
 - Burden pieces are properly disposed when they exist
 - Preserves important pieces like openers and combos
@@ -131,12 +131,12 @@ Applied same fix to all disposal priorities:
 
 **Date**: 2025-08-29
 **Bug**: Bot with zero streak declared 0 despite must_declare_nonzero=True
-**Root Cause**: 
+**Root Cause**:
 1. Early returns in non-starter logic bypassed forbidden value checking
 2. Variable `has_general_red` was undefined in starter branch
 3. `rebuild_play_list_avoiding_forbidden` returned empty list when no valid combos
 
-**Fix**: 
+**Fix**:
 1. Moved `has_general_red` check to beginning of function
 2. Replaced early `return 0` statements with `declaration = 0` to allow forbidden value checking
 3. Updated `rebuild_play_list_avoiding_forbidden` to force non-zero declaration when required
@@ -144,7 +144,7 @@ Applied same fix to all disposal priorities:
 
 **Test**: `test_zero_streak_fix.py`
 
-**Impact**: 
+**Impact**:
 - Bots now correctly respect zero streak rule and declare at least 1
 - Prevents game getting stuck when bot repeatedly tries to declare 0
 - Handles edge cases like no pile room or no opener scenarios
@@ -153,10 +153,10 @@ Applied same fix to all disposal priorities:
 
 **Date**: 2025-08-29
 **Bug**: AI declaring 0 with strong hands (2-3 openers available)
-**Root Cause**: 
+**Root Cause**:
 1. Declaration calculation was incorrectly indented inside final room adjustment block
 2. `get_piece_threshold` was using variable thresholds based on pile room instead of standard 11+ definition
-**Fix**: 
+**Fix**:
 1. Fixed indentation so declaration is always calculated from play_list
 2. Changed to use standard opener threshold of 11 points regardless of pile room
 3. Removed dynamic threshold logic that was too restrictive
@@ -167,7 +167,7 @@ Applied same fix to all disposal priorities:
 
 **Test**: Manual testing shows zero_declaration_strong_hand bugs eliminated
 
-**Impact**: 
+**Impact**:
 - AI now correctly declares based on actual openers (11+ point pieces)
 - Eliminated false "zero declaration with strong hand" bugs
 - Better declaration accuracy while maintaining zero streak rule functionality

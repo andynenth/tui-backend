@@ -23,7 +23,7 @@ from conftest import AIDecisionTester
 def test_smart_opener_assignment():
     """Ensure openers are assigned based on secured wins from combos"""
     tester = AIDecisionTester()
-    
+
     # Scenario 1: Target 3 with THREE_OF_A_KIND combo
     tester.add_scenario(
         name="Target 3 with THREE_OF_A_KIND",
@@ -43,7 +43,7 @@ def test_smart_opener_assignment():
         turn_number=1,
         is_starter=False
     )
-    
+
     # Scenario 2: Target 3 with NO combos
     tester.add_scenario(
         name="Target 3 with NO combos",
@@ -65,7 +65,7 @@ def test_smart_opener_assignment():
         turn_number=1,
         is_starter=False
     )
-    
+
     # Scenario 3: Target 4 with THREE_OF_A_KIND
     tester.add_scenario(
         name="Target 4 with THREE_OF_A_KIND",
@@ -85,7 +85,7 @@ def test_smart_opener_assignment():
         turn_number=1,
         is_starter=False
     )
-    
+
     # Scenario 4: Target 5 with TWO viable combos
     tester.add_scenario(
         name="Target 5 with 2 combos (non-opener)",
@@ -105,7 +105,7 @@ def test_smart_opener_assignment():
         turn_number=1,
         is_starter=False
     )
-    
+
     # Scenario 5: Target 2 with 2 combos (more combos than needed)
     tester.add_scenario(
         name="Target 2 with 2 combos",
@@ -124,7 +124,7 @@ def test_smart_opener_assignment():
         turn_number=1,
         is_starter=False
     )
-    
+
     # Run all scenarios and check results
     test_results = []
     for scenario in tester.scenarios:
@@ -140,14 +140,14 @@ def test_smart_opener_assignment():
         )
         result = tester.analyze_decision(context, show_plan_details=True, show_urgency=False)
         test_results.append(result)
-    
+
     # Verify expectations
     print("\n" + "="*60)
     print("SMART OPENER ASSIGNMENT TEST RESULTS")
     print("="*60)
-    
+
     all_passed = True
-    
+
     # Check Scenario 1: Target 3 with 1 combo
     result1 = test_results[0]
     if result1:
@@ -158,7 +158,7 @@ def test_smart_opener_assignment():
         else:
             print(f"❌ Target 3 with THREE_OF_A_KIND: assigned {assigned_openers} openers, expected {expected_openers}")
             all_passed = False
-    
+
     # Check Scenario 2: Target 3 with 0 combos
     result2 = test_results[1]
     if result2:
@@ -169,7 +169,7 @@ def test_smart_opener_assignment():
         else:
             print(f"❌ Target 3 with NO combos: assigned {assigned_openers} openers, expected {expected_openers}")
             all_passed = False
-    
+
     # Check Scenario 3: Target 4 with 1 combo
     result3 = test_results[2]
     if result3:
@@ -180,7 +180,7 @@ def test_smart_opener_assignment():
         else:
             print(f"❌ Target 4 with THREE_OF_A_KIND: assigned {assigned_openers} openers, expected {expected_openers}")
             all_passed = False
-    
+
     # Check Scenario 4: Target 5 with 2 combos
     result4 = test_results[3]
     if result4:
@@ -191,7 +191,7 @@ def test_smart_opener_assignment():
         else:
             print(f"❌ Target 5 with 2 combos: assigned {assigned_openers} openers, expected {expected_openers}")
             all_passed = False
-    
+
     # Check Scenario 5: Target 2 with 2 combos (edge case)
     result5 = test_results[4]
     if result5:
@@ -202,7 +202,7 @@ def test_smart_opener_assignment():
         else:
             print(f"❌ Target 2 with 2 combos: assigned {assigned_openers} openers, expected {expected_openers}")
             all_passed = False
-    
+
     return all_passed
 
 if __name__ == "__main__":

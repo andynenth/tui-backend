@@ -14,12 +14,12 @@ class PerformanceMonitor {
 
   init() {
     if (this.initialized) return;
-    
+
     this.trackBundleLoading();
     this.trackChunkLoading();
     this.trackPageVisibility();
     this.trackMemoryUsage();
-    
+
     this.initialized = true;
     console.log('📊 Performance monitor initialized');
   }
@@ -59,7 +59,7 @@ class PerformanceMonitor {
           }
         }
       });
-      
+
       observer.observe({ entryTypes: ['resource'] });
     }
   }
@@ -67,29 +67,29 @@ class PerformanceMonitor {
   trackChunkLoading() {
     // Track dynamic imports (code splitting)
     const originalImport = window.__import__ || (async (specifier) => import(specifier));
-    
+
     window.__import__ = async (specifier) => {
       const startTime = performance.now();
-      
+
       try {
         const result = await originalImport(specifier);
         const loadTime = performance.now() - startTime;
-        
+
         this.reportMetric('dynamic_import', loadTime, {
           specifier,
           success: true
         });
-        
+
         return result;
       } catch (error) {
         const loadTime = performance.now() - startTime;
-        
+
         this.reportMetric('dynamic_import', loadTime, {
           specifier,
           success: false,
           error: error.message
         });
-        
+
         throw error;
       }
     };
@@ -168,8 +168,8 @@ class PerformanceMonitor {
     const summary = {
       bundleLoadTime: this.bundleLoadTime,
       chunkCount: this.chunkLoadTimes.size,
-      averageChunkLoadTime: this.chunkLoadTimes.size > 0 
-        ? Array.from(this.chunkLoadTimes.values()).reduce((a, b) => a + b, 0) / this.chunkLoadTimes.size 
+      averageChunkLoadTime: this.chunkLoadTimes.size > 0
+        ? Array.from(this.chunkLoadTimes.values()).reduce((a, b) => a + b, 0) / this.chunkLoadTimes.size
         : 0,
       totalMetrics: this.metrics.length,
       sessionDuration: performance.now() - this.startTime

@@ -61,11 +61,11 @@ if room.started and room.game:
             player.is_bot = False
             player.is_connected = True
             player.disconnect_time = None
-            
+
             # Restore avatar color
             if hasattr(player, 'original_avatar_color'):
                 player.avatar_color = player.original_avatar_color
-        
+
         # For all players, ensure avatar colors are present
         # This handles the case where bot players lost their null avatar_color
         if not hasattr(player, 'avatar_color'):

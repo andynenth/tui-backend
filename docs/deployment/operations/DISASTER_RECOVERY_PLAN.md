@@ -137,7 +137,7 @@ ssh -i ~/.ssh/your-key.pem ubuntu@your-ec2-ip
    ```bash
    # Copy setup script
    scp -i ~/.ssh/your-key.pem ec2-setup.sh ubuntu@new-ec2-ip:~/
-   
+
    # Run setup
    ssh -i ~/.ssh/your-key.pem ubuntu@new-ec2-ip
    ./ec2-setup.sh
@@ -182,7 +182,7 @@ ssh -i ~/.ssh/your-key.pem ubuntu@your-ec2-ip
    ```bash
    # Find latest good backup
    ls -la /home/ubuntu/backups/
-   
+
    # Restore
    rm /home/ubuntu/liap-tui-data/game_events.db
    tar -xzf /home/ubuntu/backups/game_backup_YYYYMMDD_HHMMSS.tar.gz -C /home/ubuntu/liap-tui-data/
@@ -199,7 +199,7 @@ ssh -i ~/.ssh/your-key.pem ubuntu@your-ec2-ip
    ```bash
    # Isolate instance (remove from load balancer if applicable)
    # Change security group to block all traffic except your IP
-   
+
    # Stop application
    ssh -i ~/.ssh/your-key.pem ubuntu@your-ec2-ip
    docker-compose down
@@ -210,7 +210,7 @@ ssh -i ~/.ssh/your-key.pem ubuntu@your-ec2-ip
    # Check logs for breach timeline
    grep -i "failed\|unauthorized\|error" /var/log/auth.log
    docker logs liap-tui-game > breach_logs.txt
-   
+
    # Check for modified files
    find /home/ubuntu -type f -mtime -1 -ls
    ```
@@ -437,6 +437,6 @@ aws ec2 describe-snapshots --owner-ids self
 
 ---
 
-**Document Version**: 1.0  
-**Last Updated**: 2024-01-14  
+**Document Version**: 1.0
+**Last Updated**: 2024-01-14
 **Review Schedule**: Quarterly

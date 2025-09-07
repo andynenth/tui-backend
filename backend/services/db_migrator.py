@@ -105,7 +105,9 @@ class DatabaseMigrator:
         # Extract version and description from filename
         try:
             version = int(migration_file.stem.split("_")[0])
-            description = migration_file.stem.replace(f"{version:03d}_", "").replace("_", " ")
+            description = migration_file.stem.replace(f"{version:03d}_", "").replace(
+                "_", " "
+            )
         except (ValueError, IndexError):
             logger.error(f"Invalid migration filename: {migration_file}")
             raise ValueError(f"Invalid migration filename: {migration_file}")
@@ -118,16 +120,16 @@ class DatabaseMigrator:
         conn = sqlite3.connect(self.db_path)
         try:
             conn.executescript(migration_sql)
-            
+
             # Record the migration
             conn.execute(
                 """
                 INSERT INTO schema_migrations (version, applied_at, description)
                 VALUES (?, ?, ?)
                 """,
-                (version, datetime.now().isoformat(), description)
+                (version, datetime.now().isoformat(), description),
             )
-            
+
             conn.commit()
             logger.info(f"Successfully applied migration: {migration_file.name}")
         except Exception as e:
@@ -224,8 +226,8 @@ class DatabaseMigrator:
             # Check for expected tables
             cursor = conn.execute(
                 """
-                SELECT name FROM sqlite_master 
-                WHERE type='table' 
+                SELECT name FROM sqlite_master
+                WHERE type='table'
                 ORDER BY name
             """
             )

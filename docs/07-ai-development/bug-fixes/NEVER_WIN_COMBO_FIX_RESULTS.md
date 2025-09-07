@@ -14,7 +14,7 @@ def is_never_win_combo(combo_type: str, pieces: List[Piece]) -> bool:
 
 ### Integration Points
 1. **Urgent play selection** (lines ~910-917)
-2. **Low urgency combo selection** (lines ~803-811)  
+2. **Low urgency combo selection** (lines ~803-811)
 3. **Starter combo selection** (lines ~1420-1427)
 
 ### Logic

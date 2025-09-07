@@ -88,49 +88,49 @@ class BufferedEvent:
     payload: Dict[str, Any]
     player_id: Optional[str]
     timestamp: float
-    
+
 class EventBuffer:
     """
     Thread-safe event buffer with automatic flushing.
-    
+
     Features:
     - Automatic flush on size limit
     - Time-based flush (every N seconds)
     - Critical event immediate flush
     - Graceful shutdown with final flush
     """
-    
+
     # Events that bypass buffering
     CRITICAL_EVENTS = {
-        'game_started', 'game_over', 'round_complete', 
+        'game_started', 'game_over', 'round_complete',
         'player_disconnected', 'game_recovered'
     }
-    
-    def __init__(self, 
+
+    def __init__(self,
                  max_size: int = 20,
                  flush_interval: float = 2.0,
                  event_store = None):
         self.max_size = max_size
         self.flush_interval = flush_interval
         self.event_store = event_store
-        
+
         self._buffer: List[BufferedEvent] = []
         self._lock = asyncio.Lock()
         self._flush_task: Optional[asyncio.Task] = None
         self._shutdown = False
-        
+
         # Metrics
         self.total_events_buffered = 0
         self.total_flushes = 0
         self.last_flush_time = time.time()
-        
-    async def add_event(self, 
+
+    async def add_event(self,
                        room_id: str,
-                       event_type: str, 
+                       event_type: str,
                        payload: Dict[str, Any],
                        player_id: Optional[str] = None) -> None:
         """Add event to buffer or flush immediately if critical."""
-        
+
         event = BufferedEvent(
             room_id=room_id,
             event_type=event_type,
@@ -138,16 +138,16 @@ class EventBuffer:
             player_id=player_id,
             timestamp=time.time()
         )
-        
+
         # Critical events bypass buffer
         if event_type in self.CRITICAL_EVENTS:
             await self._flush_single_event(event)
             return
-            
+
         async with self._lock:
             self._buffer.append(event)
             self.total_events_buffered += 1
-            
+
             # Check if we need to flush
             if len(self._buffer) >= self.max_size:
                 await self._flush_buffer()
@@ -156,7 +156,7 @@ class EventBuffer:
                 self._flush_task = asyncio.create_task(
                     self._auto_flush_timer()
                 )
-    
+
     async def _flush_single_event(self, event: BufferedEvent) -> None:
         """Flush a single critical event immediately."""
         if self.event_store:
@@ -169,15 +169,15 @@ class EventBuffer:
                 )
             except Exception as e:
                 logger.error(f"Failed to flush critical event: {e}")
-    
+
     async def _flush_buffer(self) -> None:
         """Flush all buffered events to storage."""
         if not self._buffer or not self.event_store:
             return
-            
+
         events_to_flush = self._buffer.copy()
         self._buffer.clear()
-        
+
         try:
             # Batch insert all events
             for event in events_to_flush:
@@ -187,21 +187,21 @@ class EventBuffer:
                     payload=event.payload,
                     player_id=event.player_id
                 )
-            
+
             self.total_flushes += 1
             self.last_flush_time = time.time()
-            
+
             logger.debug(
                 f"Flushed {len(events_to_flush)} events "
                 f"(total flushes: {self.total_flushes})"
             )
-            
+
         except Exception as e:
             logger.error(f"Failed to flush buffer: {e}")
             # Re-add events to buffer on failure
             async with self._lock:
                 self._buffer = events_to_flush + self._buffer
-    
+
     async def _auto_flush_timer(self) -> None:
         """Periodically flush buffer based on time interval."""
         while not self._shutdown:
@@ -209,19 +209,19 @@ class EventBuffer:
             async with self._lock:
                 if self._buffer:
                     await self._flush_buffer()
-    
+
     async def flush(self) -> None:
         """Manual flush of buffer."""
         async with self._lock:
             await self._flush_buffer()
-    
+
     async def shutdown(self) -> None:
         """Graceful shutdown with final flush."""
         self._shutdown = True
         if self._flush_task:
             self._flush_task.cancel()
         await self.flush()
-        
+
     def get_metrics(self) -> Dict[str, Any]:
         """Get buffer performance metrics."""
         return {
@@ -245,19 +245,19 @@ import json
 
 class SemanticEventType(Enum):
     """High-level game events that capture meaningful state changes."""
-    
+
     # Game lifecycle
     GAME_STARTED = "game_started"
     GAME_COMPLETED = "game_completed"
-    
-    # Round lifecycle  
+
+    # Round lifecycle
     ROUND_STARTED = "round_started"
     ROUND_COMPLETED = "round_completed"
-    
+
     # Game phases
     DECLARATIONS_COMPLETED = "declarations_completed"
     TURN_COMPLETED = "turn_completed"
-    
+
     # Player events
     PLAYER_JOINED = "player_joined"
     PLAYER_LEFT = "player_left"
@@ -266,54 +266,54 @@ class SemanticEventType(Enum):
 class EventCompressor:
     """
     Compresses granular events into semantic events.
-    
+
     Reduces event volume by ~90% while maintaining all game information.
     """
-    
+
     def __init__(self):
         self.compression_stats = {
             'events_processed': 0,
             'events_compressed': 0,
             'compression_ratio': 0.0
         }
-        
-    def compress_turn_sequence(self, 
+
+    def compress_turn_sequence(self,
                               turn_events: List[Dict[str, Any]]) -> Dict[str, Any]:
         """
         Compress a sequence of turn events into a single turn_completed event.
-        
+
         Input: Multiple phase_data_update events
         Output: Single turn_completed event with all plays
         """
-        
+
         # Extract relevant data from all events
         turn_number = None
         starter = None
         plays = {}
         winner = None
         piles_won = 0
-        
+
         for event in turn_events:
             payload = event.get('payload', {})
             updates = payload.get('updates', {})
-            
+
             # Extract turn number
             if 'current_turn_number' in updates:
                 turn_number = updates['current_turn_number']
-            
+
             # Extract starter
             if 'current_turn_starter' in updates:
                 starter = updates['current_turn_starter']
-                
+
             # Extract plays
             if 'turn_plays' in updates:
                 plays.update(updates['turn_plays'])
-                
+
             # Extract winner
             if 'winner' in updates:
                 winner = updates['winner']
                 piles_won = updates.get('piles_won', 0)
-        
+
         # Create compressed event
         compressed_event = {
             'event_type': SemanticEventType.TURN_COMPLETED.value,
@@ -326,26 +326,26 @@ class EventCompressor:
                 'event_count_original': len(turn_events)
             }
         }
-        
+
         self.compression_stats['events_processed'] += len(turn_events)
         self.compression_stats['events_compressed'] += 1
         self._update_compression_ratio()
-        
+
         return compressed_event
-    
+
     def compress_declaration_sequence(self,
                                     declaration_events: List[Dict[str, Any]]) -> Dict[str, Any]:
         """Compress declaration events into single event."""
-        
+
         declarations = {}
-        
+
         for event in declaration_events:
             payload = event.get('payload', {})
             updates = payload.get('updates', {})
-            
+
             if 'declarations' in updates:
                 declarations.update(updates['declarations'])
-        
+
         return {
             'event_type': SemanticEventType.DECLARATIONS_COMPLETED.value,
             'payload': {
@@ -354,29 +354,29 @@ class EventCompressor:
                 'event_count_original': len(declaration_events)
             }
         }
-    
+
     def should_compress_event(self, event_type: str) -> bool:
         """Determine if an event type should be compressed."""
-        
+
         # Always store these events
         STORE_AS_IS = {
             'game_started', 'game_over', 'hands_dealt',
             'round_started', 'round_complete', 'player_joined'
         }
-        
+
         # Compress these events
         COMPRESS = {
-            'phase_data_update', 'phase_change', 
+            'phase_data_update', 'phase_change',
             'turn_started', 'piece_played'
         }
-        
+
         return event_type in COMPRESS
-    
+
     def _update_compression_ratio(self):
         """Update compression statistics."""
         if self.compression_stats['events_processed'] > 0:
             self.compression_stats['compression_ratio'] = (
-                1 - (self.compression_stats['events_compressed'] / 
+                1 - (self.compression_stats['events_compressed'] /
                      self.compression_stats['events_processed'])
             )
 ```
@@ -425,30 +425,30 @@ CREATE TABLE IF NOT EXISTS round_snapshots (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     room_id TEXT NOT NULL,
     round_number INTEGER NOT NULL,
-    
+
     -- Round setup
     starter_player TEXT NOT NULL,
     starter_reason TEXT,
     initial_hands JSON NOT NULL,  -- Compressed hand data
-    
+
     -- Gameplay data
     declarations JSON NOT NULL,
     turn_count INTEGER NOT NULL CHECK (turn_count BETWEEN 1 AND 8),  -- Max 8 turns (8 pieces/player)
     turn_sequence JSON NOT NULL,  -- All turns compressed (max 1.6KB)
-    
+
     -- Round results
     round_scores JSON NOT NULL,
     pile_counts JSON NOT NULL,
     cumulative_scores JSON NOT NULL,
-    
+
     -- Win check
     has_winner BOOLEAN DEFAULT FALSE,
     winning_player TEXT,  -- Set when someone reaches 50 points
-    
+
     -- Metadata
     duration_seconds REAL,
     created_at TEXT NOT NULL DEFAULT (datetime('now')),
-    
+
     UNIQUE(room_id, round_number)
 );
 
@@ -458,40 +458,40 @@ CREATE TABLE IF NOT EXISTS turn_details (
     room_id TEXT NOT NULL,
     round_number INTEGER NOT NULL,
     turn_number INTEGER NOT NULL,
-    
+
     -- Turn data
     starter_player TEXT NOT NULL,
     plays JSON NOT NULL,  -- {player: {pieces, play_type, value}}
     winner TEXT,
     piles_won INTEGER,
-    
+
     -- Analysis data
     play_sequence_time JSON,  -- Time taken per play
     ai_analysis JSON,  -- AI decision reasoning
-    
+
     created_at TEXT NOT NULL DEFAULT (datetime('now')),
-    
+
     UNIQUE(room_id, round_number, turn_number)
 );
 
 -- Indexes for performance
-CREATE INDEX IF NOT EXISTS idx_events_v2_room_time 
+CREATE INDEX IF NOT EXISTS idx_events_v2_room_time
     ON game_events_v2(room_id, timestamp DESC);
 
-CREATE INDEX IF NOT EXISTS idx_events_v2_type 
+CREATE INDEX IF NOT EXISTS idx_events_v2_type
     ON game_events_v2(event_type);
 
-CREATE INDEX IF NOT EXISTS idx_summaries_status 
+CREATE INDEX IF NOT EXISTS idx_summaries_status
     ON game_summaries(game_status, last_activity DESC);
 
-CREATE INDEX IF NOT EXISTS idx_summaries_completed 
-    ON game_summaries(completed_at DESC) 
+CREATE INDEX IF NOT EXISTS idx_summaries_completed
+    ON game_summaries(completed_at DESC)
     WHERE completed_at IS NOT NULL;
 
-CREATE INDEX IF NOT EXISTS idx_snapshots_room 
+CREATE INDEX IF NOT EXISTS idx_snapshots_room
     ON round_snapshots(room_id, round_number);
 
-CREATE INDEX IF NOT EXISTS idx_turns_room_round 
+CREATE INDEX IF NOT EXISTS idx_turns_room_round
     ON turn_details(room_id, round_number, turn_number);
 
 -- Migration record
@@ -519,20 +519,20 @@ logger = logging.getLogger(__name__)
 class OptimizedEventStore:
     """
     Optimized event store with buffering, compression, and new schema.
-    
+
     Features:
     - Event buffering with batched writes
     - Semantic event compression
     - Optimized schema for fast queries
     - Backward compatibility mode
     """
-    
-    def __init__(self, 
+
+    def __init__(self,
                  db_path: Optional[str] = None,
                  enable_buffer: bool = True,
                  enable_compression: bool = True,
                  enable_dual_write: bool = False):
-        
+
         # Database setup
         if db_path is None:
             current_dir = Path(__file__).resolve()
@@ -540,34 +540,34 @@ class OptimizedEventStore:
             self.db_path = str(project_root / "game_events.db")
         else:
             self.db_path = db_path
-            
+
         # Features
         self.enable_buffer = enable_buffer
         self.enable_compression = enable_compression
         self.enable_dual_write = enable_dual_write
-        
+
         # Components
         self.buffer = EventBuffer(event_store=self) if enable_buffer else None
         self.compressor = EventCompressor() if enable_compression else None
-        
+
         # Event accumulator for compression
         self._event_accumulator: Dict[str, List[Dict]] = {}
-        
+
         # Initialize database
         self._init_database()
-        
+
     def _init_database(self):
         """Initialize optimized database schema."""
         conn = sqlite3.connect(self.db_path)
-        
+
         # Read and execute migration script
         migration_path = Path(__file__).parent.parent / "migrations" / "002_optimized_schema.sql"
         if migration_path.exists():
             with open(migration_path, 'r') as f:
                 conn.executescript(f.read())
-        
+
         conn.close()
-        
+
     async def store_event(self,
                          room_id: str,
                          event_type: str,
@@ -575,11 +575,11 @@ class OptimizedEventStore:
                          player_id: Optional[str] = None) -> None:
         """
         Store event with buffering and compression.
-        
+
         This is the main entry point that routes events through
         the optimization pipeline.
         """
-        
+
         # Route through buffer if enabled
         if self.buffer and not self._is_critical_event(event_type):
             await self.buffer.add_event(
@@ -589,7 +589,7 @@ class OptimizedEventStore:
                 player_id=player_id
             )
             return
-        
+
         # Direct storage for critical events
         await self._store_event_direct(
             room_id=room_id,
@@ -597,14 +597,14 @@ class OptimizedEventStore:
             payload=payload,
             player_id=player_id
         )
-    
+
     async def _store_event_direct(self,
                                  room_id: str,
                                  event_type: str,
                                  payload: Dict[str, Any],
                                  player_id: Optional[str] = None) -> None:
         """Store event directly to database."""
-        
+
         # Apply compression if enabled
         if self.compressor and self.compressor.should_compress_event(event_type):
             # Accumulate for compression
@@ -612,7 +612,7 @@ class OptimizedEventStore:
                 room_id, event_type, payload, player_id
             )
             return
-        
+
         # Store semantic events
         await self._store_semantic_event(
             room_id=room_id,
@@ -620,45 +620,45 @@ class OptimizedEventStore:
             payload=payload,
             player_id=player_id
         )
-        
+
         # Dual write to old schema if enabled
         if self.enable_dual_write:
             await self._store_legacy_event(
                 room_id, event_type, payload, player_id
             )
-    
+
     async def _accumulate_for_compression(self,
                                         room_id: str,
                                         event_type: str,
                                         payload: Dict[str, Any],
                                         player_id: Optional[str]) -> None:
         """Accumulate events for compression."""
-        
+
         key = f"{room_id}:{event_type}"
         if key not in self._event_accumulator:
             self._event_accumulator[key] = []
-            
+
         self._event_accumulator[key].append({
             'event_type': event_type,
             'payload': payload,
             'player_id': player_id,
             'timestamp': time.time()
         })
-        
+
         # Check if we should compress
         if self._should_compress_accumulated(key):
             await self._compress_and_store_accumulated(key)
-    
+
     async def _compress_and_store_accumulated(self, key: str) -> None:
         """Compress accumulated events and store."""
-        
+
         events = self._event_accumulator.pop(key, [])
         if not events:
             return
-            
+
         room_id = key.split(':')[0]
         event_type = key.split(':')[1]
-        
+
         # Compress based on event type
         if 'turn' in event_type:
             compressed = self.compressor.compress_turn_sequence(events)
@@ -674,40 +674,40 @@ class OptimizedEventStore:
                     player_id=event.get('player_id')
                 )
             return
-        
+
         # Store compressed event
         await self._store_semantic_event(
             room_id=room_id,
             event_type=compressed['event_type'],
             payload=compressed['payload']
         )
-    
+
     async def _store_semantic_event(self,
                                   room_id: str,
                                   event_type: str,
                                   payload: Dict[str, Any],
                                   player_id: Optional[str] = None) -> None:
         """Store event in optimized schema."""
-        
+
         conn = sqlite3.connect(self.db_path)
-        
+
         try:
             # Determine which table to update
             if event_type == SemanticEventType.GAME_STARTED.value:
                 await self._create_game_summary(conn, room_id, payload)
-                
+
             elif event_type == SemanticEventType.ROUND_STARTED.value:
                 await self._create_round_snapshot(conn, room_id, payload)
-                
+
             elif event_type == SemanticEventType.TURN_COMPLETED.value:
                 await self._update_round_snapshot_turn(conn, room_id, payload)
-                
+
             elif event_type == SemanticEventType.ROUND_COMPLETED.value:
                 await self._finalize_round_snapshot(conn, room_id, payload)
-                
+
             # Always store core event
             conn.execute("""
-                INSERT INTO game_events_v2 
+                INSERT INTO game_events_v2
                 (room_id, event_type, event_sequence, round_number, timestamp)
                 VALUES (?, ?, ?, ?, ?)
             """, (
@@ -717,59 +717,59 @@ class OptimizedEventStore:
                 payload.get('round_number'),
                 time.time()
             ))
-            
+
             conn.commit()
-            
+
         except Exception as e:
             logger.error(f"Failed to store semantic event: {e}")
             conn.rollback()
         finally:
             conn.close()
-    
+
     def _is_critical_event(self, event_type: str) -> bool:
         """Check if event should bypass buffering."""
         return event_type in EventBuffer.CRITICAL_EVENTS
-    
+
     def _should_compress_accumulated(self, key: str) -> bool:
         """Determine if accumulated events should be compressed."""
         events = self._event_accumulator.get(key, [])
-        
+
         # Compress when turn is complete
         if 'turn' in key:
             for event in events:
                 if event['payload'].get('updates', {}).get('turn_complete'):
                     return True
-                    
+
         # Compress when all declarations received
         if 'declaration' in key:
             return len(events) >= 4  # All 4 players declared
-            
+
         return False
-    
+
     async def get_play_history(self, room_id: str) -> Dict[str, Any]:
         """
         Retrieve play history using optimized schema.
-        
+
         Much faster than reconstructing from individual events.
         """
         conn = sqlite3.connect(self.db_path)
-        
+
         # Get game summary
         cursor = conn.execute("""
             SELECT * FROM game_summaries WHERE room_id = ?
         """, (room_id,))
-        
+
         summary = cursor.fetchone()
         if not summary:
             return {'error': 'Game not found'}
-        
+
         # Get round snapshots
         cursor = conn.execute("""
-            SELECT * FROM round_snapshots 
-            WHERE room_id = ? 
+            SELECT * FROM round_snapshots
+            WHERE room_id = ?
             ORDER BY round_number
         """, (room_id,))
-        
+
         rounds = []
         for row in cursor.fetchall():
             rounds.append({
@@ -780,9 +780,9 @@ class OptimizedEventStore:
                 'turns': json.loads(row['turn_sequence']),
                 'scores': json.loads(row['round_scores'])
             })
-        
+
         conn.close()
-        
+
         return {
             'room_id': room_id,
             'players': json.loads(summary['player_names']),
@@ -806,7 +806,7 @@ class OptimizedEventStore:
 ### Storage Efficiency
 - **Current**: Variable by game length
   - **Quick game (12 rounds)**: ~300KB
-  - **Typical game (18 rounds)**: ~460KB  
+  - **Typical game (18 rounds)**: ~460KB
   - **Long game (30 rounds)**: ~760KB
 - **Optimized**: 15-50KB per game
   - **Per round**: 1-1.6KB (varies with turn count)
@@ -862,17 +862,17 @@ class DatabaseMetrics:
             'db_write_latency_seconds',
             'Database write latency'
         )
-        
+
         self.buffer_size_gauge = Gauge(
             'event_buffer_size',
             'Current event buffer size'
         )
-        
+
         self.compression_ratio = Gauge(
             'event_compression_ratio',
             'Event compression ratio'
         )
-        
+
         self.events_per_second = Rate(
             'db_events_per_second',
             'Database events written per second'

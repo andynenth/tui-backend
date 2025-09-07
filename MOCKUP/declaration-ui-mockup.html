@@ -6,7 +6,7 @@
     <title>Declaration Phase - Liap Tui</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=Crimson+Pro:wght@400;600;700&display=swap');
-        
+
         * {
             margin: 0;
             padding: 0;
@@ -15,7 +15,7 @@
 
         body {
             font-family: 'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
-            background: 
+            background:
                 linear-gradient(135deg, #F8F9FA 0%, #E9ECEF 25%, #DEE2E6 50%, #CED4DA 75%, #ADB5BD 100%),
                 radial-gradient(circle at 30% 20%, rgba(255, 193, 7, 0.1) 0%, transparent 50%),
                 radial-gradient(circle at 70% 80%, rgba(13, 110, 253, 0.05) 0%, transparent 50%);
@@ -36,7 +36,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: 
+            background:
                 radial-gradient(circle at 25% 25%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
                 radial-gradient(circle at 75% 75%, rgba(0, 0, 0, 0.02) 0%, transparent 50%);
             pointer-events: none;
@@ -48,13 +48,13 @@
             height: min(100vh, 177.78vw);
             max-width: 400px;
             max-height: 711px;
-            background: 
+            background:
                 linear-gradient(145deg, #FFFFFF 0%, #F8F9FA 100%),
                 radial-gradient(circle at 20% 30%, rgba(255, 193, 7, 0.03) 0%, transparent 70%),
                 radial-gradient(circle at 80% 70%, rgba(13, 110, 253, 0.02) 0%, transparent 70%);
             border-radius: 20px;
             border: 1px solid rgba(173, 181, 189, 0.3);
-            box-shadow: 
+            box-shadow:
                 0 20px 40px rgba(0, 0, 0, 0.08),
                 0 0 0 1px rgba(255, 255, 255, 0.9),
                 inset 0 1px 0 rgba(255, 255, 255, 1);
@@ -69,13 +69,13 @@
             position: absolute;
             top: 20px;
             left: 20px;
-            background: 
+            background:
                 linear-gradient(135deg, #DC3545 0%, #C82333 100%),
                 radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.3) 0%, transparent 60%);
             padding: 8px 16px;
             border-radius: 16px;
             border: 1px solid rgba(220, 53, 69, 0.4);
-            box-shadow: 
+            box-shadow:
                 0 4px 12px rgba(220, 53, 69, 0.2),
                 inset 0 1px 0 rgba(255, 255, 255, 0.6);
             font-weight: 700;
@@ -90,7 +90,7 @@
         .phase-header {
             text-align: center;
             padding: 50px 24px 16px;
-            background: 
+            background:
                 linear-gradient(180deg, rgba(248, 249, 250, 0.8) 0%, transparent 100%),
                 linear-gradient(90deg, transparent 0%, rgba(173, 181, 189, 0.1) 50%, transparent 100%);
             border-bottom: 1px solid rgba(173, 181, 189, 0.2);
@@ -154,14 +154,14 @@
         .player-row {
             display: flex;
             align-items: center;
-            background: 
+            background:
                 linear-gradient(145deg, #FFFFFF 0%, #F8F9FA 100%),
                 radial-gradient(circle at 15% 50%, rgba(255, 255, 255, 0.8) 0%, transparent 50%);
             padding: 8px 16px;
             border-radius: 10px;
             border: 1px solid rgba(173, 181, 189, 0.15);
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            box-shadow: 
+            box-shadow:
                 0 2px 6px rgba(0, 0, 0, 0.04),
                 inset 0 1px 0 rgba(255, 255, 255, 1);
             position: relative;
@@ -182,10 +182,10 @@
 
         .player-row.current-turn {
             border-color: rgba(255, 193, 7, 0.4);
-            background: 
+            background:
                 linear-gradient(145deg, #FFF8E1 0%, #FFFBF0 100%),
                 radial-gradient(circle at 15% 50%, rgba(255, 193, 7, 0.1) 0%, transparent 50%);
-            box-shadow: 
+            box-shadow:
                 0 3px 8px rgba(255, 193, 7, 0.12),
                 inset 0 1px 0 rgba(255, 255, 255, 1);
         }
@@ -197,7 +197,7 @@
 
         .player-row.declared {
             border-color: rgba(40, 167, 69, 0.3);
-            background: 
+            background:
                 linear-gradient(145deg, #F0FFF4 0%, #F8FFF8 100%),
                 radial-gradient(circle at 15% 50%, rgba(40, 167, 69, 0.08) 0%, transparent 50%);
         }
@@ -215,7 +215,7 @@
             width: 36px;
             height: 36px;
             border-radius: 50%;
-            background: 
+            background:
                 linear-gradient(145deg, #FFFFFF 0%, #F8F9FA 100%),
                 radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.8) 0%, transparent 60%);
             display: flex;
@@ -225,7 +225,7 @@
             font-size: 14px;
             margin-right: 12px;
             border: 2px solid rgba(173, 181, 189, 0.3);
-            box-shadow: 
+            box-shadow:
                 0 2px 4px rgba(0, 0, 0, 0.06),
                 inset 0 1px 0 rgba(255, 255, 255, 1);
             color: #495057;
@@ -259,7 +259,7 @@
         }
 
         .status-badge.current {
-            background: 
+            background:
                 linear-gradient(135deg, #FFC107 0%, #FF9800 100%);
             color: #212529;
             border: 1px solid rgba(255, 193, 7, 0.4);
@@ -289,7 +289,7 @@
 
         /* Player Hand Section */
         .hand-section {
-            background: 
+            background:
                 linear-gradient(180deg, #F8F9FA 0%, #E9ECEF 100%),
                 radial-gradient(ellipse 100% 60% at 50% 0%, rgba(173, 181, 189, 0.2) 0%, transparent 100%);
             padding: 20px;
@@ -320,7 +320,7 @@
         .piece {
             aspect-ratio: 1;
             border-radius: 50%;
-            background: 
+            background:
                 linear-gradient(145deg, #FFFFFF 0%, #F8F9FA 100%),
                 radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.8) 0%, transparent 60%);
             display: flex;
@@ -330,7 +330,7 @@
             font-size: 20px;
             font-weight: bold;
             text-align: center;
-            box-shadow: 
+            box-shadow:
                 0 4px 12px rgba(0, 0, 0, 0.08),
                 inset 0 1px 0 rgba(255, 255, 255, 1);
             transition: all 0.3s ease;
@@ -342,7 +342,7 @@
 
         .piece:hover {
             transform: translateY(-3px) scale(1.05);
-            box-shadow: 
+            box-shadow:
                 0 6px 12px rgba(65,105,225,0.4),
                 inset 0 2px 0 rgba(255,255,255,0.6);
         }
@@ -380,14 +380,14 @@
             bottom: 220px;
             left: 0;
             right: 0;
-            background: 
+            background:
                 linear-gradient(145deg, #FFF8E1 0%, #FFFBF0 100%),
                 radial-gradient(circle at 30% 30%, rgba(255, 193, 7, 0.1) 0%, transparent 60%);
             border: 1px solid rgba(255, 193, 7, 0.3);
             border-radius: 16px;
             margin: 0 16px;
             padding: 20px;
-            box-shadow: 
+            box-shadow:
                 0 4px 20px rgba(255, 193, 7, 0.15),
                 0 0 0 1px rgba(255, 255, 255, 0.9),
                 inset 0 1px 0 rgba(255, 255, 255, 1);
@@ -421,7 +421,7 @@
 
         .declaration-option {
             padding: 12px 6px;
-            background: 
+            background:
                 linear-gradient(145deg, #FFFFFF 0%, #F8F9FA 100%),
                 radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.8) 0%, transparent 60%);
             border: 1px solid rgba(173, 181, 189, 0.3);
@@ -431,7 +431,7 @@
             font-size: 16px;
             font-weight: 600;
             color: #343A40;
-            box-shadow: 
+            box-shadow:
                 0 2px 4px rgba(0, 0, 0, 0.04),
                 inset 0 1px 0 rgba(255, 255, 255, 1);
             text-align: center;
@@ -440,7 +440,7 @@
 
         .declaration-option:disabled,
         .declaration-option.disabled {
-            background: 
+            background:
                 linear-gradient(145deg, #E9ECEF 0%, #DEE2E6 100%);
             color: #6C757D;
             border-color: rgba(173, 181, 189, 0.2);
@@ -451,32 +451,32 @@
         .declaration-option:disabled:hover,
         .declaration-option.disabled:hover {
             transform: none;
-            background: 
+            background:
                 linear-gradient(145deg, #E9ECEF 0%, #DEE2E6 100%);
             border-color: rgba(173, 181, 189, 0.2);
-            box-shadow: 
+            box-shadow:
                 0 2px 4px rgba(0, 0, 0, 0.04),
                 inset 0 1px 0 rgba(255, 255, 255, 1);
         }
 
         .declaration-option:hover {
-            background: 
+            background:
                 linear-gradient(145deg, #FFF8E1 0%, #FFFBF0 100%),
                 radial-gradient(circle at 30% 30%, rgba(255, 193, 7, 0.1) 0%, transparent 60%);
             border-color: rgba(255, 193, 7, 0.4);
             transform: translateY(-1px) scale(1.02);
-            box-shadow: 
+            box-shadow:
                 0 4px 8px rgba(255, 193, 7, 0.15),
                 inset 0 1px 0 rgba(255, 255, 255, 1);
         }
 
         .declaration-option.selected {
-            background: 
+            background:
                 linear-gradient(135deg, #FFC107 0%, #FF9800 100%);
             border-color: rgba(255, 193, 7, 0.6);
             color: #212529;
             transform: translateY(-1px) scale(1.05);
-            box-shadow: 
+            box-shadow:
                 0 4px 12px rgba(255, 193, 7, 0.3),
                 inset 0 1px 0 rgba(255, 255, 255, 0.8);
         }
@@ -488,7 +488,7 @@
         }
 
         .action-button {
-            background: 
+            background:
                 linear-gradient(135deg, #28A745 0%, #20C997 100%),
                 radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.2) 0%, transparent 60%);
             color: white;
@@ -511,20 +511,20 @@
         }
 
         .action-button:disabled {
-            background: 
+            background:
                 linear-gradient(145deg, #E9ECEF 0%, #DEE2E6 100%);
             color: #6C757D;
             border-color: rgba(173, 181, 189, 0.3);
             cursor: not-allowed;
             transform: none;
-            box-shadow: 
+            box-shadow:
                 0 2px 4px rgba(0, 0, 0, 0.04),
                 inset 0 1px 0 rgba(255, 255, 255, 1);
             opacity: 0.7;
         }
 
         .action-button.secondary {
-            background: 
+            background:
                 linear-gradient(135deg, #6C757D 0%, #495057 100%),
                 radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.1) 0%, transparent 60%);
             border-color: rgba(108, 117, 125, 0.4);
@@ -564,13 +564,13 @@
             position: absolute;
             top: 20px;
             right: 20px;
-            background: 
+            background:
                 linear-gradient(145deg, #FFFFFF 0%, #F8F9FA 100%),
                 radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.8) 0%, transparent 60%);
             padding: 8px 16px;
             border-radius: 16px;
             border: 1px solid rgba(173, 181, 189, 0.3);
-            box-shadow: 
+            box-shadow:
                 0 4px 12px rgba(0, 0, 0, 0.08),
                 inset 0 1px 0 rgba(255, 255, 255, 1);
             font-weight: 700;
@@ -607,7 +607,7 @@
                  Zero streak restriction: "You are not allowed to declare 0 three times in a row" (when player declared 0 twice in a row)
             -->
             <div class="declaration-requirement">No third consecutive 0</div>
-            
+
             <!-- Players must be ordered by play order (declaration order) -->
             <div class="players-list">
                 <!-- Bob (Already Declared) -->
@@ -669,7 +669,7 @@
                 <div class="declaration-option" onclick="selectDeclaration(7)">7</div>
                 <div class="declaration-option" onclick="selectDeclaration(8)">8</div>
             </div>
-            
+
             <div class="action-buttons">
                 <button class="action-button" onclick="confirmDeclaration()" disabled>Confirm</button>
                 <button class="action-button secondary" onclick="clearSelection()">Clear</button>
@@ -697,7 +697,7 @@
                     <div class="piece-character">车</div>
                     <div class="piece-points">7</div>
                 </div>
-                
+
                 <!-- Row 2 -->
                 <div class="piece red">
                     <div class="piece-character">马</div>
@@ -724,15 +724,15 @@
 
         function selectDeclaration(value) {
             selectedDeclaration = value;
-            
+
             // Remove previous selection
             document.querySelectorAll('.declaration-option').forEach(option => {
                 option.classList.remove('selected');
             });
-            
+
             // Add selection to clicked option
             event.target.classList.add('selected');
-            
+
             // Enable confirm button
             document.querySelector('.action-button:not(.secondary)').disabled = false;
         }
@@ -743,15 +743,15 @@
                 // Here you would send the declaration to the backend
                 // For demo, we'll just hide the panel
                 document.getElementById('declarationPanel').classList.remove('show');
-                
+
                 // Update the player row to show declared state
                 const playerRow = document.querySelector('.player-row.current-turn');
                 playerRow.classList.remove('current-turn');
                 playerRow.classList.add('declared');
-                
+
                 const playerStatus = playerRow.querySelector('.player-status');
                 playerStatus.innerHTML = `<div class="declared-value">${selectedDeclaration}</div>`;
-                
+
                 // Move turn to next player (Lucas)
                 const lucasRow = document.querySelectorAll('.player-row')[2];
                 lucasRow.classList.add('current-turn');
@@ -762,12 +762,12 @@
 
         function clearSelection() {
             selectedDeclaration = null;
-            
+
             // Remove all selections
             document.querySelectorAll('.declaration-option').forEach(option => {
                 option.classList.remove('selected');
             });
-            
+
             // Disable confirm button
             document.querySelector('.action-button:not(.secondary)').disabled = true;
         }

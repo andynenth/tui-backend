@@ -17,7 +17,7 @@ The content from this manual has been split into focused documents:
    - Validation rules
    - Error handling
 
-## Legacy Reference  
+## Legacy Reference
 
 This file originally served as a comprehensive API reference covering both WebSocket and REST endpoints. Since the system now uses WebSocket exclusively for game operations, the content has been reorganized for better clarity.
 

@@ -7,7 +7,7 @@ Bots were playing their best combos when responding instead of disposing burden 
 
 ### 1. Declaration Logic Simplified (ai.py)
 - Removed complex fractional scoring (0.85 multipliers)
-- Simple formula: 
+- Simple formula:
   - With opener + combo: declare 1 (control) + combo_size
   - With opener no combo: declare opener_count
   - No opener: declare combo_size or 0
@@ -18,7 +18,7 @@ New `execute_responder_strategy()` function with disposal priority:
 ```
 Priority Order:
 1. Burden pieces (highest value first)
-2. Reserve pieces (if necessary) 
+2. Reserve pieces (if necessary)
 3. Openers (only as last resort)
 4. Combo pieces (should never reach)
 5. Any other pieces

@@ -407,22 +407,22 @@
         <!-- OPTION 1: Button Group Style -->
         <div class="mockup-option">
             <h2 class="mockup-title">Option 1: Button Group Style</h2>
-            
+
             <div class="sp-game-container">
                 <div class="sp-game-icon">
                     <div class="sp-icon-circle">將</div>
                 </div>
-                
+
                 <h1 class="sp-game-title">Welcome to Liap TUI</h1>
                 <p class="sp-game-subtitle">Enter your player name to start playing</p>
-                
+
                 <form>
                     <div class="sp-input-wrapper">
                         <label class="sp-input-label">Player Name</label>
                         <input type="text" class="sp-glowing-input" placeholder="Enter your name..." value="Andy">
                         <p class="sp-input-helper-text">2-20 characters, letters and numbers only</p>
                     </div>
-                    
+
                     <!-- THEME SELECTOR OPTION 1 -->
                     <div class="theme-selector-buttons">
                         <label class="sp-input-label">Choose Theme</label>
@@ -443,11 +443,11 @@
                             </button>
                         </div>
                     </div>
-                    
+
                     <button type="submit" class="btn btn-primary">Enter Lobby</button>
                 </form>
             </div>
-            
+
             <div class="demo-controls">
                 <p class="demo-note">Pros: Quick visual selection, both options visible at once</p>
                 <p class="demo-note">Cons: Takes more vertical space</p>
@@ -457,22 +457,22 @@
         <!-- OPTION 2: Card Style -->
         <div class="mockup-option">
             <h2 class="mockup-title">Option 2: Card Style with Details</h2>
-            
+
             <div class="sp-game-container">
                 <div class="sp-game-icon">
                     <div class="sp-icon-circle">將</div>
                 </div>
-                
+
                 <h1 class="sp-game-title">Welcome to Liap TUI</h1>
                 <p class="sp-game-subtitle">Enter your player name to start playing</p>
-                
+
                 <form>
                     <div class="sp-input-wrapper">
                         <label class="sp-input-label">Player Name</label>
                         <input type="text" class="sp-glowing-input" placeholder="Enter your name..." value="Andy">
                         <p class="sp-input-helper-text">2-20 characters, letters and numbers only</p>
                     </div>
-                    
+
                     <!-- THEME SELECTOR OPTION 2 -->
                     <div class="theme-selector-cards">
                         <label class="sp-input-label">Choose Theme</label>
@@ -501,11 +501,11 @@
                             </div>
                         </div>
                     </div>
-                    
+
                     <button type="submit" class="btn btn-primary">Enter Lobby</button>
                 </form>
             </div>
-            
+
             <div class="demo-controls">
                 <p class="demo-note">Pros: More information, clear selection state, room for more themes</p>
                 <p class="demo-note">Cons: Takes most vertical space</p>
@@ -515,22 +515,22 @@
         <!-- OPTION 3: Dropdown Style -->
         <div class="mockup-option">
             <h2 class="mockup-title">Option 3: Dropdown Style</h2>
-            
+
             <div class="sp-game-container">
                 <div class="sp-game-icon">
                     <div class="sp-icon-circle">將</div>
                 </div>
-                
+
                 <h1 class="sp-game-title">Welcome to Liap TUI</h1>
                 <p class="sp-game-subtitle">Enter your player name to start playing</p>
-                
+
                 <form>
                     <div class="sp-input-wrapper">
                         <label class="sp-input-label">Player Name</label>
                         <input type="text" class="sp-glowing-input" placeholder="Enter your name..." value="Andy">
                         <p class="sp-input-helper-text">2-20 characters, letters and numbers only</p>
                     </div>
-                    
+
                     <!-- THEME SELECTOR OPTION 3 -->
                     <div class="theme-selector-dropdown">
                         <label class="sp-input-label">Choose Theme</label>
@@ -565,11 +565,11 @@
                             </div>
                         </div>
                     </div>
-                    
+
                     <button type="submit" class="btn btn-primary">Enter Lobby</button>
                 </form>
             </div>
-            
+
             <div class="demo-controls">
                 <p class="demo-note">Pros: Minimal space, familiar UI pattern, scales to many themes</p>
                 <p class="demo-note">Cons: Requires click to see options</p>
@@ -603,7 +603,7 @@
                 const dropdown = this.closest('.theme-dropdown');
                 const toggle = dropdown.querySelector('.theme-dropdown-toggle');
                 const current = toggle.querySelector('.theme-dropdown-current');
-                
+
                 // Update the display
                 current.innerHTML = `
                     <div class="theme-dropdown-preview">
@@ -611,7 +611,7 @@
                     </div>
                     <span>${this.querySelector('.theme-dropdown-item-name').textContent}</span>
                 `;
-                
+
                 // Close dropdown
                 toggle.classList.remove('open');
                 dropdown.querySelector('.theme-dropdown-menu').classList.remove('show');

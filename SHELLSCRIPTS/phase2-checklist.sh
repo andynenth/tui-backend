@@ -30,7 +30,7 @@ ask_confirm() {
 echo -e "${BLUE}Pre-requisites:${NC}"
 if command -v aws &> /dev/null; then
     echo -e "${GREEN}✅ AWS CLI installed${NC}"
-    
+
     if aws sts get-caller-identity &> /dev/null; then
         echo -e "${GREEN}✅ AWS credentials configured${NC}"
         ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
@@ -54,7 +54,7 @@ echo ""
 if ask_confirm "Ready to launch EC2 instance?"; then
     echo -e "${GREEN}Running launch script...${NC}"
     ./launch-ec2-instance.sh
-    
+
     if [ $? -eq 0 ]; then
         echo -e "${GREEN}✅ EC2 instance launched successfully${NC}"
     else
@@ -78,13 +78,13 @@ if ask_confirm "Ready to run setup on EC2?"; then
     if [ -f "ec2-instance-details.txt" ]; then
         ELASTIC_IP=$(grep "Elastic IP:" ec2-instance-details.txt  < /dev/null |  awk '{print $3}')
         KEY_FILE=$(grep "SSH Key:" ec2-instance-details.txt | awk '{print $3}')
-        
+
         echo -e "${YELLOW}Copying setup script to EC2...${NC}"
         scp -o StrictHostKeyChecking=no -i ${KEY_FILE} ec2-setup.sh ubuntu@${ELASTIC_IP}:~/
-        
+
         echo -e "${YELLOW}Running setup script...${NC}"
         ssh -o StrictHostKeyChecking=no -i ${KEY_FILE} ubuntu@${ELASTIC_IP} 'chmod +x ec2-setup.sh && ./ec2-setup.sh'
-        
+
         if [ $? -eq 0 ]; then
             echo -e "${GREEN}✅ EC2 setup completed${NC}"
         else

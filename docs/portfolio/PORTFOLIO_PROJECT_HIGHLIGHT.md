@@ -66,7 +66,7 @@ The game implements a sophisticated state machine pattern that ensures consisten
 ```python
 class GameState(ABC):
     """Base state with automatic broadcasting."""
-    
+
     async def update_phase_data(self, updates: dict, reason: str):
         """Update state with automatic event broadcasting."""
         # Updates game state
@@ -273,7 +273,7 @@ This project demonstrates the ability to take a complex real-world problem and d
 
 ---
 
-**Repository**: [github.com/yourusername/liap-tui](https://github.com/yourusername/liap-tui)  
-**Live Demo**: [34.233.7.20](http://34.233.7.20)  
-**Documentation**: [Complete Technical Docs](./docs)  
+**Repository**: [github.com/yourusername/liap-tui](https://github.com/yourusername/liap-tui)
+**Live Demo**: [34.233.7.20](http://34.233.7.20)
+**Documentation**: [Complete Technical Docs](./docs)
 **Technologies**: Python • FastAPI • React • TypeScript • WebSocket • AWS • Docker

@@ -66,16 +66,16 @@ def detect_opener_only_plan(plan: "StrategicPlan") -> bool:
 def is_never_win_combo(combo_type: str, pieces: List[Piece]) -> bool:
     """
     Check if a combination can never win against any other combo of the same type.
-    
+
     Never-win combos:
     1. All-BLACK straights (3+5+7=15 points minimum)
     2. SOLDIER_BLACK pairs (1+1=2 points minimum)
     3. Multiple SOLDIER_BLACK (minimum points for their type)
-    
+
     Args:
         combo_type: Type of combination
         pieces: List of pieces in the combination
-        
+
     Returns:
         True if this combo can never win, False otherwise
     """
@@ -88,17 +88,17 @@ def is_never_win_combo(combo_type: str, pieces: List[Piece]) -> bool:
             # Minimum straight is 3,5,7 (CANNON_BLACK, HORSE_BLACK, CHARIOT_BLACK)
             if len(points) >= 3 and points[:3] == [3, 5, 7]:
                 return True
-                
+
     elif combo_type == "PAIR":
         # Check if both pieces are SOLDIER_BLACK (1 point each)
         if len(pieces) == 2 and all(p.point == 1 for p in pieces):
             return True
-            
+
     elif combo_type in ["THREE_OF_A_KIND", "FOUR_OF_A_KIND", "FIVE_OF_A_KIND"]:
         # Check if all pieces are SOLDIER_BLACK
         if all(p.point == 1 for p in pieces):
             return True
-            
+
     return False
 
 
@@ -124,7 +124,9 @@ class TurnPlayContext:
         Piece
     ]  # ⚠️ NOT IMPLEMENTED - Always empty list, do not use in strategy
     player_states: Dict[str, Dict]  # All players' captured/declared
-    required_play_type: Optional[str] = None  # The play type set by starter (e.g., "PAIR", "STRAIGHT")
+    required_play_type: Optional[
+        str
+    ] = None  # The play type set by starter (e.g., "PAIR", "STRAIGHT")
 
 
 @dataclass
@@ -487,7 +489,7 @@ def calculate_urgency(context: TurnPlayContext) -> str:
     """
     Calculate urgency level based on room concept.
     Room = remaining_turns - max_opponent_target_remaining
-    
+
     Not urgent when: room >= my_target_remaining
     Urgent when: room < my_target_remaining
 
@@ -499,25 +501,25 @@ def calculate_urgency(context: TurnPlayContext) -> str:
     """
     # Calculate my target remaining
     my_target_remaining = context.my_declared - context.my_captured
-    
+
     if my_target_remaining <= 0:
         return "none"  # Already at/above target
-    
+
     # Calculate remaining turns (each turn uses at least 1 piece)
     hand_size = len(context.my_hand)
     remaining_turns = hand_size
-    
+
     # Find max opponent target_remaining
     max_opponent_remaining = 0
     for player_name, state in context.player_states.items():
         if player_name != context.my_name:
-            opponent_remaining = state.get('declared', 0) - state.get('captured', 0)
+            opponent_remaining = state.get("declared", 0) - state.get("captured", 0)
             if opponent_remaining > max_opponent_remaining:
                 max_opponent_remaining = opponent_remaining
-    
+
     # Calculate room
     room = remaining_turns - max_opponent_remaining
-    
+
     # Determine urgency based on room
     if room < my_target_remaining:
         return "critical"  # URGENT - must compete for wins
@@ -623,16 +625,16 @@ def form_execution_plan(
     # Assign openers based on target
     all_openers = [p for p in hand if p.point >= 11]
     # Openers available: {len(all_openers)}
-    
+
     # Count secured wins from non-opener combos
     secured_wins = 0
     opener_set = set(all_openers)
-    
+
     for combo_type, pieces in viable_combos:
         # Only count combos that don't require opener pieces
         if not any(p in opener_set for p in pieces):
             secured_wins += 1
-    
+
     # Debug logging for smart opener assignment
     # Smart assignment: target={target_remaining}, secured_wins={secured_wins}, openers_available={len(all_openers)}
 
@@ -642,13 +644,13 @@ def form_execution_plan(
     else:
         # Calculate how many openers we actually need
         openers_needed = max(0, target_remaining - secured_wins)
-        
+
         # Apply practical limits (cap at 4 for very high declarations)
         if target_remaining >= 4:
             openers_needed = min(openers_needed, len(all_openers), 4)
         else:
             openers_needed = min(openers_needed, len(all_openers))
-        
+
         assigned_openers = all_openers[:openers_needed]
 
     # Assigned {len(assigned_openers)} openers
@@ -806,13 +808,15 @@ def execute_aggressive_capture(
             for combo_type, pieces in valid_of_size
             if not is_never_win_combo(combo_type, pieces)
         ]
-        
+
         # Use winnable combos if available, otherwise use all valid
         if winnable_of_size:
             valid_of_size = winnable_of_size
         # Check constraints if risk level is high
         if constraints.risk_level in ["medium", "high"]:
-            print(f"⚠️ Aggressive capture with overcapture risk - filtering safe combos")
+            print(
+                f"⚠️ Aggressive capture with overcapture risk - filtering safe combos"
+            )
             field_strength = "normal"  # Default assumption for aggressive play
             safe_combos = [
                 (t, p)
@@ -889,7 +893,7 @@ def execute_responder_strategy(
         # Not urgent - consider random opener play
         # Get all openers in hand (pieces with point >= 11)
         openers_in_hand = [p for p in context.my_hand if p.point >= 11]
-        
+
         if openers_in_hand and should_randomly_play_opener(len(context.my_hand)):
             # Random timing triggered!
             hand_size = len(context.my_hand)
@@ -919,16 +923,18 @@ def execute_responder_strategy(
         if valid_of_size:
             # Filter out never-win combos if we have alternatives
             winnable_combos = [
-                (combo_type, pieces) 
+                (combo_type, pieces)
                 for combo_type, pieces in valid_of_size
                 if not is_never_win_combo(combo_type, pieces)
             ]
-            
+
             # Use winnable combos if available, otherwise fall back to all valid
             combos_to_consider = winnable_combos if winnable_combos else valid_of_size
-            
+
             # Get strongest valid combination
-            best_combo = max(combos_to_consider, key=lambda x: sum(p.point for p in x[1]))
+            best_combo = max(
+                combos_to_consider, key=lambda x: sum(p.point for p in x[1])
+            )
             print(
                 f"  ⚡ Playing strongest valid combo: {[p.name for p in best_combo[1]]}"
             )
@@ -968,7 +974,9 @@ def execute_responder_strategy(
         plan_combo_kinds = set()
         for combo_type, pieces in plan.assigned_combos:
             plan_combo_kinds.update(p.kind for p in pieces)
-        combo_pieces_in_hand = [p for p in context.my_hand if p.kind in plan_combo_kinds]
+        combo_pieces_in_hand = [
+            p for p in context.my_hand if p.kind in plan_combo_kinds
+        ]
         # Remove duplicates by kind (shouldn't happen but just in case)
         seen_kinds = set()
         unique_combo_pieces = []
@@ -1035,8 +1043,9 @@ def execute_responder_strategy(
         if required > 1 and context.required_play_type:
             # Find all valid combinations of the required size and type
             from itertools import combinations
+
             valid_plays = []
-            
+
             for combo in combinations(disposal_candidates, required):
                 combo_list = list(combo)
                 if is_valid_play(combo_list):
@@ -1045,32 +1054,44 @@ def execute_responder_strategy(
                         # Check if it's a never-win combo
                         is_never_win = is_never_win_combo(play_type, combo_list)
                         total_value = sum(p.point for p in combo_list)
-                        valid_plays.append({
-                            'pieces': combo_list,
-                            'value': total_value,
-                            'is_never_win': is_never_win
-                        })
-            
+                        valid_plays.append(
+                            {
+                                "pieces": combo_list,
+                                "value": total_value,
+                                "is_never_win": is_never_win,
+                            }
+                        )
+
             if valid_plays:
                 # Sort by: non-never-win first, then by lowest value (to dispose burden)
-                valid_plays.sort(key=lambda x: (x['is_never_win'], x['value']))
-                
+                valid_plays.sort(key=lambda x: (x["is_never_win"], x["value"]))
+
                 # Log if we're choosing a never-win combo when alternatives exist
-                if valid_plays[0]['is_never_win'] and any(not p['is_never_win'] for p in valid_plays):
-                    non_never_win = [p for p in valid_plays if not p['is_never_win']]
-                    print(f"  ⚠️ WARNING: Choosing never-win combo when {len(non_never_win)} better alternatives exist!")
-                
-                pieces_to_play = valid_plays[0]['pieces']
+                if valid_plays[0]["is_never_win"] and any(
+                    not p["is_never_win"] for p in valid_plays
+                ):
+                    non_never_win = [p for p in valid_plays if not p["is_never_win"]]
+                    print(
+                        f"  ⚠️ WARNING: Choosing never-win combo when {len(non_never_win)} better alternatives exist!"
+                    )
+
+                pieces_to_play = valid_plays[0]["pieces"]
                 play_type_str = context.required_play_type
-                total_value = valid_plays[0]['value']
-                never_win_str = " (NEVER-WIN!)" if valid_plays[0]['is_never_win'] else ""
-                print(f"  Playing valid {play_type_str}: {[p.name for p in pieces_to_play]} ({total_value} pts){never_win_str}")
+                total_value = valid_plays[0]["value"]
+                never_win_str = (
+                    " (NEVER-WIN!)" if valid_plays[0]["is_never_win"] else ""
+                )
+                print(
+                    f"  Playing valid {play_type_str}: {[p.name for p in pieces_to_play]} ({total_value} pts){never_win_str}"
+                )
                 return pieces_to_play
             else:
                 # No valid combos found - this is a problem!
-                print(f"  ❌ ERROR: Cannot form valid {context.required_play_type} from disposal candidates!")
+                print(
+                    f"  ❌ ERROR: Cannot form valid {context.required_play_type} from disposal candidates!"
+                )
                 # Fall through to old behavior as emergency fallback
-        
+
         # Fallback: Take first N pieces (original behavior for singles or when no type required)
         pieces_to_play = disposal_candidates[:required]
 
@@ -1152,13 +1173,17 @@ def get_optimal_piece_count_for_starter(
                 ):
                     combo_rank = COMBO_TYPE_RANK.get(combo_type, 0)
                     combo_value = sum(p.point for p in pieces)
-                    
+
                     # Prioritize by rank first, then by points
-                    if combo_rank > best_rank or (combo_rank == best_rank and combo_value > best_value):
+                    if combo_rank > best_rank or (
+                        combo_rank == best_rank and combo_value > best_value
+                    ):
                         best_rank = combo_rank
                         best_value = combo_value
                         best_combo = pieces
-                        print(f"  New best: {combo_type} (rank={combo_rank}, value={combo_value})")
+                        print(
+                            f"  New best: {combo_type} (rank={combo_rank}, value={combo_value})"
+                        )
 
         if best_combo:
             print(f"  Selected combo with rank {best_rank}, value {best_value}")
@@ -1265,13 +1290,13 @@ def execute_starter_strategy(
     # Starter strategy: {required} pieces, urgency {plan.urgency_level}, risk {constraints.risk_level}
 
     # NOTE: Critical urgency now handled in get_optimal_piece_count_for_starter()
-    
+
     # Check for random opener play when not urgent (for single piece plays)
     if required == 1 and plan.urgency_level == "low":
         # Not urgent - consider random opener play
         # Get all openers in hand (pieces with point >= 11)
         openers_in_hand = [p for p in context.my_hand if p.point >= 11]
-        
+
         if openers_in_hand and should_randomly_play_opener(len(context.my_hand)):
             # Random timing triggered for starter!
             hand_size = len(context.my_hand)
@@ -1279,10 +1304,12 @@ def execute_starter_strategy(
             # Starter randomly playing opener
             # Hand size: {hand_size}, probability: {probability}%
             # {len(openers_in_hand)} openers available
-            
+
             # Randomly select an opener (not always the strongest!)
             opener_to_play = random.choice(openers_in_hand)
-            print(f"🎲 {context.my_name} randomly plays opener: {opener_to_play.name}({opener_to_play.point})")
+            print(
+                f"🎲 {context.my_name} randomly plays opener: {opener_to_play.name}({opener_to_play.point})"
+            )
             return [opener_to_play]
 
     # Check if we have an assigned combo that matches required pieces
@@ -1357,9 +1384,9 @@ def execute_starter_strategy(
 
         # Sort combos by rank first, then value
         sorted_combos = sorted(
-            plan.assigned_combos, 
-            key=lambda x: (COMBO_TYPE_RANK.get(x[0], 0), sum(p.point for p in x[1])), 
-            reverse=True
+            plan.assigned_combos,
+            key=lambda x: (COMBO_TYPE_RANK.get(x[0], 0), sum(p.point for p in x[1])),
+            reverse=True,
         )
 
         for combo_type, pieces in sorted_combos:
@@ -1464,10 +1491,10 @@ def execute_starter_strategy(
                 for combo_type, pieces in valid_combos_of_size
                 if not is_never_win_combo(combo_type, pieces)
             ]
-            
+
             # Use winnable combos if available, otherwise use all valid
             combos_to_use = winnable_combos if winnable_combos else valid_combos_of_size
-            
+
             # Sort by value (weakest first for safety)
             combos_to_use.sort(key=lambda x: sum(p.point for p in x[1]))
             combo_type, pieces = combos_to_use[0]

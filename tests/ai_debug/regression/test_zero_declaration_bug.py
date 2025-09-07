@@ -17,7 +17,7 @@ def test_zero_declaration_with_openers():
     """Test that AI doesn't declare 0 with strong openers"""
     print("Testing Zero Declaration Bug Fix...")
     print("-" * 50)
-    
+
     test_cases = [
         {
             'name': 'Two Generals (strongest possible)',
@@ -60,56 +60,56 @@ def test_zero_declaration_with_openers():
             'description': 'Non-starter with 2 ADVISORs should declare at least 1'
         }
     ]
-    
+
     all_passed = True
     failures = []
-    
+
     # Test as starter (position 0)
     print("\nAs STARTER:")
     for test in test_cases[:3]:
         print(f"\n{test['name']}:")
         print(f"  {test['description']}")
-        
+
         result = run_declaration_test(
             hand_specs=test['hand'],
             position=0,  # Starter
             previous_declarations=[],
             expected_min=test['min_declaration']
         )
-        
+
         print(f"  AI declared: {result['declaration']}")
-        
+
         if result['declaration'] >= test['min_declaration']:
             print("  ✓ PASSED - No zero declaration bug")
         else:
             print("  ✗ FAILED - ZERO DECLARATION BUG DETECTED!")
             all_passed = False
             failures.append(f"Starter {test['name']}: declared {result['declaration']}")
-            
+
     # Test as non-starter
     print("\n\nAs NON-STARTER (position 2):")
     for test in test_cases:
         print(f"\n{test['name']}:")
         print(f"  {test['description']}")
-        
+
         result = run_declaration_test(
             hand_specs=test['hand'],
             position=2,
             previous_declarations=[2, 1],  # Normal field
             expected_min=test['min_declaration'] if test == test_cases[3] else test['min_declaration'] - 1
         )
-        
+
         print(f"  AI declared: {result['declaration']}")
-        
+
         min_expected = test['min_declaration'] if test == test_cases[3] else test['min_declaration'] - 1
-        
+
         if result['declaration'] >= min_expected:
             print("  ✓ PASSED - No zero declaration bug")
         else:
             print("  ✗ FAILED - ZERO DECLARATION BUG DETECTED!")
             all_passed = False
             failures.append(f"Non-starter {test['name']}: declared {result['declaration']}")
-            
+
     return all_passed, failures
 
 
@@ -117,7 +117,7 @@ def test_edge_cases():
     """Test edge cases around the bug fix"""
     print("\n\nTesting Edge Cases...")
     print("-" * 50)
-    
+
     edge_cases = [
         {
             'name': 'Exactly 2 openers with pile room constraint',
@@ -142,12 +142,12 @@ def test_edge_cases():
             'min_declaration': 1
         }
     ]
-    
+
     all_passed = True
-    
+
     for test in edge_cases:
         print(f"\n{test['name']}:")
-        
+
         if 'previous' in test:
             result = run_declaration_test(
                 hand_specs=test['hand'],
@@ -166,15 +166,15 @@ def test_edge_cases():
                 expected_min=test['min_declaration']
             )
             print(f"  Must declare non-zero: {test.get('must_declare_nonzero', False)}")
-            
+
         print(f"  AI declared: {result['declaration']}")
-        
+
         if result['passed']:
             print("  ✓ PASSED")
         else:
             print(f"  ✗ FAILED: {result['message']}")
             all_passed = False
-            
+
     return all_passed
 
 
@@ -185,16 +185,16 @@ if __name__ == "__main__":
     print("\nThis bug was found 15 times in 5 games during initial testing.")
     print("AI would declare 0 despite having 2-3 openers (GENERAL/ADVISOR).")
     print("="*60)
-    
+
     # Run tests
     test1_passed, failures = test_zero_declaration_with_openers()
     test2_passed = test_edge_cases()
-    
+
     # Summary
     print("\n" + "="*60)
     print("REGRESSION TEST SUMMARY")
     print("="*60)
-    
+
     if test1_passed and test2_passed:
         print("✓ ALL TESTS PASSED - Zero declaration bug appears FIXED")
     else:

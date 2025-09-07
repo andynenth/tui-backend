@@ -52,7 +52,7 @@ from tests.ai_regression.ai_decision_framework import AIDecisionTester
 def test_bug():
     """Test the bug scenario"""
     tester = AIDecisionTester()
-    
+
     # TODO: Add exact scenario from game data
     tester.add_scenario(
         name="Bug from Room $ROOM_ID",
@@ -66,7 +66,7 @@ def test_bug():
         required_pieces=1,
         turn_number=1
     )
-    
+
     tester.run_all_scenarios()
 
 if __name__ == "__main__":

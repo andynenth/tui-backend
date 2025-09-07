@@ -37,7 +37,7 @@ This document provides a comprehensive analysis of the technology choices made f
 // Phase-based component structure
 const GamePage = () => {
   const { gameState } = useGame();
-  
+
   switch (gameState.phase) {
     case 'PREPARATION':
       return <PreparationPhase />;
@@ -176,7 +176,7 @@ const buildOptions = {
 @router.websocket("/ws/{room_id}")
 async def websocket_endpoint(websocket: WebSocket, room_id: str):
     await websocket.accept()
-    
+
     try:
         # Game connection logic
         await handle_game_connection(websocket, room_id)
@@ -204,14 +204,14 @@ async def websocket_endpoint(websocket: WebSocket, room_id: str):
 async def process_game_action(action: GameAction):
     # Validate action asynchronously
     validation = await validate_action(action)
-    
+
     if validation.is_valid:
         # Update state (automatic broadcasting)
         await state.update_phase_data(
             validation.updates,
             f"Action: {action.type}"
         )
-    
+
     # Process any triggered events
     await process_triggered_events()
 ```

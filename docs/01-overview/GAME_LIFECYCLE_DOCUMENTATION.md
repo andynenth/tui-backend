@@ -829,26 +829,26 @@ interface GameState {
   isConnected: boolean;
   roomId: string | null;
   playerName: string;
-  
+
   // Game phase
   phase: Phase;
   phaseData: any;
-  
+
   // Players
   players: Player[];
   myPlayerData: Player | null;
-  
+
   // Game data
   myHand: Piece[];
   playerPiles: Record<string, number>;
   declarations: Record<string, number>;
   totalScores: Record<string, number>;
-  
+
   // Turn state
   currentPlayer: string | null;
   turnNumber: number;
   requiredPieceCount: number | null;
-  
+
   // Meta
   gameStarted: boolean;
   roundNumber: number;

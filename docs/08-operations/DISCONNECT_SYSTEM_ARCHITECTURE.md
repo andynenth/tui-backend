@@ -41,7 +41,7 @@ self.websocket_to_player: Dict[str, tuple[str, str]] = {}  # ws_id -> (room_id, 
 ```python
 async def handle_disconnect(room_id: str, websocket: WebSocket):
     websocket_id = getattr(websocket, "_ws_id", None)  # Line 59
-    
+
     if websocket_id:
         connection = await connection_manager.handle_disconnect(websocket_id)  # Line 73
 ```
@@ -51,10 +51,10 @@ async def handle_disconnect(room_id: str, websocket: WebSocket):
 async def handle_disconnect(self, websocket_id: str) -> Optional[PlayerConnection]:
     # Find player from websocket ID
     room_id, player_name = self.websocket_to_player[websocket_id]  # Line 93
-    
+
     # Remove websocket mapping
     del self.websocket_to_player[websocket_id]  # Line 96
-    
+
     # Update connection state
     connection.connection_status = ConnectionStatus.DISCONNECTED  # Line 101
     connection.disconnect_time = datetime.now()  # Line 102
@@ -67,12 +67,12 @@ if room and room.started:  # Only treat as in-game if game started!
     # Store original state for ALL players
     player.original_is_bot = player.is_bot  # Line 104
     player.original_avatar_color = getattr(player, 'avatar_color', None)  # Line 105
-    
+
     # Only process human players for disconnect
     if not player.is_bot:
         player.is_connected = False  # Line 109
         player.disconnect_time = connection.disconnect_time  # Line 110
-        
+
         # Convert human to bot during disconnect
         player.is_bot = True  # Line 113
 ```
@@ -160,7 +160,7 @@ is_reconnecting = await connection_manager.check_reconnection(room_id, player_na
 if is_reconnecting:
     # Register the player connection
     await connection_manager.register_player(room_id, player_name, websocket._ws_id)
-    
+
     # Restore player state in game
     if room.game:
         player = next((p for p in room.game.players if p.name == player_name), None)
@@ -176,7 +176,7 @@ if is_reconnecting:
 if room.started and room.game_state_machine:
     current_phase = room.game_state_machine.get_current_phase()
     phase_data = room.game_state_machine.get_phase_data()
-    
+
     # Send phase_change event with complete game state
     await registered_ws.send_json({
         "event": "phase_change",

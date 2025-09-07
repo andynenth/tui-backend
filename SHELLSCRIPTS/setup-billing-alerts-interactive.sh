@@ -73,7 +73,7 @@ aws ce put-anomaly-monitor \
 # Create billing alarms
 for THRESHOLD in 1 5 10; do
     echo -e "${YELLOW}Creating alarm for $${THRESHOLD}...${NC}"
-    
+
     aws cloudwatch put-metric-alarm \
         --alarm-name "Billing-Alert-${THRESHOLD}USD" \
         --alarm-description "Alert when AWS charges exceed $${THRESHOLD}" \
@@ -87,7 +87,7 @@ for THRESHOLD in 1 5 10; do
         --alarm-actions $TOPIC_ARN \
         --dimensions Name=Currency,Value=USD \
         --treat-missing-data notBreaching
-    
+
     echo -e "${GREEN}✅ Created $${THRESHOLD} alert${NC}"
 done
 
@@ -164,7 +164,7 @@ if [ "$INSTANCE_ID" \!= "None" ] && [ \! -z "$INSTANCE_ID" ]; then
         }') \
         --query 'ResultsByTime[0].Total.UsageQuantity.Amount' \
         --output text 2>/dev/null || echo "0")
-    
+
     echo "Hours used: ${HOURS_USED:-0} / 750"
 fi
 SCRIPT_EOF

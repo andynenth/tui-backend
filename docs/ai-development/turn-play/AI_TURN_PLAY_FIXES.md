@@ -9,11 +9,11 @@ The `is_valid` field has inconsistent default values between turn_state.py and b
 
 1. **File**: `backend/engine/bot_manager.py`
    - **Line**: ~1195
-   - **Change**: 
+   - **Change**:
    ```python
    # OLD
    if play.get('is_valid', False):
-   
+
    # NEW
    if play.get('is_valid', True):  # Match turn_state.py default
    ```
@@ -24,7 +24,7 @@ The `is_valid` field has inconsistent default values between turn_state.py and b
    ```python
    # OLD
    revealed_pieces=self._extract_revealed_pieces(game_state),
-   
+
    # NEW
    revealed_pieces=self._extract_revealed_pieces(game_state) if hasattr(self, '_extract_revealed_pieces') else [],
    ```
@@ -37,7 +37,7 @@ The `is_valid` field has inconsistent default values between turn_state.py and b
 - **No fix needed**
 
 ### 2. Game Waiting
-- **Status**: Working correctly  
+- **Status**: Working correctly
 - **Reason**: Waiting for human player (Alexanderium) to play
 - **No fix needed**
 
@@ -60,7 +60,7 @@ The `is_valid` field has inconsistent default values between turn_state.py and b
    # Test with and without is_valid field
    test_plays = [
        {'pieces': [...], 'is_valid': True},   # Should include
-       {'pieces': [...], 'is_valid': False},  # Should exclude  
+       {'pieces': [...], 'is_valid': False},  # Should exclude
        {'pieces': [...]},                     # Should include (default True)
    ]
    ```

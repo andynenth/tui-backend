@@ -44,7 +44,7 @@
 
 ### Declaration Distributions
 - **Conservative** (1 pile): 15% of declarations
-- **Standard** (2 piles): 60% of declarations  
+- **Standard** (2 piles): 60% of declarations
 - **Aggressive** (3 piles): 25% of declarations
 
 ### AI Reasoning Themes

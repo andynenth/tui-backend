@@ -54,7 +54,7 @@ The frontend converts backend strings to objects:
   type: "GENERAL",      // Piece type
   color: "red",         // "red" or "black"
   value: 14,            // Point value
-  
+
   // Additional properties (depending on context):
   kind: "GENERAL",      // Alternative to type
   point: 14,            // Alternative to value

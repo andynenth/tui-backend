@@ -48,7 +48,7 @@ There are currently **three different implementations** of scoring logic:
 def calculate_score(declared: int, actual: int) -> dict:
     """
     Calculate scoring components based on declared and actual piles.
-    
+
     Returns:
         dict: {
             'base_points': int,  # The X value (declared amount or penalty)
@@ -63,7 +63,7 @@ def calculate_score(declared: int, actual: int) -> dict:
 def calculate_final_score(declared: int, actual: int, multiplier: int = 1) -> int:
     """
     Calculate final score with multiplier applied correctly.
-    
+
     Returns:
         int: Final score with multiplier applied only to base points
     """
@@ -101,7 +101,7 @@ def calculate_final_score(declared: int, actual: int, multiplier: int = 1) -> in
 ```python
 def calculate_score_components(declared: int, actual: int) -> dict:
     """Calculate base points, bonus, and penalty flag."""
-    
+
 def calculate_final_score(declared: int, actual: int, multiplier: int = 1) -> int:
     """Calculate final score with new multiplier rules."""
 ```

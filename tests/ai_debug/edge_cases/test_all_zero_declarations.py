@@ -17,14 +17,14 @@ def test_all_zero_declarations():
     """Test when all players try to declare 0"""
     print("Testing All Zero Declarations Scenario...")
     print("-" * 50)
-    
+
     # Weak hand with no openers
     weak_hand = [
         "SOLDIER_BLACK", "SOLDIER_RED", "SOLDIER_BLACK",
         "CANNON_BLACK", "CANNON_RED", "HORSE_BLACK",
         "CHARIOT_BLACK", "ELEPHANT_BLACK"
     ]
-    
+
     test_cases = [
         {
             'name': 'Position 0 - First to declare 0',
@@ -55,13 +55,13 @@ def test_all_zero_declarations():
             'expected_max': 8,  # Can declare anything but 0
         },
     ]
-    
+
     all_passed = True
-    
+
     for test in test_cases:
         print(f"\n{test['name']}:")
         print(f"  Previous declarations: {test['previous_declarations']}")
-        
+
         result = run_declaration_test(
             hand_specs=weak_hand,
             position=test['position'],
@@ -69,19 +69,19 @@ def test_all_zero_declarations():
             expected_min=test['expected_min'],
             expected_max=test['expected_max']
         )
-        
+
         print(f"  AI declared: {result['declaration']}")
-        
+
         if result['passed']:
             print("  ✓ PASSED")
         else:
             print(f"  ✗ FAILED: {result['message']}")
             all_passed = False
-            
+
     # Test with zero streak rule
     print("\n\nTesting with Zero Streak Rule (must declare non-zero):")
     print("-" * 50)
-    
+
     result = run_declaration_test(
         hand_specs=weak_hand,
         position=1,
@@ -90,15 +90,15 @@ def test_all_zero_declarations():
         expected_min=1,  # Must declare at least 1
         expected_max=5   # But not too high with weak hand
     )
-    
+
     print(f"AI declared: {result['declaration']} (must be non-zero)")
-    
+
     if result['passed']:
         print("✓ PASSED - Correctly avoided zero declaration")
     else:
         print(f"✗ FAILED: {result['message']}")
         all_passed = False
-        
+
     return all_passed
 
 
@@ -106,7 +106,7 @@ def test_strategic_zero_declaration():
     """Test strategic zero declaration with different hand strengths"""
     print("\n\nTesting Strategic Zero Declarations...")
     print("-" * 50)
-    
+
     test_hands = [
         {
             'name': 'Very weak hand (no pieces > 6)',
@@ -136,13 +136,13 @@ def test_strategic_zero_declaration():
             'expected_declaration': 2  # Should declare at least 2
         }
     ]
-    
+
     all_passed = True
-    
+
     for test in test_hands:
         print(f"\n{test['name']}:")
         print(f"  Hand: {test['hand'][:4]}...")  # Show first 4 pieces
-        
+
         result = run_declaration_test(
             hand_specs=test['hand'],
             position=1,
@@ -150,15 +150,15 @@ def test_strategic_zero_declaration():
             expected_min=test['expected_declaration'],
             expected_max=test['expected_declaration'] + 2
         )
-        
+
         print(f"  AI declared: {result['declaration']} (expected ~{test['expected_declaration']})")
-        
+
         if result['declaration'] >= test['expected_declaration']:
             print("  ✓ PASSED - Declaration matches hand strength")
         else:
             print(f"  ✗ FAILED - Under-declared with this hand")
             all_passed = False
-            
+
     return all_passed
 
 
@@ -166,16 +166,16 @@ if __name__ == "__main__":
     print("="*60)
     print("EDGE CASE TEST: All Zero Declarations")
     print("="*60)
-    
+
     # Run tests
     test1_passed = test_all_zero_declarations()
     test2_passed = test_strategic_zero_declaration()
-    
+
     # Summary
     print("\n" + "="*60)
     print("TEST SUMMARY")
     print("="*60)
-    
+
     if test1_passed and test2_passed:
         print("✓ ALL TESTS PASSED")
         exit(0)

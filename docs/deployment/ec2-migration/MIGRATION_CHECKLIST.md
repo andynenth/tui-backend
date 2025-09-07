@@ -105,7 +105,7 @@
 - [ ] Monitor EC2 for 24-48 hours
 - [ ] Confirm stable operation
 - [ ] Final ECS backup (if needed)
-- [ ] Stop ECS service: 
+- [ ] Stop ECS service:
   ```bash
   aws ecs update-service --cluster liap-tui-cluster --service liap-tui-service --desired-count 0
   ```
@@ -153,8 +153,8 @@ If issues occur:
 
 ---
 
-**Migration Started**: August 13, 2025  
-**Migration Completed**: August 14, 2025  
+**Migration Started**: August 13, 2025
+**Migration Completed**: August 14, 2025
 **Performed By**: Andy (with Claude)
 
 ---

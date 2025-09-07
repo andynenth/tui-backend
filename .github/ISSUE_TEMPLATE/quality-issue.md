@@ -11,12 +11,12 @@ assignees: ''
 
 ### File(s) Affected
 <!-- List the files with quality issues -->
-- 
+-
 
 ### Issue Category
 <!-- Check all that apply -->
 - [ ] Readability
-- [ ] Maintainability  
+- [ ] Maintainability
 - [ ] Reusability
 - [ ] Testability
 - [ ] Performance
@@ -46,7 +46,7 @@ assignees: ''
 
 ### Impact
 <!-- What problems does this cause? -->
-- 
+-
 
 ### Checklist
 - [ ] I've checked the CODE_QUALITY_CHECKLIST.md

@@ -37,7 +37,7 @@ def create_test_pieces():
 def test_scenario_1_combo_available():
     """Test that starter chooses combo when available."""
     print("\n=== Test 1: Starter with Combo Available ===")
-    
+
     pieces = create_test_pieces()
     hand = [
         pieces['general_red'],    # 14 - opener
@@ -47,7 +47,7 @@ def test_scenario_1_combo_available():
         pieces['cannon_red'],      # 4
         pieces['soldier_black'],   # 1
     ]
-    
+
     # Create context - starter setting piece count
     context = TurnPlayContext(
         my_name="Bot_1",
@@ -67,7 +67,7 @@ def test_scenario_1_combo_available():
             "Bot_4": {"captured": 0, "declared": 1}
         }
     )
-    
+
     # Create plan with combo
     plan = StrategicPlan(
         target_remaining=2,
@@ -85,34 +85,34 @@ def test_scenario_1_combo_available():
         main_plan_size=4,  # 2 openers + 1 combo (2 pieces)
         plan_impossible=False
     )
-    
+
     # Get constraints
     constraints = get_overcapture_constraints(context)
-    
+
     # Test new function
     piece_count, combo_to_play = get_optimal_piece_count_for_starter(
         plan, constraints, context, hand
     )
-    
+
     print(f"Piece count chosen: {piece_count}")
     if combo_to_play:
         print(f"Combo selected: PAIR of {[p.name for p in combo_to_play]}")
     else:
         print("No combo pre-selected")
-    
+
     # Verify it chose the combo
     assert piece_count == 2, f"Expected 2 pieces for PAIR, got {piece_count}"
     assert combo_to_play is not None, "Expected PAIR combo to be selected"
     assert len(combo_to_play) == 2, "Expected 2-piece combo"
     assert all(p.name == 'HORSE' for p in combo_to_play), "Expected HORSE pair"
-    
+
     print("✅ Test 1 PASSED: Starter correctly chose combo over singles")
 
 
 def test_scenario_2_critical_urgency():
     """Test that critical urgency finds strongest combo."""
     print("\n=== Test 2: Critical Urgency ===")
-    
+
     pieces = create_test_pieces()
     hand = [
         pieces['elephant_red'],    # 10
@@ -122,7 +122,7 @@ def test_scenario_2_critical_urgency():
         pieces['horse_red'],       # 6
         pieces['horse_black'],     # 5  - PAIR worth 11
     ]
-    
+
     context = TurnPlayContext(
         my_name="Bot_2",
         my_hand=hand,
@@ -141,7 +141,7 @@ def test_scenario_2_critical_urgency():
             "Bot_4": {"captured": 1, "declared": 1}
         }
     )
-    
+
     plan = StrategicPlan(
         target_remaining=3,
         valid_combos=[
@@ -160,29 +160,29 @@ def test_scenario_2_critical_urgency():
         main_plan_size=2,
         plan_impossible=False
     )
-    
+
     constraints = get_overcapture_constraints(context)
     piece_count, combo_to_play = get_optimal_piece_count_for_starter(
         plan, constraints, context, hand
     )
-    
+
     print(f"Piece count chosen: {piece_count}")
     if combo_to_play:
         total_value = sum(p.point for p in combo_to_play)
         print(f"Combo selected: {[f'{p.name}({p.point})' for p in combo_to_play]} = {total_value} pts")
-    
+
     # Should choose strongest combo (ELEPHANT pair = 19)
     assert piece_count == 2, f"Expected 2 pieces for PAIR, got {piece_count}"
     assert combo_to_play is not None, "Expected combo to be selected"
     assert sum(p.point for p in combo_to_play) == 19, "Expected ELEPHANT pair (19 pts)"
-    
+
     print("✅ Test 2 PASSED: Critical urgency chose strongest combo")
 
 
 def test_scenario_3_no_combos():
     """Test strategic count selection when no combos available."""
     print("\n=== Test 3: No Combos Available ===")
-    
+
     pieces = create_test_pieces()
     hand = [
         pieces['general_red'],     # 14 - opener
@@ -192,7 +192,7 @@ def test_scenario_3_no_combos():
         pieces['cannon_red'],      # 3
         pieces['soldier_black'],   # 1
     ]
-    
+
     context = TurnPlayContext(
         my_name="Bot_3",
         my_hand=hand,
@@ -211,7 +211,7 @@ def test_scenario_3_no_combos():
             "Bot_4": {"captured": 0, "declared": 2}
         }
     )
-    
+
     plan = StrategicPlan(
         target_remaining=3,
         valid_combos=[],  # No combos!
@@ -224,26 +224,26 @@ def test_scenario_3_no_combos():
         main_plan_size=2,  # Just 2 openers
         plan_impossible=False
     )
-    
+
     constraints = get_overcapture_constraints(context)
     piece_count, combo_to_play = get_optimal_piece_count_for_starter(
         plan, constraints, context, hand
     )
-    
+
     print(f"Piece count chosen: {piece_count}")
     print(f"Combo selected: {combo_to_play}")
-    
+
     # With high urgency and 2 openers, should choose 2
     assert piece_count == 2, f"Expected 2 pieces with high urgency, got {piece_count}"
     assert combo_to_play is None, "Expected no combo (singles play)"
-    
+
     print("✅ Test 3 PASSED: High urgency with openers chose 2 pieces")
 
 
 def test_scenario_4_at_target():
     """Test that bot at target always plays 1 piece."""
     print("\n=== Test 4: Already At Target ===")
-    
+
     pieces = create_test_pieces()
     hand = [
         pieces['general_red'],
@@ -251,7 +251,7 @@ def test_scenario_4_at_target():
         pieces['horse_red'],
         pieces['horse_black'],
     ]
-    
+
     context = TurnPlayContext(
         my_name="Bot_4",
         my_hand=hand,
@@ -270,7 +270,7 @@ def test_scenario_4_at_target():
             "Bot_4": {"captured": 2, "declared": 2}
         }
     )
-    
+
     plan = StrategicPlan(
         target_remaining=0,  # At target
         valid_combos=[("PAIR", [pieces['horse_red'], pieces['horse_black']])],
@@ -283,19 +283,19 @@ def test_scenario_4_at_target():
         main_plan_size=0,
         plan_impossible=False
     )
-    
+
     constraints = get_overcapture_constraints(context)
     piece_count, combo_to_play = get_optimal_piece_count_for_starter(
         plan, constraints, context, hand
     )
-    
+
     print(f"Piece count chosen: {piece_count}")
     print(f"Combo selected: {combo_to_play}")
-    
+
     # At target should always play 1
     assert piece_count == 1, f"Expected 1 piece at target, got {piece_count}"
     assert combo_to_play is None, "Expected no combo at target"
-    
+
     print("✅ Test 4 PASSED: At target correctly chose 1 piece")
 
 
@@ -303,12 +303,12 @@ def main():
     """Run all tests."""
     print("Testing Starter Strategy Improvements...")
     print("=" * 50)
-    
+
     test_scenario_1_combo_available()
     test_scenario_2_critical_urgency()
     test_scenario_3_no_combos()
     test_scenario_4_at_target()
-    
+
     print("\n" + "=" * 50)
     print("🎉 All tests passed! Starter strategy improvements working correctly.")
     print("\nKey improvements verified:")

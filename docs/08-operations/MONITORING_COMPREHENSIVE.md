@@ -67,24 +67,24 @@ Thread-safe metrics collection with sliding window analysis.
 class MetricsCollector:
     def __init__(self, window_size_minutes: int = 60):
         self.window_size = timedelta(minutes=window_size_minutes)
-        
+
         # Metric storage
         self.response_times = defaultdict(lambda: deque())
         self.error_counts = defaultdict(int)
         self.request_counts = defaultdict(int)
         self.cache_metrics = defaultdict(lambda: {"hits": 0, "misses": 0})
-        
+
     def record_request(self, endpoint: str, method: str, status_code: int, duration_ms: float):
         """Record API request metrics"""
         timestamp = datetime.utcnow()
-        
+
         # Store response time
         self.response_times[endpoint].append({
             "timestamp": timestamp,
             "duration_ms": duration_ms,
             "status_code": status_code
         })
-        
+
         # Update counters
         self.request_counts[endpoint] += 1
         if status_code >= 400:
@@ -105,7 +105,7 @@ class HealthMonitor:
             "disk": self.check_disk_space,
             "game_engine": self.check_game_engine
         }
-        
+
     async def get_health_status(self) -> Dict[str, Any]:
         """Comprehensive health check"""
         results = {}
@@ -114,7 +114,7 @@ class HealthMonitor:
                 results[name] = await check_func()
             except Exception as e:
                 results[name] = {"status": "unhealthy", "error": str(e)}
-                
+
         overall_status = self._calculate_overall_status(results)
         return {
             "status": overall_status,
@@ -156,9 +156,9 @@ Track every API request with detailed timing and status:
 @app.middleware("http")
 async def monitor_requests(request: Request, call_next):
     start_time = time.time()
-    
+
     response = await call_next(request)
-    
+
     duration_ms = (time.time() - start_time) * 1000
     metrics_collector.record_request(
         endpoint=str(request.url.path),
@@ -166,7 +166,7 @@ async def monitor_requests(request: Request, call_next):
         status_code=response.status_code,
         duration_ms=duration_ms
     )
-    
+
     return response
 ```
 
@@ -183,7 +183,7 @@ def record_game_event(event_type: str, room_id: str, data: Dict):
         "round_completed": lambda: record_histogram("round_duration", data.get("duration")),
         "game_ended": lambda: increment_counter("games_completed")
     }
-    
+
     if event_type in metrics:
         metrics[event_type]()
 ```
@@ -198,14 +198,14 @@ class WebSocketMetrics:
         self.active_connections = 0
         self.message_counts = defaultdict(int)
         self.connection_durations = []
-        
+
     def on_connect(self, client_id: str):
         self.active_connections += 1
         self.connection_start[client_id] = time.time()
-        
+
     def on_message(self, event_type: str):
         self.message_counts[event_type] += 1
-        
+
     def on_disconnect(self, client_id: str):
         self.active_connections -= 1
         duration = time.time() - self.connection_start.pop(client_id, 0)
@@ -283,7 +283,7 @@ Real-time performance assessment:
 ```python
 def calculate_health_status(metrics: Dict) -> str:
     """Determine overall health based on metrics"""
-    
+
     # Critical checks
     if metrics["error_rate"] > 0.05:  # >5% errors
         return "unhealthy"
@@ -291,7 +291,7 @@ def calculate_health_status(metrics: Dict) -> str:
         return "unhealthy"
     if metrics["memory_usage"] > 0.90:  # >90% memory
         return "unhealthy"
-        
+
     # Warning checks
     if metrics["error_rate"] > 0.02:  # >2% errors
         return "degraded"
@@ -299,7 +299,7 @@ def calculate_health_status(metrics: Dict) -> str:
         return "degraded"
     if metrics["memory_usage"] > 0.75:  # >75% memory
         return "degraded"
-        
+
     return "healthy"
 ```
 
@@ -314,7 +314,7 @@ def calculate_percentiles(times: List[float]) -> Dict[str, float]:
     """Calculate response time percentiles"""
     if not times:
         return {"p50": 0, "p95": 0, "p99": 0}
-        
+
     sorted_times = sorted(times)
     return {
         "p50": sorted_times[len(times) // 2],
@@ -353,7 +353,7 @@ class PlayHistoryMetrics:
                 f"Large play history response: {response_size} bytes",
                 extra={"room_id": room_id, "rounds": total_rounds}
             )
-            
+
         # Alert on slow builds
         if build_time_ms > 1000:  # 1 second
             create_alert(
@@ -381,12 +381,12 @@ ALERT_RULES = {
         "cooldown": 300  # 5 minutes
     },
     "very_slow_response": {
-        "metric": "p95_response_time", 
+        "metric": "p95_response_time",
         "threshold": 5000,  # 5 seconds
         "severity": "critical",
         "cooldown": 600  # 10 minutes
     },
-    
+
     # Error rate alerts
     "elevated_errors": {
         "metric": "error_rate",
@@ -400,7 +400,7 @@ ALERT_RULES = {
         "severity": "critical",
         "cooldown": 600
     },
-    
+
     # Resource alerts
     "high_memory": {
         "metric": "memory_usage_percent",
@@ -423,19 +423,19 @@ ALERT_RULES = {
 class AlertDelivery:
     async def send_alert(self, alert: Alert):
         """Send alert through configured channels"""
-        
+
         # Log all alerts
         logger.warning(f"Alert: {alert.message}", extra=alert.to_dict())
-        
+
         # Critical alerts
         if alert.severity == "critical":
             await self.send_pagerduty(alert)
             await self.send_slack(alert, channel="#alerts-critical")
-            
+
         # Warning alerts
         elif alert.severity == "warning":
             await self.send_slack(alert, channel="#alerts-warning")
-            
+
         # Store in alert history
         self.alert_history.append(alert)
 ```
@@ -451,16 +451,16 @@ class PlayerActivityMonitor:
     def __init__(self):
         self.player_sessions = {}
         self.game_participation = defaultdict(list)
-        
+
     def track_player_action(self, player_id: str, action: str, metadata: Dict):
         """Track individual player actions"""
-        
+
         self.player_sessions[player_id].append({
             "timestamp": datetime.utcnow(),
             "action": action,
             "metadata": metadata
         })
-        
+
         # Track key metrics
         if action == "game_joined":
             self.increment_daily_active_users()
@@ -488,15 +488,15 @@ All game events stored for replay and analysis:
 class EventStore:
     def __init__(self, db_path: str = "game_events.db"):
         self.db_path = db_path
-        
+
     def store_event(self, event: GameEvent):
         """Store game event with metadata"""
-        
+
         with sqlite3.connect(self.db_path) as conn:
             cursor = conn.cursor()
             cursor.execute("""
                 INSERT INTO events (
-                    event_id, room_id, event_type, 
+                    event_id, room_id, event_type,
                     player_id, data, timestamp
                 ) VALUES (?, ?, ?, ?, ?, ?)
             """, (
@@ -635,7 +635,7 @@ metrics:
 class EC2HealthMonitor:
     async def check_ec2_health(self):
         """EC2-specific health checks"""
-        
+
         return {
             "instance_health": await self.check_instance_status(),
             "load_balancer": await self.check_alb_health(),
@@ -750,7 +750,7 @@ scrape_configs:
     static_configs:
       - targets: ['localhost:8000']
     metrics_path: '/api/metrics/prometheus'
-    
+
   - job_name: 'node-exporter'
     static_configs:
       - targets: ['localhost:9100']
@@ -780,7 +780,7 @@ groups:
         annotations:
           summary: "High error rate detected"
           description: "Error rate is {{ $value }} (threshold: 0.05)"
-          
+
       - alert: SlowAPIResponse
         expr: histogram_quantile(0.95, http_request_duration_seconds_bucket) > 2
         for: 10m
@@ -789,7 +789,7 @@ groups:
         annotations:
           summary: "Slow API responses detected"
           description: "P95 response time is {{ $value }}s (threshold: 2s)"
-          
+
       - alert: HighMemoryUsage
         expr: (node_memory_MemTotal_bytes - node_memory_MemAvailable_bytes) / node_memory_MemTotal_bytes > 0.85
         for: 5m
@@ -916,7 +916,7 @@ def group_alerts(alerts: List[Alert]) -> List[Alert]:
     for alert in alerts:
         key = f"{alert.type}:{alert.endpoint}"
         grouped[key].append(alert)
-    
+
     # Return only one alert per group
     return [merge_alerts(group) for group in grouped.values()]
 

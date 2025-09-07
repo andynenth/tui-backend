@@ -26,7 +26,7 @@ Example scenario:
 - Bot has pile room 3
 - Needs pieces ≥12 points (only ADVISOR_RED, GENERAL)
 - If bot doesn't have these specific high pieces, it may:
-  - Count lower pieces as "strong" 
+  - Count lower pieces as "strong"
   - Or find combos that aren't actually winnable
 
 #### 3. Competition Not Considered

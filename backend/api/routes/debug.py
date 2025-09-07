@@ -38,7 +38,9 @@ async def get_room_events(
     try:
         if event_type:
             # Get filtered events
-            events = await debug_db_service.get_events_by_type(room_id, event_type, limit)
+            events = await debug_db_service.get_events_by_type(
+                room_id, event_type, limit
+            )
         else:
             # Get all events
             events = await debug_db_service.get_room_events(room_id, limit)
@@ -268,7 +270,9 @@ async def get_turn_plays(
                 turns[turn_num]["winner"] = event.player_id
 
         # Get turn results to identify winners
-        result_events = await debug_db_service.get_events_by_type(room_id, "turn_result")
+        result_events = await debug_db_service.get_events_by_type(
+            room_id, "turn_result"
+        )
         for event in result_events:
             payload = event.payload
             turn_num = payload.get("turn_number", 0)
@@ -479,14 +483,14 @@ async def clear_logs():
 async def get_player_activity(room_id: str):
     """
     Get current player activity status for a room
-    
+
     Shows heartbeat status, last actions, and potential hang detection
     for all players in a room.
     """
     try:
         activities = await activity_tracker.get_room_activities(room_id)
         logger.info(f"Activities for room {room_id}: {activities}")
-        
+
         players_data = []
         for player_name, activity in activities.items():
             logger.info(f"Processing player {player_name}, activity: {activity}")
@@ -494,7 +498,7 @@ async def get_player_activity(room_id: str):
             now = time.time()
             heartbeat_lag = now - activity.last_heartbeat
             action_lag = now - activity.last_action
-            
+
             player_data = {
                 "name": player_name,
                 "status": "active" if activity.is_active() else "inactive",
@@ -503,10 +507,14 @@ async def get_player_activity(room_id: str):
                 "last_action_type": activity.last_action_type,
                 "heartbeat_lag": heartbeat_lag,
                 "action_lag": action_lag,
-                "connection_health": "good" if heartbeat_lag < 35 else "warning" if heartbeat_lag < 90 else "critical",
+                "connection_health": "good"
+                if heartbeat_lag < 35
+                else "warning"
+                if heartbeat_lag < 90
+                else "critical",
                 "recent_actions": list(activity.action_history)[-5:],  # Last 5 actions
             }
-            
+
             # Add client state if available
             if activity.heartbeat_data:
                 game_context = activity.heartbeat_data.get("game_context", {})
@@ -519,20 +527,20 @@ async def get_player_activity(room_id: str):
                 performance = activity.heartbeat_data.get("performance", {})
                 if performance:
                     player_data["client_memory_mb"] = performance.get("memory_mb")
-                
+
             players_data.append(player_data)
-            
+
         # Check for current hangs
         hang_detections = await activity_tracker.detect_hangs()
         room_hangs = [h for h in hang_detections if h.room_id == room_id]
-        
+
         return {
             "room_id": room_id,
             "timestamp": time.time(),
             "players": players_data,
             "hang_detections": [h.to_dict() for h in room_hangs],
         }
-        
+
     except Exception as e:
         logger.error(f"Error getting player activity for room {room_id}: {e}")
         raise HTTPException(status_code=500, detail=str(e))
@@ -546,25 +554,23 @@ async def get_hang_diagnostics(
 ):
     """
     Get recent hang diagnostic snapshots
-    
+
     Returns detailed diagnostic information about detected hang situations,
     including client state, server state, and network conditions.
     """
     try:
         diagnostics = await activity_tracker.get_diagnostics(
-            limit=limit,
-            hang_type=hang_type,
-            player_id=player_id
+            limit=limit, hang_type=hang_type, player_id=player_id
         )
-        
+
         summary = await activity_tracker.get_hang_summary()
-        
+
         return {
             "total": len(diagnostics),
             "diagnostics": [d.to_dict() for d in diagnostics],
             "summary": summary,
         }
-        
+
     except Exception as e:
         logger.error(f"Error getting hang diagnostics: {e}")
         raise HTTPException(status_code=500, detail=str(e))
@@ -574,19 +580,19 @@ async def get_hang_diagnostics(
 async def activity_monitor_websocket(websocket: WebSocket):
     """
     Real-time activity monitoring WebSocket
-    
+
     Provides live updates on player activity, hang detections,
     and system health metrics.
     """
     await websocket.accept()
-    
+
     try:
         while True:
             # Gather current statistics
             all_activities = {}
             active_count = 0
             inactive_count = 0
-            
+
             # Get all activities across all rooms
             for room_id in list(activity_tracker.activities.keys()):
                 room_activities = await activity_tracker.get_room_activities(room_id)
@@ -596,30 +602,32 @@ async def activity_monitor_websocket(websocket: WebSocket):
                         active_count += 1
                     else:
                         inactive_count += 1
-                        
+
             # Check for active hangs
             active_hangs = await activity_tracker.detect_hangs()
-            
+
             # Count hang types
             hang_type_counts = {}
             for hang in active_hangs:
                 hang_type = hang.hang_type
                 hang_type_counts[hang_type] = hang_type_counts.get(hang_type, 0) + 1
-                
+
             # Send update
-            await websocket.send_json({
-                "type": "activity_update",
-                "timestamp": time.time(),
-                "active_players": active_count,
-                "inactive_players": inactive_count,
-                "active_hangs": len(active_hangs),
-                "hang_types": hang_type_counts,
-                "total_rooms": len(activity_tracker.activities),
-            })
-            
+            await websocket.send_json(
+                {
+                    "type": "activity_update",
+                    "timestamp": time.time(),
+                    "active_players": active_count,
+                    "inactive_players": inactive_count,
+                    "active_hangs": len(active_hangs),
+                    "hang_types": hang_type_counts,
+                    "total_rooms": len(activity_tracker.activities),
+                }
+            )
+
             # Wait 5 seconds before next update
             await asyncio.sleep(5)
-            
+
     except WebSocketDisconnect:
         logger.info("Activity monitor disconnected")
     except Exception as e:
@@ -629,42 +637,48 @@ async def activity_monitor_websocket(websocket: WebSocket):
 @router.get("/connection-timeline/{room_id}")
 async def get_connection_timeline(
     room_id: str,
-    player_name: Optional[str] = Query(None, description="Filter by player name")
+    player_name: Optional[str] = Query(None, description="Filter by player name"),
 ):
     """
     Get chronological timeline of all connection events for debugging
-    
+
     Shows complete timeline of disconnects, reconnects, bot takeovers, and control releases.
     """
     try:
         # Get all relevant event types
         event_types = [
-            "player_disconnected", "player_reconnected", "connection_lost",
-            "bot_takeover_scheduled", "bot_takeover_cancelled", 
-            "bot_takeover_activated", "bot_control_released",
-            "bot_control_failed_release", "human_action", "bot_action",
-            "action_blocked"
+            "player_disconnected",
+            "player_reconnected",
+            "connection_lost",
+            "bot_takeover_scheduled",
+            "bot_takeover_cancelled",
+            "bot_takeover_activated",
+            "bot_control_released",
+            "bot_control_failed_release",
+            "human_action",
+            "bot_action",
+            "action_blocked",
         ]
-        
+
         all_events = []
         for event_type in event_types:
             events = await debug_db_service.get_events_by_type(room_id, event_type)
             all_events.extend(events)
-        
+
         # Filter by player if specified
         if player_name:
             all_events = [e for e in all_events if e.player_id == player_name]
-        
+
         # Sort by timestamp
         all_events.sort(key=lambda x: x.timestamp)
-        
+
         # Build timeline with state tracking
         timeline = []
         player_states = {}  # Track each player's state
-        
+
         for event in all_events:
             player = event.player_id
-            
+
             # Update tracked state
             if event.event_type == "player_disconnected":
                 player_states[player] = "disconnected"
@@ -674,49 +688,59 @@ async def get_connection_timeline(
                 player_states[player] = "reconnecting"
             elif event.event_type == "bot_control_released":
                 player_states[player] = "human_controlled"
-            
-            timeline.append({
-                "timestamp": event.timestamp,
-                "human_time": time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(event.timestamp)),
-                "event_type": event.event_type,
-                "player": player,
-                "player_state": player_states.get(player, "unknown"),
-                "details": event.payload,
-                "sequence": event.sequence
-            })
-        
+
+            timeline.append(
+                {
+                    "timestamp": event.timestamp,
+                    "human_time": time.strftime(
+                        "%Y-%m-%d %H:%M:%S", time.localtime(event.timestamp)
+                    ),
+                    "event_type": event.event_type,
+                    "player": player,
+                    "player_state": player_states.get(player, "unknown"),
+                    "details": event.payload,
+                    "sequence": event.sequence,
+                }
+            )
+
         # Add time gaps
         for i in range(1, len(timeline)):
-            timeline[i]["seconds_since_previous"] = timeline[i]["timestamp"] - timeline[i-1]["timestamp"]
-        
+            timeline[i]["seconds_since_previous"] = (
+                timeline[i]["timestamp"] - timeline[i - 1]["timestamp"]
+            )
+
         # Identify issues
         issues = []
         for event in timeline:
             if event["event_type"] == "bot_control_failed_release":
-                issues.append({
-                    "severity": "CRITICAL",
-                    "timestamp": event["timestamp"],
-                    "issue": "Failed to release bot control",
-                    "player": event["player"],
-                    "details": event["details"]
-                })
+                issues.append(
+                    {
+                        "severity": "CRITICAL",
+                        "timestamp": event["timestamp"],
+                        "issue": "Failed to release bot control",
+                        "player": event["player"],
+                        "details": event["details"],
+                    }
+                )
             elif event["event_type"] == "action_blocked":
-                issues.append({
-                    "severity": "HIGH", 
-                    "timestamp": event["timestamp"],
-                    "issue": "Human action blocked by bot",
-                    "player": event["player"],
-                    "details": event["details"]
-                })
-        
+                issues.append(
+                    {
+                        "severity": "HIGH",
+                        "timestamp": event["timestamp"],
+                        "issue": "Human action blocked by bot",
+                        "player": event["player"],
+                        "details": event["details"],
+                    }
+                )
+
         return {
             "room_id": room_id,
             "timeline_events": len(timeline),
             "timeline": timeline,
             "issues_found": issues,
-            "player_states": player_states
+            "player_states": player_states,
         }
-        
+
     except Exception as e:
         logger.error(f"Error building connection timeline: {e}")
         raise HTTPException(status_code=500, detail=str(e))
@@ -726,24 +750,30 @@ async def get_connection_timeline(
 async def analyze_bot_control(room_id: str):
     """
     Analyze bot control patterns and issues
-    
+
     Provides statistics on bot takeovers, control releases, and potential problems.
     """
     try:
         # Get all bot-related events
         bot_events = []
-        for event_type in ["bot_takeover_scheduled", "bot_takeover_activated", 
-                          "bot_control_released", "bot_control_failed_release",
-                          "human_action", "bot_action", "action_blocked",
-                          "player_disconnected"]:
+        for event_type in [
+            "bot_takeover_scheduled",
+            "bot_takeover_activated",
+            "bot_control_released",
+            "bot_control_failed_release",
+            "human_action",
+            "bot_action",
+            "action_blocked",
+            "player_disconnected",
+        ]:
             events = await debug_db_service.get_events_by_type(room_id, event_type)
             bot_events.extend(events)
-        
+
         bot_events.sort(key=lambda x: x.timestamp)
-        
+
         # Analyze patterns
         players_analysis = {}
-        
+
         for event in bot_events:
             player = event.player_id
             if player not in players_analysis:
@@ -755,26 +785,29 @@ async def analyze_bot_control(room_id: str):
                     "human_actions": 0,
                     "bot_actions": 0,
                     "blocked_actions": 0,
-                    "takeover_events": []
+                    "takeover_events": [],
                 }
-            
+
             analysis = players_analysis[player]
-            
+
             if event.event_type == "player_disconnected":
                 analysis["total_disconnects"] += 1
             elif event.event_type == "bot_takeover_activated":
                 analysis["total_takeovers"] += 1
-                analysis["takeover_events"].append({
-                    "timestamp": event.timestamp,
-                    "duration": None  # Will calculate
-                })
+                analysis["takeover_events"].append(
+                    {"timestamp": event.timestamp, "duration": None}  # Will calculate
+                )
             elif event.event_type == "bot_control_released":
                 analysis["successful_releases"] += 1
                 # Calculate takeover duration
                 if analysis["takeover_events"]:
                     last_takeover = analysis["takeover_events"][-1]
-                    last_takeover["duration"] = event.timestamp - last_takeover["timestamp"]
-                    last_takeover["release_method"] = event.payload.get("method", "unknown")
+                    last_takeover["duration"] = (
+                        event.timestamp - last_takeover["timestamp"]
+                    )
+                    last_takeover["release_method"] = event.payload.get(
+                        "method", "unknown"
+                    )
             elif event.event_type == "bot_control_failed_release":
                 analysis["failed_releases"] += 1
             elif event.event_type == "human_action":
@@ -783,34 +816,45 @@ async def analyze_bot_control(room_id: str):
                 analysis["bot_actions"] += 1
             elif event.event_type == "action_blocked":
                 analysis["blocked_actions"] += 1
-        
+
         # Calculate summary statistics
         summary = {
             "total_players": len(players_analysis),
-            "total_disconnections": sum(p["total_disconnects"] for p in players_analysis.values()),
-            "total_takeovers": sum(p["total_takeovers"] for p in players_analysis.values()),
-            "total_failed_releases": sum(p["failed_releases"] for p in players_analysis.values()),
-            "total_blocked_actions": sum(p["blocked_actions"] for p in players_analysis.values()),
-            "average_takeover_duration": None
+            "total_disconnections": sum(
+                p["total_disconnects"] for p in players_analysis.values()
+            ),
+            "total_takeovers": sum(
+                p["total_takeovers"] for p in players_analysis.values()
+            ),
+            "total_failed_releases": sum(
+                p["failed_releases"] for p in players_analysis.values()
+            ),
+            "total_blocked_actions": sum(
+                p["blocked_actions"] for p in players_analysis.values()
+            ),
+            "average_takeover_duration": None,
         }
-        
+
         # Calculate average takeover duration
         all_durations = []
         for analysis in players_analysis.values():
             for takeover in analysis["takeover_events"]:
                 if takeover.get("duration"):
                     all_durations.append(takeover["duration"])
-        
+
         if all_durations:
-            summary["average_takeover_duration"] = sum(all_durations) / len(all_durations)
-        
+            summary["average_takeover_duration"] = sum(all_durations) / len(
+                all_durations
+            )
+
         return {
             "room_id": room_id,
             "summary": summary,
             "player_analysis": players_analysis,
-            "has_issues": summary["total_failed_releases"] > 0 or summary["total_blocked_actions"] > 0
+            "has_issues": summary["total_failed_releases"] > 0
+            or summary["total_blocked_actions"] > 0,
         }
-        
+
     except Exception as e:
         logger.error(f"Error analyzing bot control: {e}")
         raise HTTPException(status_code=500, detail=str(e))

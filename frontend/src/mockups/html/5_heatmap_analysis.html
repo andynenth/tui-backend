@@ -544,7 +544,7 @@
                     <h2 class="card-title">Declaration Success Rate by Position</h2>
                     <div class="info-icon" title="Success rate of achieving declared pile count based on starting position and declaration amount">?</div>
                 </div>
-                
+
                 <div class="heatmap-container">
                     <table class="heatmap-table">
                         <thead>
@@ -823,13 +823,13 @@
                 const tooltip = document.getElementById('tooltip');
                 const value = this.getAttribute('data-value') || this.textContent;
                 const rect = this.getBoundingClientRect();
-                
+
                 tooltip.textContent = `Success Rate: ${value}`;
                 tooltip.style.left = rect.left + (rect.width / 2) - (tooltip.offsetWidth / 2) + 'px';
                 tooltip.style.top = rect.top - tooltip.offsetHeight - 10 + 'px';
                 tooltip.classList.add('show');
             });
-            
+
             cell.addEventListener('mouseleave', function() {
                 document.getElementById('tooltip').classList.remove('show');
             });
@@ -848,18 +848,18 @@
             select.addEventListener('change', function() {
                 console.log('Filter changed:', this.value);
                 // In a real app, this would update the heatmaps with filtered data
-                
+
                 // Simulate data update animation
                 document.querySelectorAll('.heatmap-table td:not(.row-label)').forEach(cell => {
                     const currentValue = parseInt(cell.textContent);
                     const newValue = currentValue + Math.floor(Math.random() * 10) - 5;
                     const clampedValue = Math.max(0, Math.min(100, newValue));
-                    
+
                     cell.style.opacity = '0.5';
                     setTimeout(() => {
                         cell.textContent = clampedValue + '%';
                         cell.style.opacity = '1';
-                        
+
                         // Update heat color based on new value
                         cell.className = '';
                         if (clampedValue >= 80) cell.classList.add('heat-high');
@@ -875,17 +875,17 @@
         // Export functionality
         function exportData() {
             console.log('Exporting analysis data...');
-            
+
             // Create a simple CSV representation
             let csv = 'Position,Declare 0,Declare 1,Declare 2,Declare 3\n';
             const rows = document.querySelectorAll('.heatmap-table tbody tr');
-            
+
             rows.forEach(row => {
                 const cells = row.querySelectorAll('td');
                 const rowData = Array.from(cells).map(cell => cell.textContent).join(',');
                 csv += rowData + '\n';
             });
-            
+
             // In a real app, this would download the CSV file
             const blob = new Blob([csv], { type: 'text/csv' });
             const url = window.URL.createObjectURL(blob);
@@ -894,13 +894,13 @@
             a.download = 'liap-tui-analysis.csv';
             a.click();
             window.URL.revokeObjectURL(url);
-            
+
             // Visual feedback
             const btn = document.querySelector('.export-btn');
             const originalText = btn.textContent;
             btn.textContent = '✓ Exported!';
             btn.style.background = 'linear-gradient(135deg, #22c55e 0%, #16a34a 100%)';
-            
+
             setTimeout(() => {
                 btn.textContent = originalText;
                 btn.style.background = '';

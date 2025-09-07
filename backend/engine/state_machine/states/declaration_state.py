@@ -166,7 +166,7 @@ class DeclarationState(GameState):
         self, player_name: str, value: int
     ) -> bool:
         """Check if the declaration value is valid according to game rules.
-        
+
         Returns:
             bool: True if valid, False if invalid
         """
@@ -174,7 +174,7 @@ class DeclarationState(GameState):
         player = self.state_machine.game.get_player(player_name)
         if not player:
             return False
-            
+
         # Rule 1: Check zero streak rule
         # If player has declared 0 for 2 consecutive rounds, they must declare at least 1
         if player.zero_declares_in_a_row >= 2 and value == 0:
@@ -182,12 +182,12 @@ class DeclarationState(GameState):
                 f"Player {player_name} must declare at least 1 (zero streak rule)"
             )
             return False
-            
+
         # Rule 2: Check last player rule
         # Last player cannot make total declarations equal to 8
         order = self.phase_data["declaration_order"]
         current_index = self.phase_data["current_declarer_index"]
-        
+
         if current_index == len(order) - 1:  # This is the last player
             current_total = self.phase_data["declaration_total"]
             if current_total + value == 8:
@@ -195,7 +195,7 @@ class DeclarationState(GameState):
                     f"Player {player_name} cannot declare {value} (would make total = 8)"
                 )
                 return False
-                
+
         return True
 
     async def check_transition_conditions(self) -> Optional[GamePhase]:

@@ -33,25 +33,25 @@ echo -e "${GREEN}🔄 Deploying on EC2...${NC}"
 ssh -i ${KEY_PATH} ${EC2_USER}@${EC2_HOST} << 'ENDSSH'
   # Load Docker image
   docker load < liap-tui-latest.tar.gz
-  
+
   # Create data directory if not exists
   mkdir -p /home/ubuntu/liap-tui-data
-  
+
   # Create logs directory with proper permissions
   mkdir -p /home/ubuntu/logs
   chmod 755 /home/ubuntu/logs
-  
+
   # Stop and remove existing container
   docker-compose down || true
   docker stop liap-tui-game || true
   docker rm liap-tui-game || true
-  
+
   # Start new container
   docker-compose up -d
-  
+
   # Cleanup
   rm liap-tui-latest.tar.gz
-  
+
   echo "✅ Deployment complete!"
 ENDSSH
 

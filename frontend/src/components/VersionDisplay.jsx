@@ -4,7 +4,7 @@ import React from 'react';
 
 /**
  * VersionDisplay Component
- * 
+ *
  * Displays the application version number.
  * Version is injected at build time from package.json
  */

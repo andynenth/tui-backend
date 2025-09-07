@@ -24,7 +24,7 @@ Multiple critical issues occur when refreshing the page during an active game:
 🎨 Declaration player data: Bot 2 avatar_color: null is_bot: true
 
 // After refresh:
-🎨 Declaration player data: TestPlayer avatar_color: null is_bot: false  
+🎨 Declaration player data: TestPlayer avatar_color: null is_bot: false
 🎨 Declaration player data: Bot 2 avatar_color: null is_bot: false  // WRONG!
 ```
 
@@ -98,7 +98,7 @@ if player:
     # Store state for ALL players, not just humans
     player.original_is_bot = player.is_bot
     player.original_avatar_color = getattr(player, 'avatar_color', None)
-    
+
     if not player.is_bot:  # Only convert humans to bots
         player.is_bot = True
         player.is_connected = False
@@ -111,11 +111,11 @@ if player:
     # Restore original bot state
     if hasattr(player, 'original_is_bot'):
         player.is_bot = player.original_is_bot
-    
+
     # Restore avatar color for ALL players
     if hasattr(player, 'original_avatar_color'):
         player.avatar_color = player.original_avatar_color
-    
+
     # Handle human reconnection
     if player.name == player_name and not player.original_is_bot:
         player.is_connected = True

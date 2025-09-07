@@ -116,6 +116,6 @@ assert result[0].name == "SOLDIER"
 
 This is the #1 issue to fix because:
 1. It's a core strategic feature
-2. It affects game balance significantly  
+2. It affects game balance significantly
 3. Players expect this to work
 4. The fix should be straightforward once we identify the timing issue

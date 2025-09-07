@@ -25,18 +25,18 @@ from backend.engine.turn_resolution import TurnPlay, TurnResult, resolve_turn
 
 class RoundRecreator:
     """Recreates specific game rounds for analysis"""
-    
+
     def __init__(self):
         self.players = []
         self.game = None
         self.bot_manager = None
-        
+
     def setup_round_1(self):
         """Set up the exact initial conditions from Round 1"""
         print("\n" + "="*80)
         print("RECREATING ROUND 1 - EXACT CONDITIONS FROM GAME HISTORY")
         print("="*80)
-        
+
         # Create players
         self.players = [
             Player("Alexanderium", is_bot=False),
@@ -44,11 +44,11 @@ class RoundRecreator:
             Player("Bot 3", is_bot=True),
             Player("Bot 4", is_bot=True)
         ]
-        
+
         # Create game instance
         self.game = Game(players=self.players)
         self.bot_manager = BotManager()
-        
+
         # Set up exact initial hands from game history - NEW HANDS DATA
         hands = {
             "Alexanderium": [
@@ -68,23 +68,23 @@ class RoundRecreator:
                 "HORSE_RED", "ADVISOR_BLACK", "SOLDIER_RED", "SOLDIER_RED"
             ]
         }
-        
+
         # Convert to Piece objects and set hands
         for player in self.players:
             piece_names = hands[player.name]
             player.hand = [Piece(name) for name in piece_names]
             print(f"\n{player.name} initial hand:")
             print(f"  {[f'{p.name}({p.point})' for p in player.hand]}")
-    
+
     def test_declarations(self):
         """Test the declaration phase with debug output"""
         print("\n" + "="*60)
         print("DECLARATION PHASE ANALYSIS")
         print("="*60)
-        
+
         # Test each bot's declaration decision
         previous_declarations = []
-        
+
         for i, player in enumerate(self.players):
             if player.name == "Alexanderium":
                 # Human player declared 3
@@ -92,16 +92,16 @@ class RoundRecreator:
                 previous_declarations.append(declared)
                 print(f"\n{player.name} (Human) declared: {declared}")
                 continue
-            
+
             # Bot declaration
             print(f"\n{'='*40}")
             print(f"ANALYZING {player.name.upper()} DECLARATION")
             print(f"{'='*40}")
-            
+
             # Set bot name in pieces for logging
             for piece in player.hand:
                 piece._bot_name = player.name
-            
+
             # Call strategic declaration with debug output
             declared = choose_declare_strategic(
                 hand=player.hand,
@@ -111,20 +111,20 @@ class RoundRecreator:
                 must_declare_nonzero=False,
                 verbose=True
             )
-            
+
             previous_declarations.append(declared)
             player.declared = declared
-            
+
             print(f"\n🎯 {player.name} FINAL DECLARATION: {declared}")
             print(f"Previous declarations so far: {previous_declarations}")
-    
-    def test_turn_play(self, turn_number: int, starter_name: str, 
+
+    def test_turn_play(self, turn_number: int, starter_name: str,
                       required_count: int, expected_plays: Dict[str, List[str]]):
         """Test a specific turn with debug output"""
         print(f"\n" + "="*80)
         print(f"TURN {turn_number} ANALYSIS (Starter: {starter_name}, Required: {required_count} pieces)")
         print(f"="*80)
-        
+
         # Set up game state for this turn
         # In the actual game:
         # Turn 1: Alexanderium plays straight, bots forfeit -> Alexanderium wins
@@ -135,7 +135,7 @@ class RoundRecreator:
             "Bot 3": 1 if turn_number >= 3 else 0,  # Won Turn 2 with GENERAL
             "Bot 4": 0
         }
-        
+
         # Check if any bot is at target
         if turn_number >= 3:
             for bot_name, captured in pile_counts.items():
@@ -145,37 +145,37 @@ class RoundRecreator:
                         if p.name == bot_name and hasattr(p, 'declared'):
                             if captured == p.declared:
                                 print(f"\n⚠️ {bot_name} is at target ({captured}/{p.declared}) - should avoid overcapture!")
-        
+
         # Test each bot's play decision
         for player in self.players:
             if not player.is_bot:
                 continue
-                
+
             print(f"\n{'='*40}")
             print(f"ANALYZING {player.name.upper()} PLAY DECISION")
             print(f"{'='*40}")
-            
+
             # Get current hand by removing all previously played pieces
             played_piece_names = expected_plays.get(player.name, [])
             current_hand = []
             played_count = {}
-            
+
             # Count how many of each piece type were played
             for piece_name in played_piece_names:
                 # Convert from full name (e.g., "CHARIOT_RED") to short name (e.g., "CHARIOT")
                 short_name = piece_name.split('_')[0]
                 played_count[short_name] = played_count.get(short_name, 0) + 1
-            
+
             # Remove played pieces from original hand
             for piece in player.hand:
                 if played_count.get(piece.name, 0) > 0:
                     played_count[piece.name] -= 1
                 else:
                     current_hand.append(piece)
-            
+
             print(f"Pieces played so far: {played_piece_names}")
             print(f"Current hand: {[f'{p.name}({p.point})' for p in current_hand]}")
-            
+
             # Create context for strategic play
             context = TurnPlayContext(
                 my_name=player.name,
@@ -195,28 +195,28 @@ class RoundRecreator:
                     "Bot 4": {"captured": pile_counts["Bot 4"], "declared": player.declared if player.name == "Bot 4" else 1}
                 }
             )
-            
+
             # Call strategic play with debug output
             pieces_to_play = choose_strategic_play(current_hand, context)
-    
+
     def run_full_analysis(self):
         """Run the complete Round 1 recreation"""
         self.setup_round_1()
         self.test_declarations()
-        
+
         # Track cumulative pieces played by each bot
         played_pieces = {
             "Bot 2": [],
             "Bot 3": [],
             "Bot 4": []
         }
-        
+
         # Turn 1: Alexanderium starts, plays 3 pieces
         print("\n" + "#"*80)
         print("TURN 1: Alexanderium plays STRAIGHT (GEN-ADV-ELE)")
         # Note: We're testing what bots SHOULD play, not what they historically played
         self.test_turn_play(1, "Alexanderium", 3, played_pieces)
-        
+
         # Now add what the bots actually played in Turn 1 based on the new strategy
         # (This would normally come from the actual game, but for testing we'll use expected values)
         # Bot 2 should dispose: CHARIOT(8), CHARIOT(7), CANNON(4)
@@ -225,17 +225,17 @@ class RoundRecreator:
         played_pieces["Bot 3"].extend(["ELEPHANT_RED", "CANNON_BLACK", "CHARIOT_BLACK"])
         # Bot 4 should dispose: ADVISOR(11), ELEPHANT(9), CHARIOT(7)
         played_pieces["Bot 4"].extend(["ADVISOR_BLACK", "CANNON_BLACK", "CHARIOT_BLACK"])
-        
+
         # Turn 2: Bot 2 starts (won Turn 1), plays 1 piece
         print("\n" + "#"*80)
         print("TURN 2: Bot 2 starts, plays singles")
         self.test_turn_play(2, "Bot 2", 1, played_pieces)
-        
+
         # Add what was played in Turn 2
         played_pieces["Bot 2"].append("SOLDIER_RED")
         played_pieces["Bot 3"].append("CANNON_RED")  # Weak piece disposal
         played_pieces["Bot 4"].append("SOLDIER_BLACK")  # Weak piece disposal
-        
+
         # Turn 3: Bot 3 starts (won Turn 2), plays 1 piece - CRITICAL!
         print("\n" + "#"*80)
         print("TURN 3: Bot 3 starts (AT TARGET!) - CRITICAL MOMENT")
@@ -245,7 +245,7 @@ class RoundRecreator:
 if __name__ == "__main__":
     recreator = RoundRecreator()
     recreator.run_full_analysis()
-    
+
     print("\n" + "="*80)
     print("ROUND 1 RECREATION COMPLETE")
     print("="*80)

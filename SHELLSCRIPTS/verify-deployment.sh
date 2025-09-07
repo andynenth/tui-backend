@@ -22,9 +22,9 @@ check_endpoint() {
     local endpoint=$1
     local expected_status=$2
     local description=$3
-    
+
     response=$(curl -s -o /dev/null -w "%{http_code}" -k "$SERVER_URL$endpoint")
-    
+
     if [ "$response" -eq "$expected_status" ]; then
         echo -e "${GREEN}✓${NC} $description ($endpoint) - Status: $response"
         return 0
@@ -38,9 +38,9 @@ check_endpoint() {
 check_json_endpoint() {
     local endpoint=$1
     local description=$2
-    
+
     response=$(curl -s -k "$SERVER_URL$endpoint")
-    
+
     if echo "$response" | jq . >/dev/null 2>&1; then
         echo -e "${GREEN}✓${NC} $description ($endpoint) - Valid JSON"
         echo "   Preview: $(echo "$response" | jq -c . | head -c 100)..."
@@ -60,9 +60,9 @@ test_websocket() {
     elif [[ "$SERVER_URL" == "https://"* ]]; then
         ws_url="wss://$(echo $SERVER_URL | cut -d'/' -f3)/ws/lobby"
     fi
-    
+
     echo -e "\n${YELLOW}Testing WebSocket connection...${NC}"
-    
+
     # Simple WebSocket test using curl (requires curl 7.86.0+)
     if command -v websocat &> /dev/null; then
         echo "test" | timeout 3 websocat -n1 "$ws_url" 2>/dev/null && \

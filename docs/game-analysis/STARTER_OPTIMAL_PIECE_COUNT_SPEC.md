@@ -51,14 +51,14 @@ if plan.urgency_level == "high":
         return (2, None)  # Play 2 for better odds
     else:
         return (1, None)  # Play strongest single
-        
+
 elif plan.urgency_level == "medium":
     # Balanced approach
     if plan.target_remaining >= 3 and len(hand) >= 4:
         return (2, None)  # Can afford 2-piece plays
     else:
         return (1, None)
-        
+
 else:  # "low" urgency
     # Conservative, save resources
     return (1, None)
@@ -130,7 +130,7 @@ if context.required_piece_count is None:  # We're setting the count
     required, combo_to_play = get_optimal_piece_count_for_starter(
         plan, constraints, context, context.my_hand
     )
-    
+
     if combo_to_play:
         return combo_to_play  # Direct return if combo selected
 ```

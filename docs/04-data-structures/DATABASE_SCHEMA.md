@@ -35,7 +35,7 @@ class EventStoreV2:
         # SQLite database with optimizations
         self.db_path = "/app/data/game_events.db"
         self.connection_pool = self._create_connection_pool()
-        
+
         # Performance optimizations
         self._execute_pragmas()
         self._create_indexes()
@@ -62,7 +62,7 @@ graph LR
     Server -->|In-Memory| GameState[Game State Cache]
     SQLite -->|Recovery| GameState
     SQLite -->|History API| Client
-    
+
     style SQLite fill:#90EE90
 ```
 
@@ -77,22 +77,22 @@ graph TB
         WS[WebSocket Handler]
         Cache[Redis Cache]
     end
-    
+
     subgraph "Data Layer"
         PG[(PostgreSQL)]
         Redis[(Redis)]
         S3[S3/Object Storage]
     end
-    
+
     API --> Cache
     WS --> Cache
     Cache --> Redis
-    
+
     API --> PG
     Cache -->|Write-through| PG
-    
+
     PG -->|Large Data| S3
-    
+
     style PG fill:#4169E1
     style Redis fill:#DC382D
     style S3 fill:#FF9900
@@ -121,16 +121,16 @@ CREATE TABLE players (
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
     last_seen TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
     is_active BOOLEAN DEFAULT true,
-    
+
     -- Statistics
     games_played INTEGER DEFAULT 0,
     games_won INTEGER DEFAULT 0,
     total_score INTEGER DEFAULT 0,
     highest_score INTEGER DEFAULT 0,
-    
+
     -- Settings
     settings JSONB DEFAULT '{}',
-    
+
     CONSTRAINT username_valid CHECK (username ~ '^[a-zA-Z0-9_-]{3,50}$')
 );
 
@@ -141,16 +141,16 @@ CREATE TABLE rooms (
     name VARCHAR(100) NOT NULL,
     created_by UUID REFERENCES players(id),
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-    
+
     -- Room settings
     is_public BOOLEAN DEFAULT true,
     max_players INTEGER DEFAULT 4,
     game_settings JSONB DEFAULT '{}',
-    
+
     -- Status
     status VARCHAR(20) DEFAULT 'waiting',
     current_game_id UUID,
-    
+
     CONSTRAINT status_valid CHECK (status IN ('waiting', 'playing', 'finished', 'abandoned'))
 );
 
@@ -160,21 +160,21 @@ CREATE TABLE games (
     room_id UUID REFERENCES rooms(id) ON DELETE CASCADE,
     started_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
     ended_at TIMESTAMP WITH TIME ZONE,
-    
+
     -- Game configuration
     winning_score INTEGER DEFAULT 50,
     max_rounds INTEGER DEFAULT 20,
     initial_multiplier INTEGER DEFAULT 1,
-    
+
     -- Current state
     current_round INTEGER DEFAULT 0,
     current_phase VARCHAR(20) DEFAULT 'NOT_STARTED',
     phase_data JSONB DEFAULT '{}',
-    
+
     -- Results
     winner_id UUID REFERENCES players(id),
     final_scores JSONB,
-    
+
     CONSTRAINT phase_valid CHECK (current_phase IN (
         'NOT_STARTED', 'PREPARATION', 'DECLARATION', 'TURN', 'SCORING', 'GAME_OVER'
     ))
@@ -185,17 +185,17 @@ CREATE TABLE game_players (
     game_id UUID REFERENCES games(id) ON DELETE CASCADE,
     player_id UUID REFERENCES players(id),
     position INTEGER NOT NULL CHECK (position BETWEEN 0 AND 3),
-    
+
     -- Player game state
     score INTEGER DEFAULT 0,
     is_active BOOLEAN DEFAULT true,
     is_bot BOOLEAN DEFAULT false,
-    
+
     -- Current round state
     pieces_in_hand JSONB DEFAULT '[]',
     declared_piles INTEGER,
     captured_piles INTEGER DEFAULT 0,
-    
+
     PRIMARY KEY (game_id, player_id),
     UNIQUE (game_id, position)
 );
@@ -207,14 +207,14 @@ CREATE TABLE rounds (
     round_number INTEGER NOT NULL,
     started_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
     ended_at TIMESTAMP WITH TIME ZONE,
-    
+
     -- Round configuration
     multiplier INTEGER DEFAULT 1,
     had_redeal BOOLEAN DEFAULT false,
-    
+
     -- Round results
     round_data JSONB NOT NULL,
-    
+
     UNIQUE (game_id, round_number)
 );
 
@@ -224,16 +224,16 @@ CREATE TABLE turns (
     round_id UUID REFERENCES rounds(id) ON DELETE CASCADE,
     turn_number INTEGER NOT NULL,
     timestamp TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-    
+
     -- Turn data
     leading_player_id UUID REFERENCES players(id),
     required_piece_count INTEGER,
-    
+
     -- Plays made this turn
     plays JSONB NOT NULL,
     winner_id UUID REFERENCES players(id),
     pile_count INTEGER,
-    
+
     UNIQUE (round_id, turn_number)
 );
 
@@ -246,7 +246,7 @@ CREATE TABLE player_actions (
     action_data JSONB NOT NULL,
     timestamp TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
     sequence_number INTEGER NOT NULL,
-    
+
     -- Indexing for fast queries
     INDEX idx_player_actions_game_id (game_id),
     INDEX idx_player_actions_player_id (player_id),
@@ -264,11 +264,11 @@ CREATE TABLE active_connections (
     room_id UUID REFERENCES rooms(id),
     connected_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
     last_heartbeat TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-    
+
     -- Connection metadata
     ip_address INET,
     user_agent TEXT,
-    
+
     INDEX idx_active_connections_player_id (player_id),
     INDEX idx_active_connections_room_id (room_id)
 );
@@ -280,11 +280,11 @@ CREATE TABLE player_sessions (
     token_hash VARCHAR(64) UNIQUE NOT NULL,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
     expires_at TIMESTAMP WITH TIME ZONE NOT NULL,
-    
+
     -- Session metadata
     ip_address INET,
     user_agent TEXT,
-    
+
     INDEX idx_player_sessions_token_hash (token_hash),
     INDEX idx_player_sessions_expires_at (expires_at)
 );
@@ -300,11 +300,11 @@ CREATE TABLE analytics_events (
     player_id UUID REFERENCES players(id),
     game_id UUID REFERENCES games(id),
     room_id UUID REFERENCES rooms(id),
-    
+
     -- Event data
     event_data JSONB NOT NULL,
     timestamp TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-    
+
     -- Partitioned by month for performance
     INDEX idx_analytics_events_timestamp (timestamp),
     INDEX idx_analytics_events_player_id (player_id)
@@ -324,18 +324,18 @@ erDiagram
     PLAYERS ||--o{ GAME_PLAYERS : plays
     PLAYERS ||--o{ ROOMS : creates
     PLAYERS ||--o{ PLAYER_ACTIONS : performs
-    
+
     ROOMS ||--o{ GAMES : hosts
-    
+
     GAMES ||--o{ GAME_PLAYERS : has
     GAMES ||--o{ ROUNDS : contains
     GAMES ||--o{ PLAYER_ACTIONS : logs
-    
+
     ROUNDS ||--o{ TURNS : consists_of
-    
+
     PLAYERS ||--o{ ACTIVE_CONNECTIONS : has
     PLAYERS ||--o{ PLAYER_SESSIONS : has
-    
+
     ROOMS ||--o{ ACTIVE_CONNECTIONS : contains
 ```
 
@@ -352,26 +352,26 @@ erDiagram
 
 ```sql
 -- Most common queries
-CREATE INDEX idx_game_players_player_games 
-    ON game_players(player_id, game_id) 
+CREATE INDEX idx_game_players_player_games
+    ON game_players(player_id, game_id)
     WHERE is_active = true;
 
-CREATE INDEX idx_games_active_rooms 
-    ON games(room_id) 
+CREATE INDEX idx_games_active_rooms
+    ON games(room_id)
     WHERE ended_at IS NULL;
 
-CREATE INDEX idx_player_actions_recent 
+CREATE INDEX idx_player_actions_recent
     ON player_actions(game_id, timestamp DESC);
 
 -- Full-text search on room names
-CREATE INDEX idx_rooms_name_search 
+CREATE INDEX idx_rooms_name_search
     ON rooms USING gin(to_tsvector('english', name));
 
 -- JSONB indexes for common queries
-CREATE INDEX idx_games_phase_data 
+CREATE INDEX idx_games_phase_data
     ON games USING gin(phase_data);
 
-CREATE INDEX idx_game_players_pieces 
+CREATE INDEX idx_game_players_pieces
     ON game_players USING gin(pieces_in_hand);
 ```
 
@@ -380,17 +380,17 @@ CREATE INDEX idx_game_players_pieces
 ```sql
 -- Materialized view for leaderboard
 CREATE MATERIALIZED VIEW player_leaderboard AS
-SELECT 
+SELECT
     p.id,
     p.username,
     p.display_name,
     p.games_won,
     p.games_played,
     p.highest_score,
-    CASE 
-        WHEN p.games_played > 0 
-        THEN p.games_won::float / p.games_played 
-        ELSE 0 
+    CASE
+        WHEN p.games_played > 0
+        THEN p.games_won::float / p.games_played
+        ELSE 0
     END as win_rate,
     RANK() OVER (ORDER BY p.games_won DESC) as wins_rank,
     RANK() OVER (ORDER BY p.highest_score DESC) as score_rank
@@ -414,7 +414,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 class DataMigrator:
     """Migrate from in-memory to persistent storage."""
-    
+
     async def migrate_active_games(
         self,
         room_manager: RoomManager,
@@ -431,14 +431,14 @@ class DataMigrator:
                 status='playing' if room.game_started else 'waiting'
             )
             db.add(db_room)
-            
+
             # Migrate game if active
             if room_id in room_manager.game_state_machines:
                 game_sm = room_manager.game_state_machines[room_id]
                 await self.migrate_game_state(game_sm, db_room, db)
-        
+
         await db.commit()
-    
+
     async def migrate_game_state(
         self,
         game_sm: GameStateMachine,
@@ -454,7 +454,7 @@ class DataMigrator:
             phase_data=self.serialize_phase_data(game_sm.current_state)
         )
         db.add(db_game)
-        
+
         # Migrate players
         for i, player in enumerate(game_sm.game.players):
             db_game_player = GamePlayer(
@@ -474,22 +474,22 @@ class DataMigrator:
 ```python
 class HybridStorage:
     """Support both in-memory and database storage."""
-    
+
     def __init__(self, db_session: AsyncSession):
         self.memory_store = {}
         self.db = db_session
         self.cache = Redis()
-    
+
     async def get_game_state(self, game_id: str) -> Optional[Dict]:
         # Check memory first
         if game_id in self.memory_store:
             return self.memory_store[game_id]
-        
+
         # Check cache
         cached = await self.cache.get(f"game:{game_id}")
         if cached:
             return json.loads(cached)
-        
+
         # Check database
         db_game = await self.db.get(Game, game_id)
         if db_game:
@@ -501,7 +501,7 @@ class HybridStorage:
                 json.dumps(state)
             )
             return state
-        
+
         return None
 ```
 
@@ -515,15 +515,15 @@ CACHE_KEYS = {
     # Game state - short TTL
     "game_state": "game:{game_id}:state",  # 5 minutes
     "game_players": "game:{game_id}:players",  # 5 minutes
-    
+
     # Room data - medium TTL
     "room_info": "room:{room_id}:info",  # 30 minutes
     "room_list": "rooms:public:list",  # 1 minute
-    
+
     # Player data - long TTL
     "player_stats": "player:{player_id}:stats",  # 1 hour
     "player_games": "player:{player_id}:games",  # 30 minutes
-    
+
     # Leaderboards - medium TTL
     "leaderboard_wins": "leaderboard:wins:top100",  # 15 minutes
     "leaderboard_score": "leaderboard:score:top100",  # 15 minutes
@@ -535,21 +535,21 @@ CACHE_KEYS = {
 ```python
 class CacheWarmer:
     """Preload frequently accessed data."""
-    
+
     async def warm_game_cache(self, game_id: str):
         """Load game data into cache."""
         # Get from database
         game = await self.db.get(Game, game_id)
         if not game:
             return
-        
+
         # Cache game state
         await self.cache.setex(
             f"game:{game_id}:state",
             300,
             json.dumps(self.serialize_game(game))
         )
-        
+
         # Cache player list
         players = await self.get_game_players(game_id)
         await self.cache.setex(
@@ -557,7 +557,7 @@ class CacheWarmer:
             300,
             json.dumps(players)
         )
-    
+
     async def warm_leaderboard_cache(self):
         """Update leaderboard caches."""
         # Get top players by wins
@@ -566,7 +566,7 @@ class CacheWarmer:
             .order_by(Player.games_won.desc())
             .limit(100)
         )
-        
+
         await self.cache.setex(
             "leaderboard:wins:top100",
             900,  # 15 minutes
@@ -594,7 +594,7 @@ CREATE POLICY players_update_policy ON players
 CREATE EXTENSION IF NOT EXISTS pgcrypto;
 
 -- Store sensitive data encrypted
-ALTER TABLE players 
+ALTER TABLE players
     ADD COLUMN email_encrypted BYTEA;
 
 -- Encrypt on insert/update

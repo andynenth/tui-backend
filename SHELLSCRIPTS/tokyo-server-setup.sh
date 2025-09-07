@@ -12,7 +12,7 @@ NC='\033[0m'
 echo -e "${GREEN}🗾 Tokyo Server Initial Setup${NC}"
 
 # Check if running with sudo
-if [ "$EUID" -ne 0 ]; then 
+if [ "$EUID" -ne 0 ]; then
     echo -e "${RED}Please run with sudo: sudo ./tokyo-server-setup.sh${NC}"
     exit 1
 fi
@@ -31,7 +31,7 @@ if ! command -v docker &> /dev/null; then
       tee /etc/apt/sources.list.d/docker.list > /dev/null
     apt-get update
     apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
-    
+
     # Add ubuntu user to docker group
     usermod -aG docker ubuntu
     echo -e "${GREEN}✅ Docker installed${NC}"

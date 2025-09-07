@@ -25,23 +25,23 @@ graph LR
             ESBuild[ESBuild<br/>Watch Mode]
             React[React App<br/>:3000]
         end
-        
+
         subgraph "Backend Dev"
             Uvicorn[Uvicorn<br/>--reload]
             FastAPI[FastAPI<br/>:5050]
         end
-        
+
         subgraph "Support"
             Docker[Docker<br/>Optional]
             Scripts[start.sh]
         end
     end
-    
+
     ESBuild -->|Hot Reload| React
     React -->|WebSocket| FastAPI
     Scripts -->|Manages| ESBuild
     Scripts -->|Manages| Uvicorn
-    
+
     style ESBuild fill:#f9f,stroke:#333,stroke-width:4px
     style FastAPI fill:#9f9,stroke:#333,stroke-width:4px
 ```
@@ -186,16 +186,16 @@ graph TD
     A[Make Code Change] --> B{Frontend or Backend?}
     B -->|Frontend| C[ESBuild Detects]
     B -->|Backend| D[Uvicorn Detects]
-    
+
     C --> E[Rebuilds Bundle<br/>~50ms]
     D --> F[Restarts Server<br/>~1s]
-    
+
     E --> G[Browser Hot Reload]
     F --> H[WebSocket Reconnect]
-    
+
     G --> I[Test Change]
     H --> I
-    
+
     I --> J{Works?}
     J -->|Yes| K[Commit]
     J -->|No| A
@@ -531,12 +531,12 @@ npm run test:multiplayer
    ```python
    import cProfile
    import pstats
-   
+
    profiler = cProfile.Profile()
    profiler.enable()
    # ... code to profile ...
    profiler.disable()
-   
+
    stats = pstats.Stats(profiler)
    stats.sort_stats('cumulative')
    stats.print_stats(10)
@@ -565,11 +565,11 @@ npm run test:multiplayer
    # Standard library
    import os
    import sys
-   
+
    # Third party
    import fastapi
    import pytest
-   
+
    # Local imports
    from backend.engine import Game
    from backend.api import routes
@@ -578,8 +578,8 @@ npm run test:multiplayer
 2. **Use type hints**
    ```python
    def calculate_score(
-       declared: int, 
-       captured: int, 
+       declared: int,
+       captured: int,
        multiplier: int = 1
    ) -> int:
        """Calculate player score."""
@@ -601,7 +601,7 @@ npm run test:multiplayer
    # Check outdated packages
    npm outdated
    pip list --outdated
-   
+
    # Update carefully
    npm update
    pip install --upgrade -r requirements.txt
@@ -611,7 +611,7 @@ npm run test:multiplayer
    ```bash
    # Remove unused imports
    autoflake --remove-all-unused-imports -i **/*.py
-   
+
    # Remove console.logs
    eslint . --fix --rule 'no-console: error'
    ```
@@ -642,7 +642,7 @@ npm run test:multiplayer
    ```python
    # Good
    SECRET_KEY = os.getenv('SECRET_KEY')
-   
+
    # Bad
    SECRET_KEY = 'hardcoded-secret'
    ```

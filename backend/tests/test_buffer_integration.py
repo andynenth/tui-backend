@@ -206,7 +206,7 @@ class TestBufferIntegration:
         cursor = conn.execute(
             """
             SELECT event_type, json_extract(payload, '$.sequence') as seq
-            FROM game_events 
+            FROM game_events
             WHERE room_id = ?
             ORDER BY sequence ASC
             """,

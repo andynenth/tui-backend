@@ -23,7 +23,7 @@ print(f"is_strong_combo('PAIR', horse_pair) = {result}")
 if not result:
     print("\n❌ HORSE pair is NOT considered strong!")
     print("This is why it's not being selected by the iterative function.")
-    
+
 # Test CANNON pair too
 cannon_pair = [Piece("CANNON_BLACK"), Piece("CANNON_BLACK")]
 total_cannon = sum(p.point for p in cannon_pair)

@@ -72,13 +72,13 @@ class EventPriorityManager:
     GRACE_ELIGIBLE_EVENTS: Set[str] = {"play", "play_pieces", "declare", "start_game"}
 
     def __init__(self):
-        self.grace_periods: Dict[str, Dict[str, float]] = (
-            {}
-        )  # client_id -> event -> expiry
+        self.grace_periods: Dict[
+            str, Dict[str, float]
+        ] = {}  # client_id -> event -> expiry
         self.grace_config = GracePeriodConfig()
-        self.warnings_sent: Dict[str, Dict[str, float]] = (
-            {}
-        )  # client_id -> event -> last_warning
+        self.warnings_sent: Dict[
+            str, Dict[str, float]
+        ] = {}  # client_id -> event -> last_warning
 
     def get_event_priority(self, event_name: str) -> EventPriority:
         """Get the priority level for an event."""

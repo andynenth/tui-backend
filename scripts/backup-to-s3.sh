@@ -140,7 +140,7 @@ OLD_BACKUPS=$(aws s3 ls s3://${S3_BUCKET}/${S3_PREFIX}/ | grep "game_backup_" | 
         BACKUP_EPOCH=$(date -d "${BACKUP_DATE:0:4}-${BACKUP_DATE:4:2}-${BACKUP_DATE:6:2}" +%s 2>/dev/null || echo 0)
         CURRENT_EPOCH=$(date +%s)
         AGE_DAYS=$(( (CURRENT_EPOCH - BACKUP_EPOCH) / 86400 ))
-        
+
         if [ $AGE_DAYS -gt $RETENTION_DAYS ]; then
             echo $backup
         fi

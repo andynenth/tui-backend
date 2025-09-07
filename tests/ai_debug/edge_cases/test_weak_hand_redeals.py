@@ -17,7 +17,7 @@ def test_weak_hand_scenarios():
     """Test various weak hand scenarios"""
     print("Testing Weak Hand Scenarios...")
     print("-" * 50)
-    
+
     test_cases = [
         {
             'name': 'Extremely weak hand (highest piece is 6)',
@@ -57,13 +57,13 @@ def test_weak_hand_scenarios():
             'expected_max': 3,  # Pairs might win in weak field
         }
     ]
-    
+
     all_passed = True
-    
+
     for test in test_cases:
         print(f"\n{test['name']}:")
         print(f"  Hand pieces: {test['hand'][:4]}...")
-        
+
         result = run_declaration_test(
             hand_specs=test['hand'],
             position=1,
@@ -71,15 +71,15 @@ def test_weak_hand_scenarios():
             expected_min=test.get('expected_min', 0),
             expected_max=test['expected_max']
         )
-        
+
         print(f"  AI declared: {result['declaration']}")
-        
+
         if result['passed']:
             print("  ✓ PASSED - Declaration appropriate for weak hand")
         else:
             print(f"  ✗ FAILED: {result['message']}")
             all_passed = False
-            
+
     return all_passed
 
 
@@ -87,14 +87,14 @@ def test_weak_field_dynamics():
     """Test how AI adapts when all players have weak hands"""
     print("\n\nTesting Weak Field Dynamics...")
     print("-" * 50)
-    
+
     # Moderate hand in a weak field
     moderate_hand = [
         "ELEPHANT_BLACK", "CHARIOT_RED", "HORSE_BLACK",
         "CANNON_BLACK", "CANNON_RED", "HORSE_RED",
         "SOLDIER_BLACK", "SOLDIER_RED"
     ]
-    
+
     scenarios = [
         {
             'name': 'Position 0 - First to declare in weak field',
@@ -125,13 +125,13 @@ def test_weak_field_dynamics():
             'expected_max': 5,  # Cannot declare 6 (would sum to 8)
         }
     ]
-    
+
     all_passed = True
-    
+
     for scenario in scenarios:
         print(f"\n{scenario['name']}:")
         print(f"  Previous declarations: {scenario['previous']}")
-        
+
         result = run_declaration_test(
             hand_specs=moderate_hand,
             position=scenario['position'],
@@ -139,15 +139,15 @@ def test_weak_field_dynamics():
             expected_min=scenario['expected_min'],
             expected_max=scenario['expected_max']
         )
-        
+
         print(f"  AI declared: {result['declaration']}")
-        
+
         if result['passed']:
             print("  ✓ PASSED")
         else:
             print(f"  ✗ FAILED: {result['message']}")
             all_passed = False
-            
+
     return all_passed
 
 
@@ -155,16 +155,16 @@ if __name__ == "__main__":
     print("="*60)
     print("EDGE CASE TEST: Weak Hand Scenarios")
     print("="*60)
-    
+
     # Run tests
     test1_passed = test_weak_hand_scenarios()
     test2_passed = test_weak_field_dynamics()
-    
+
     # Summary
     print("\n" + "="*60)
     print("TEST SUMMARY")
     print("="*60)
-    
+
     if test1_passed and test2_passed:
         print("✓ ALL TESTS PASSED")
         exit(0)

@@ -104,27 +104,27 @@ app = FastAPI(
     title="Castellan API",
     description="""
     **Backend API for Castellan Board Game**
-    
+
     A real-time multiplayer medieval strategy board game.
-    
+
     ## Features
-    
+
     * **Room Management** - Create and join game rooms
     * **Real-time Gameplay** - WebSocket-based real-time communication
     * **Game Logic** - Complete game flow with validation
     * **Event Sourcing** - Full game event history and recovery
     * **Health Monitoring** - Comprehensive health checks and metrics
-    
+
     ## Game Flow
-    
+
     1. **Lobby** - Players create/join rooms
     2. **Preparation** - Cards dealt, weak hand redeals
     3. **Declaration** - Players declare target pile counts
     4. **Turn Play** - Turn-based piece playing
     5. **Scoring** - Round scoring and win condition checks
-    
+
     ## WebSocket Connection
-    
+
     Connect to `ws://localhost:8000/ws/{room_id}` for real-time game events.
     Special lobby connection: `ws://localhost:8000/ws/lobby`
     """,
@@ -183,7 +183,7 @@ app.add_middleware(
 app.add_middleware(
     GZipMiddleware,
     minimum_size=500,  # Compress files larger than 500 bytes
-    compresslevel=6    # Balanced compression level (1-9 scale, 6 is a good balance)
+    compresslevel=6,  # Balanced compression level (1-9 scale, 6 is a good balance)
 )
 
 # ✅ Add Structured Logging middleware
@@ -211,8 +211,12 @@ app.include_router(debug_router)  # Mounts the debug router for event store acce
 app.include_router(
     maintenance_router
 )  # Mounts the maintenance router for log management.
-app.include_router(telemetry_router, prefix="/api")  # Mounts the telemetry router for client metrics.
-app.include_router(telemetry_ws_router, prefix="/api")  # Mounts the telemetry WebSocket router for live monitoring.
+app.include_router(
+    telemetry_router, prefix="/api"
+)  # Mounts the telemetry router for client metrics.
+app.include_router(
+    telemetry_ws_router, prefix="/api"
+)  # Mounts the telemetry WebSocket router for live monitoring.
 
 
 # ✅ Serve static files ONLY for actual static assets (js, css, images, etc)
@@ -220,7 +224,9 @@ app.include_router(telemetry_ws_router, prefix="/api")  # Mounts the telemetry W
 @app.get("/bundle.js")
 async def serve_bundle():
     """Serve the JavaScript bundle with no-cache headers and proper content-type for ESM"""
-    response = FileResponse(os.path.join(STATIC_DIR, "bundle.js"), media_type="text/javascript")
+    response = FileResponse(
+        os.path.join(STATIC_DIR, "bundle.js"), media_type="text/javascript"
+    )
     response.headers["Cache-Control"] = "no-cache, no-store, must-revalidate"
     response.headers["Pragma"] = "no-cache"
     response.headers["Expires"] = "0"
@@ -244,7 +250,9 @@ async def serve_css():
 async def serve_favicon():
     """Serve the favicon.ico file"""
     # Look for favicon in the project root directory
-    favicon_path = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), "favicon.ico")
+    favicon_path = os.path.join(
+        os.path.dirname(os.path.dirname(os.path.dirname(__file__))), "favicon.ico"
+    )
     if os.path.exists(favicon_path):
         return FileResponse(favicon_path, media_type="image/x-icon")
     # Fallback to static directory
@@ -260,18 +268,18 @@ async def serve_chunk(file_name: str):
     chunk_path = os.path.join(STATIC_DIR, "chunks", file_name)
     if os.path.exists(chunk_path):
         # Determine media type based on file extension
-        if file_name.endswith('.js'):
+        if file_name.endswith(".js"):
             media_type = "text/javascript"  # ESM modules require text/javascript
-        elif file_name.endswith('.css'):
+        elif file_name.endswith(".css"):
             media_type = "text/css"
-        elif file_name.endswith('.map'):
+        elif file_name.endswith(".map"):
             media_type = "application/json"
         else:
             media_type = "application/octet-stream"
-        
+
         response = FileResponse(chunk_path, media_type=media_type)
         response.headers["Cache-Control"] = "no-cache, no-store, must-revalidate"
-        response.headers["Pragma"] = "no-cache" 
+        response.headers["Pragma"] = "no-cache"
         response.headers["Expires"] = "0"
         return response
     raise HTTPException(status_code=404, detail="Chunk file not found")
@@ -342,24 +350,25 @@ async def startup_event():
         app.state.maintenance_scheduler = scheduler
     else:
         print("ℹ️  Log maintenance scheduler disabled")
-    
+
     # Start telemetry data cleanup service
     if os.getenv("TELEMETRY_CLEANUP_ENABLED", "true").lower() == "true":
         from backend.api.services.telemetry_cleanup import TelemetryCleanupService
         from backend.api.routes.telemetry import get_telemetry_db_path
         from pathlib import Path
-        
+
         # Use same path resolution as telemetry system
         telemetry_db_path = Path(get_telemetry_db_path())
         cleanup_service = TelemetryCleanupService(telemetry_db_path)
-        
+
         # Start cleanup scheduler in background
         import asyncio
+
         asyncio.create_task(cleanup_service.start_cleanup_scheduler())
-        
+
         # Store reference for shutdown
         app.state.telemetry_cleanup_service = cleanup_service
-        
+
         print("✅ Telemetry data cleanup service started")
     else:
         print("ℹ️  Telemetry cleanup service disabled")
@@ -374,7 +383,7 @@ async def shutdown_event():
     if hasattr(app.state, "maintenance_scheduler"):
         app.state.maintenance_scheduler.stop()
         print("✅ Log maintenance scheduler stopped")
-    
+
     # Stop telemetry cleanup service if running
     if hasattr(app.state, "telemetry_cleanup_service"):
         app.state.telemetry_cleanup_service.stop_cleanup_scheduler()

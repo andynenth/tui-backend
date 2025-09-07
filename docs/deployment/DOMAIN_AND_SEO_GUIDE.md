@@ -133,12 +133,12 @@ Routing Policy: Simple
    ```bash
    # Via AWS Console
    ACM → Request certificate → Request a public certificate
-   
+
    Domain names:
    - yourdomain.com
    - www.yourdomain.com
    - *.yourdomain.com
-   
+
    Validation method: DNS validation
    ```
 
@@ -192,24 +192,24 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
   <title>{title}</title>
   <meta name="title" content={title} />
   <meta name="description" content={description} />
-  
+
   <!-- Robots -->
   <meta name="robots" content={noindex ? 'noindex, follow' : 'index, follow'} />
-  
+
   <!-- Open Graph / Facebook -->
   <meta property="og:type" content="website" />
   <meta property="og:url" content={canonicalURL} />
   <meta property="og:title" content={title} />
   <meta property="og:description" content={description} />
   <meta property="og:image" content={new URL(image, Astro.site)} />
-  
+
   <!-- Twitter -->
   <meta property="twitter:card" content="summary_large_image" />
   <meta property="twitter:url" content={canonicalURL} />
   <meta property="twitter:title" content={title} />
   <meta property="twitter:description" content={description} />
   <meta property="twitter:image" content={new URL(image, Astro.site)} />
-  
+
   <!-- Canonical -->
   <link rel="canonical" href={canonicalURL} />
 </head>
@@ -230,7 +230,7 @@ const project = {
 };
 ---
 
-<BaseLayout 
+<BaseLayout
   title={`${project.title} - Coming Soon`}
   description={`${project.description}. Launching ${project.timeline}.`}
   noindex={true}
@@ -249,7 +249,7 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 const projectData = await import('../../content/projects/liap-tui.json');
 ---
 
-<BaseLayout 
+<BaseLayout
   title="Liap Tui - Real-Time Multiplayer Board Game"
   description="Production-ready multiplayer game with <100ms latency, enterprise state machine architecture, and comprehensive test coverage."
   image="/images/liap-tui-og.png"
@@ -269,11 +269,11 @@ import { getCollection } from 'astro:content';
 export const get: APIRoute = async ({ site }) => {
   const projects = await getCollection('projects');
   const blogPosts = await getCollection('blog');
-  
+
   // Filter only ready content
   const readyProjects = projects.filter(p => p.data.ready === true);
   const publishedPosts = blogPosts.filter(p => p.data.draft !== true);
-  
+
   const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <!-- Homepage -->
@@ -283,7 +283,7 @@ export const get: APIRoute = async ({ site }) => {
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
-  
+
   <!-- Ready Projects -->
   ${readyProjects.map(project => `
   <url>
@@ -292,7 +292,7 @@ export const get: APIRoute = async ({ site }) => {
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
   </url>`).join('')}
-  
+
   <!-- Blog Posts -->
   ${publishedPosts.map(post => `
   <url>
@@ -301,7 +301,7 @@ export const get: APIRoute = async ({ site }) => {
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>`).join('')}
-  
+
   <!-- Static Pages -->
   <url>
     <loc>${site}about/</loc>
@@ -432,19 +432,19 @@ export function shouldIndexPage(status: 'ready' | 'coming-soon' | 'draft'): bool
 export async function transitionToReady(projectId: string) {
   // 1. Update project status
   const project = await updateProjectStatus(projectId, 'ready');
-  
+
   // 2. Remove from robots.txt disallow list
   await updateRobotsTxt(projectId, 'allow');
-  
+
   // 3. Regenerate sitemap
   await generateSitemap();
-  
+
   // 4. Submit to search engines
   await submitToSearchEngines(project.url);
-  
+
   // 5. Send notifications to subscribers
   await notifySubscribers(projectId);
-  
+
   return project;
 }
 ```
@@ -481,7 +481,7 @@ export async function requestIndexing(url: string) {
       type: 'URL_UPDATED'
     })
   });
-  
+
   return response.json();
 }
 ```
@@ -515,7 +515,7 @@ async function checkIndexingStatus() {
     'https://yourdomain.com/projects/liap-tui',
     // Add all important pages
   ];
-  
+
   for (const page of pages) {
     const result = await searchconsole.searchanalytics.query({
       siteUrl: 'https://yourdomain.com',
@@ -531,7 +531,7 @@ async function checkIndexingStatus() {
         }]
       }
     });
-    
+
     console.log(`${page}: ${result.data.rows?.[0]?.impressions || 0} impressions`);
   }
 }
@@ -629,16 +629,16 @@ aws acm describe-certificate --certificate-arn arn:aws:acm:region:account:certif
 #### CloudFront Caching
 ```yaml
 # Cache behavior for different content types
-Default (*): 
+Default (*):
   Cache: 24 hours
-  
+
 Images (*.jpg, *.png, *.webp):
   Cache: 7 days
-  
+
 JavaScript/CSS:
   Cache: 7 days
   Headers: Cache-Control: public, max-age=604800
-  
+
 HTML:
   Cache: 1 hour
   Headers: Cache-Control: public, max-age=3600

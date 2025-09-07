@@ -35,7 +35,7 @@ This is the fundamental rule that was initially misunderstood:
 
 #### 3. Reading Declaration Patterns (CRITICAL)
 - **Declarations 0-1 = No combos**: These players have terrible hands with NO combinations
-- **Declarations 2-3 = Mixed**: May have some combos or decent singles  
+- **Declarations 2-3 = Mixed**: May have some combos or decent singles
 - **Declarations 4+ = Strong combos**: Likely have multiple combinations
 - **Key Insight**: Low declarers (0-1) will NOT create combo opportunities - they play singles only!
 
@@ -68,7 +68,7 @@ This is the fundamental rule that was initially misunderstood:
 - Check opponent declarations:
   - Low (0-2) → They have no combos → 0% chance for your combo
   - High (3+) → They have combos → Possible opportunity (but they control)
-- **Combo strength matters**: 
+- **Combo strength matters**:
   - CHARIOT-HORSE-CANNON (18pts) is too weak to rely on
   - Even with opportunity, weak combos often lose
 - **Critical Exception**: GENERAL_RED/BLACK can CREATE opportunities

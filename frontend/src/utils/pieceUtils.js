@@ -11,7 +11,7 @@ export const sortPieces = (pieces) => {
   if (!pieces || !Array.isArray(pieces)) {
     return [];
   }
-  
+
   return [...pieces].sort((a, b) => {
     // First sort by color: red before black
     if (a.color !== b.color) {

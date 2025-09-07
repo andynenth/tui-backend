@@ -108,7 +108,7 @@ git mv docs/07-ai-development/AI_TESTING_*.md docs/ai-system/testing/
 # Move declaration files
 git mv docs/ai-development/declaration/*.md docs/ai-system/implementation/declaration/
 
-# Move evaluation files  
+# Move evaluation files
 git mv docs/ai-development/evaluation/*.md docs/ai-system/implementation/evaluation/
 
 # Move turn-play files

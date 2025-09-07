@@ -49,13 +49,13 @@ export const colors = stylex.defineVars({
   gameBackground: '#1e1e2e',
   gameSurface: '#313244',
   gameText: '#cdd6f4',
-  
+
   // Piece colors
   pieceRed: '#f38ba8',
   pieceBlack: '#585b70',
   pieceGold: '#f9e2af',
   pieceSilver: '#a6adc8',
-  
+
   // Slot colors
   slotEmpty: '#45475a',
   slotHost: '#f9e2af',
@@ -210,14 +210,14 @@ import * as stylex from '@stylexjs/stylex';
 // Utility to combine StyleX with existing classes during migration
 export function combineStyles(stylexStyles, classNames = '') {
   const stylexProps = stylex.props(...(Array.isArray(stylexStyles) ? stylexStyles : [stylexStyles]));
-  
+
   if (classNames) {
     return {
       ...stylexProps,
       className: `${stylexProps.className || ''} ${classNames}`.trim(),
     };
   }
-  
+
   return stylexProps;
 }
 
@@ -277,12 +277,12 @@ export const text = stylex.create({
   xl: {
     fontSize: typography.fontSizeXl,
   },
-  
+
   // Text alignment
   left: { textAlign: 'left' },
   center: { textAlign: 'center' },
   right: { textAlign: 'right' },
-  
+
   // Font weight
   normal: { fontWeight: 400 },
   medium: { fontWeight: 500 },
@@ -298,7 +298,7 @@ export const spacing = stylex.create({
   pmd: { padding: spacing.md },
   plg: { padding: spacing.lg },
   pxl: { padding: spacing.xl },
-  
+
   // Margin utilities
   m0: { margin: 0 },
   mxs: { margin: spacing.xs },
@@ -306,7 +306,7 @@ export const spacing = stylex.create({
   mmd: { margin: spacing.md },
   mlg: { margin: spacing.lg },
   mxl: { margin: spacing.xl },
-  
+
   // Gap for flexbox
   gapxs: { gap: spacing.xs },
   gapsm: { gap: spacing.sm },
@@ -359,7 +359,7 @@ describe('StyleX Token System', () => {
     expect(colors.gamePrimary).toBeDefined();
     expect(colors.gameBackground).toBeDefined();
   });
-  
+
   test('spacing values are consistent', () => {
     expect(spacing.md).toBe('16px');
     expect(spacing.lg).toBe('24px');
@@ -380,7 +380,7 @@ export function measureCSSPerformance() {
     totalStyleSheets: document.styleSheets.length,
     totalRules: 0,
   };
-  
+
   // Count total CSS rules
   for (let sheet of document.styleSheets) {
     try {
@@ -389,10 +389,10 @@ export function measureCSSPerformance() {
       // Cross-origin stylesheets
     }
   }
-  
+
   // Measure paint timing
   const paintMetrics = performance.getEntriesByType('paint');
-  
+
   console.table({
     'Before Migration': {
       'CSS Files': 29,
@@ -407,7 +407,7 @@ export function measureCSSPerformance() {
       'Total Rules': 'Optimized',
     },
   });
-  
+
   return perfData;
 }
 ```

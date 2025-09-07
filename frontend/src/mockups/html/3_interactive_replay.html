@@ -712,7 +712,7 @@
             isPlaying = !isPlaying;
             const playBtn = document.querySelector('.play-pause-btn');
             playBtn.textContent = isPlaying ? '⏸' : '▶';
-            
+
             if (isPlaying) {
                 playGame();
             }
@@ -758,20 +758,20 @@
             // Update turn display
             const turnNum = Math.floor(currentMove / 4) + 1;
             document.querySelector('.turn-display').textContent = `Turn ${turnNum}/8`;
-            
+
             // Update evaluation bar (simulated)
             const evalPercent = 50 + (Math.sin(currentMove / 5) * 30);
             document.querySelector('.eval-bar-fill').style.width = evalPercent + '%';
-            
+
             // Update current move highlighting
             document.querySelectorAll('.move-item').forEach((item, index) => {
                 item.classList.toggle('current', index === currentMove - 1);
             });
-            
+
             // Update pile count (simulated)
             const pileCount = 4 + currentMove;
             document.querySelector('.pile-count').textContent = pileCount;
-            
+
             console.log(`Current position: Move ${currentMove} of ${totalMoves}`);
         }
 

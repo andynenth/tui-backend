@@ -42,13 +42,13 @@ Reusable testing framework for AI decisions.
 ```python
 class AIDecisionTester:
     """Reusable tester for AI decision-making scenarios"""
-    
+
     def create_hand_from_specs(self, piece_specs: List[Tuple[str, int]]) -> List[Piece]:
         """Create hands from specifications"""
-        
+
     def create_context(self, bot_name: str, hand: List[Piece], ...) -> TurnPlayContext:
         """Create game contexts for testing"""
-        
+
     def analyze_decision(self, context: TurnPlayContext) -> Dict:
         """Analyze AI decisions with detailed results"""
 ```
@@ -140,7 +140,7 @@ Tests that AI avoids combinations that can never win.
 ```python
 def test_never_win_detection():
     """Test the never-win combo detection function"""
-    
+
     # All-BLACK straight (never wins)
     black_straight = [
         Piece("CANNON_BLACK"),   # 3 points
@@ -148,7 +148,7 @@ def test_never_win_detection():
         Piece("CHARIOT_BLACK")   # 7 points
     ]
     assert is_never_win_combo("STRAIGHT", black_straight)
-    
+
     # Mixed color straight (can win)
     mixed_straight = [
         Piece("CANNON_RED"),     # 4 points
@@ -165,7 +165,7 @@ Tests that validate AI makes correct strategic decisions.
 ```python
 def test_responder_strategy():
     """Test responder decision making"""
-    
+
     # Create scenario
     context = create_context(
         required_pieces=3,      # Must match starter
@@ -173,10 +173,10 @@ def test_responder_strategy():
         captured=1,
         declared=4
     )
-    
+
     # Get AI decision
     chosen = execute_responder_strategy(hand, context)
-    
+
     # Validate decision
     assert len(chosen) == 3, "Must match required pieces"
     assert not is_never_win_combo(get_play_type(chosen), chosen)
@@ -189,17 +189,17 @@ Tests for boundary conditions and special cases.
 ```python
 def test_fallback_to_never_win():
     """Test fallback when only never-win combos available"""
-    
+
     # Hand with ONLY never-win options
     hand = [
         Piece("CANNON_BLACK"),
         Piece("HORSE_BLACK"),
         Piece("CHARIOT_BLACK")
     ]
-    
+
     context = create_context(required_pieces=3)
     chosen = choose_strategic_play(hand, context)
-    
+
     # Should play the never-win combo when no choice
     assert len(chosen) == 3
     assert is_never_win_combo("STRAIGHT", chosen)
@@ -213,15 +213,15 @@ Tests that validate AI performance characteristics.
 def test_decision_performance():
     """Test AI decision speed"""
     import time
-    
+
     # Complex hand
     hand = create_large_hand(20)  # 20 pieces
     context = create_complex_context()
-    
+
     start = time.time()
     decision = choose_strategic_play(hand, context)
     duration = time.time() - start
-    
+
     assert duration < 0.1, f"Decision too slow: {duration}s"
 ```
 
@@ -243,7 +243,7 @@ combo_test_hand = [
 # Pattern 2: Edge case testing
 edge_case_hand = [
     # All same value
-    Piece("CANNON_BLACK"), Piece("CANNON_BLACK"), 
+    Piece("CANNON_BLACK"), Piece("CANNON_BLACK"),
     Piece("CANNON_RED"), Piece("CANNON_RED")
 ]
 
@@ -313,15 +313,15 @@ def test_main_behavior():
     """Test the primary behavior"""
     print("TEST 1: [Test Name]")
     print("=" * 60)
-    
+
     # Setup
     tester = AIDecisionTester()
     hand = tester.create_hand_from_specs([...])
     context = tester.create_context(...)
-    
+
     # Execute
     result = [function_under_test](hand, context)
-    
+
     # Validate
     assert [condition], "[Error message]"
     print("✅ [Success message]")

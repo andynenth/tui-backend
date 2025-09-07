@@ -91,7 +91,7 @@ for combo_type, pieces in strong_combos:
    ```python
    # Current: Limits to [1,7]
    score = min(max(score, 1), 7)  # Clamp score to range [1, 7]
-   
+
    # Should be: Allow [0,8] per game rules
    # (though game constraints will prevent some values)
    ```
@@ -99,7 +99,7 @@ for combo_type, pieces in strong_combos:
 ## TODO List
 
 ### 1. Remove Starter Bonus ❌
-**File**: `backend/engine/ai.py`  
+**File**: `backend/engine/ai.py`
 **Location**: Around line 81
 ```python
 # DELETE THESE LINES:
@@ -110,7 +110,7 @@ if is_first_player:
 **Reason**: User decided to keep AI simple - no position bonuses
 
 ### 2. Fix Declaration Range Bug ❌
-**File**: `backend/engine/ai.py`  
+**File**: `backend/engine/ai.py`
 **Location**: Line 89
 ```python
 # Current:
@@ -124,7 +124,7 @@ score = min(max(score, 0), 8)  # Allow full range
 ### 3. Consider Advanced Features (Optional)
 Based on user preference for simplicity, these are NOT being implemented:
 - ❌ Pile room calculation
-- ❌ Field strength assessment  
+- ❌ Field strength assessment
 - ❌ Previous declaration reading
 - ❌ Opponent modeling
 - ❌ Game state awareness

@@ -56,10 +56,10 @@ async def custom_validation_exception_handler(request: Request, exc):
         input_value = error.get("input")
         if isinstance(input_value, bytes):
             try:
-                input_value = input_value.decode('utf-8')
+                input_value = input_value.decode("utf-8")
             except UnicodeDecodeError:
                 input_value = f"<bytes data of length {len(input_value)}>"
-        
+
         errors.append(
             {
                 "code": ErrorCodes.INVALID_PARAMETER,

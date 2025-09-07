@@ -58,7 +58,7 @@ Each analysis must be structured exactly like this:
 ```
 ## X. `/full/path/to/file.ext`
 
-**Status**: ✅ Checked  
+**Status**: ✅ Checked
 **Purpose**: [Brief description of file's responsibility]
 
 **Classes/Functions**:

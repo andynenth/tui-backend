@@ -7,7 +7,7 @@ This document contains detailed analysis of all infrastructure components includ
 
 ## 1. `/backend/engine/room.py`
 
-**Status**: ✅ Checked  
+**Status**: ✅ Checked
 **Purpose**: Manages individual game room state including players, room status, and game lifecycle. Provides thread-safe operations for room management.
 
 **Classes/Functions**:
@@ -41,7 +41,7 @@ This document contains detailed analysis of all infrastructure components includ
   - `engine.state_machine.core.GamePhase` - Game phase enumeration
   - `engine.state_machine.game_state_machine.GameStateMachine` - State machine management
   - `.bot_manager.BotManager` (dynamic import in start_game_safe) - Bot AI management
-- Used by: 
+- Used by:
   - `backend.api.routes.ws.py` - WebSocket handler calls room methods
   - `backend.shared_instances` - Room manager maintains room instances
 
@@ -49,7 +49,7 @@ This document contains detailed analysis of all infrastructure components includ
 
 ## 2. `/backend/engine/bot_manager.py`
 
-**Status**: ✅ Checked  
+**Status**: ✅ Checked
 **Purpose**: **Critical Bot AI System**: Centralized bot management with enterprise architecture compliance. Manages bot actions, prevents duplicate actions, and coordinates with state machine for automatic broadcasting.
 
 **Classes/Functions**:
@@ -94,7 +94,7 @@ This document contains detailed analysis of all infrastructure components includ
 
 ## 3. `/backend/engine/room_manager.py`
 
-**Status**: ✅ Checked  
+**Status**: ✅ Checked
 **Purpose**: Room lifecycle management service that handles creation, retrieval, deletion, and listing of all game rooms in the system.
 
 **Classes/Functions**:
@@ -126,7 +126,7 @@ This document contains detailed analysis of all infrastructure components includ
 
 ## 4. `/backend/shared_instances.py`
 
-**Status**: ✅ Checked  
+**Status**: ✅ Checked
 **Purpose**: Global singleton management module that provides shared instances of core manager classes for consistent state across the entire application.
 
 **Classes/Functions**:
@@ -156,7 +156,7 @@ This document contains detailed analysis of all infrastructure components includ
 
 ## 5. `/backend/socket_manager.py`
 
-**Status**: ✅ Checked  
+**Status**: ✅ Checked
 **Purpose**: Enterprise-grade WebSocket connection manager providing reliable message delivery, acknowledgment tracking, automatic retry, and real-time broadcasting for all game rooms.
 
 **Classes/Functions**:
@@ -206,7 +206,7 @@ This document contains detailed analysis of all infrastructure components includ
 
 ## 6. `/backend/api/services/event_store.py`
 
-**Status**: ✅ Checked  
+**Status**: ✅ Checked
 **Purpose**: **Event Sourcing System**: Provides persistent event storage, state reconstruction, and client recovery capabilities using SQLite database.
 
 **Classes/Functions**:

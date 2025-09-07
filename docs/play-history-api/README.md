@@ -48,7 +48,7 @@ Detailed explanation of how the `captured_count` field works:
 
 **Root Cause**: Custom events (`hands_dealt`, `play_with_context`) were being broadcast via WebSocket but not stored in the database.
 
-**Solution**: 
+**Solution**:
 1. Store `hands_dealt` events in the database
 2. Calculate `hand_before` and `hand_after` from existing `action_processed` events rather than storing duplicate `play_with_context` events
 

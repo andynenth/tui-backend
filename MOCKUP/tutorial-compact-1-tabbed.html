@@ -679,11 +679,11 @@
             // Update tabs
             tabs.forEach(t => t.classList.remove('active'));
             tabs[index].classList.add('active');
-            
+
             // Update content
             contents.forEach(c => c.classList.remove('active'));
             contents[index].classList.add('active');
-            
+
             // Update dots
             dots.forEach((d, i) => {
                 if (i <= index) {
@@ -692,10 +692,10 @@
                     d.classList.remove('active');
                 }
             });
-            
+
             // Update page info
             document.querySelector('.page-info').textContent = `Tab ${index + 1} of 5`;
-            
+
             currentTab = index;
         }
 
@@ -707,7 +707,7 @@
                 } else if (i === 1 && currentTab < tabs.length - 1) {
                     switchTab(currentTab + 1);
                 }
-                
+
                 // Update button states
                 document.querySelectorAll('.nav-btn')[0].disabled = currentTab === 0;
                 document.querySelectorAll('.nav-btn')[1].disabled = currentTab === tabs.length - 1;

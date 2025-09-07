@@ -60,7 +60,7 @@ export class NetworkService extends EventTarget {
   private readonly heartbeatTimers = new Map<string, NodeJS.Timeout>();
   private readonly reconnectStates = new Map<string, ReconnectState>();
   private isDestroyed = false;
-  
+
   // Activity tracking for hang detection
   private lastUserAction: string | null = null;
   private lastUserActionType: string | null = null;
@@ -156,7 +156,7 @@ export class NetworkService extends EventTarget {
       // Send initial ready signal
       const connectionData = this.connections.get(roomId);
       const isReconnection = connectionData?.isReconnection || false;
-      
+
       // Check if we have a stored session (indicates page refresh/reconnection)
       let hasStoredSession = false;
       try {
@@ -173,10 +173,10 @@ export class NetworkService extends EventTarget {
       } catch (error) {
         console.warn('Failed to check session storage:', error);
       }
-      
+
       // Set reconnection flag if we have a stored session OR if marked as reconnection
       const shouldRequestFullState = isReconnection || hasStoredSession;
-      
+
       console.log('🔍 [REFRESH_DEBUG] Sending client_ready:', {
         room_id: roomId,
         player_name: connectionData?.playerName,
@@ -186,7 +186,7 @@ export class NetworkService extends EventTarget {
         isReconnection,
         timestamp: new Date().toISOString(),
       });
-      
+
       this.send(roomId, 'client_ready', {
         room_id: roomId,
         player_name: connectionData?.playerName,
@@ -273,7 +273,7 @@ export class NetworkService extends EventTarget {
       console.warn('Cannot send message: NetworkService destroyed');
       return false;
     }
-    
+
     // Track user actions for hang detection (exclude system events)
     const userActionEvents = ['play', 'declare', 'accept_redeal', 'decline_redeal', 'start_game', 'join_room'];
     if (userActionEvents.includes(event)) {
@@ -713,16 +713,16 @@ export class NetworkService extends EventTarget {
     } catch (error) {
       console.warn('Failed to get game state for diagnostics:', error);
     }
-    
+
     const connectionData = this.connections.get(roomId);
     const queueSize = this.messageQueues.get(roomId)?.length || 0;
-    
+
     return {
       timestamp: Date.now(),
       last_user_action: this.lastUserAction,
       last_user_action_type: this.lastUserActionType,
       last_user_action_age: Date.now() - this.lastUserActionTimestamp,
-      
+
       game_context: gameState ? {
         phase: gameState.phase,
         round: gameState.currentRound,
@@ -731,17 +731,17 @@ export class NetworkService extends EventTarget {
         is_my_turn: gameState.isMyTurn,
         waiting_for: gameState.allowedActions?.join(',') || null,
       } : null,
-      
+
       network_state: {
         connection_status: connectionData?.status || 'unknown',
         message_queue_size: queueSize,
         reconnect_count: this.reconnectStates.get(roomId)?.attempts || 0,
         latency_ms: connectionData?.latency || null,
       },
-      
+
       performance: {
-        memory_mb: (performance as any).memory?.usedJSHeapSize 
-          ? (performance as any).memory.usedJSHeapSize / 1048576 
+        memory_mb: (performance as any).memory?.usedJSHeapSize
+          ? (performance as any).memory.usedJSHeapSize / 1048576
           : null,
       },
     };

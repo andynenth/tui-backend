@@ -14,7 +14,7 @@ test_cases = [
         'expected_avoid': 4
     },
     {
-        'name': 'forbidden_3', 
+        'name': 'forbidden_3',
         'prev_decl': [2, 2, 1],  # sum = 5, forbidden = 3
         'expected_avoid': 3
     },
@@ -46,7 +46,7 @@ for test in test_cases:
     print(f"\nTest: {test['name']}")
     print(f"Previous declarations: {test['prev_decl']} (sum = {sum(test['prev_decl'])})")
     print(f"Forbidden value: {test['expected_avoid']} (would make sum = 8)")
-    
+
     result = choose_declare_strategic_v2(
         hand=hand,
         is_first_player=False,
@@ -55,12 +55,12 @@ for test in test_cases:
         must_declare_nonzero=False,
         verbose=False
     )
-    
+
     total_sum = sum(test['prev_decl']) + result
-    
+
     print(f"AI declared: {result}")
     print(f"Total sum: {total_sum}")
-    
+
     if result == test['expected_avoid']:
         print("❌ FAILED - AI should avoid this value!")
     elif total_sum == 8:

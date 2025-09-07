@@ -9,7 +9,7 @@
 
 **Impact**: This explains why bots seemed conservative in declarations - they were under-counting by 2-5 piles per hand!
 
-### 2. Opener Detection  
+### 2. Opener Detection
 **Problem**: Only GENERAL pieces (13+ points) were considered openers
 - Old: Missed ADVISOR pieces (11-12 points)
 - New: All pieces with 11+ points are openers
@@ -53,7 +53,7 @@ has_strong_opening = any(
     p.name.startswith("GENERAL") or p.point >= 13 for p in hand
 )
 
-# NEW: Include ADVISOR pieces (11+ points)  
+# NEW: Include ADVISOR pieces (11+ points)
 has_strong_opening = any(
     p.point >= 11 for p in hand
 )

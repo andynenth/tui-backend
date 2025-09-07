@@ -19,6 +19,6 @@ This file originally focused on API contracts and interface specifications. All 
 
 Key sections mapping:
 - Contract Principles → Message Contracts § Contract Principles
-- Event Types → Message Contracts § Event Categories  
+- Event Types → Message Contracts § Event Categories
 - Type Definitions → Message Contracts § Type Definitions
 - Testing Contracts → Message Contracts § Contract Testing

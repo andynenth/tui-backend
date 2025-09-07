@@ -95,7 +95,7 @@ frontend/src/
     readonly players: ReadonlyArray<Player>;
     readonly gameStatus: Readonly<GameStatus>;
   }
-  
+
   interface Round {
     readonly roundNumber: number;
     readonly declarations: ReadonlyArray<Declaration>;
@@ -130,19 +130,19 @@ frontend/src/
       expect(result).toEqual(mockData);
       expect(fetchMock).toHaveBeenCalledWith('/api/rooms/23BEBA/play-history');
     });
-    
+
     it('should handle 404 - room not found', async () => {
       fetchMock.mockResponseOnce('', { status: 404 });
       await expect(playHistoryService.getHistory('invalid'))
         .rejects.toThrow('Game history not found');
     });
-    
+
     it('should handle network errors', async () => {
       fetchMock.mockRejectOnce(new Error('Network error'));
       await expect(playHistoryService.getHistory('23BEBA'))
         .rejects.toThrow('Network error');
     });
-    
+
     it('should validate response structure', async () => {
       fetchMock.mockResponseOnce(JSON.stringify({ invalid: 'data' }));
       await expect(playHistoryService.getHistory('23BEBA'))
@@ -157,20 +157,20 @@ frontend/src/
   export const playHistoryService = {
     async getHistory(roomId: string): Promise<PlayHistory> {
       const response = await fetch(`/api/rooms/${roomId}/play-history`);
-      
+
       if (!response.ok) {
         if (response.status === 404) {
           throw new Error('Game history not found');
         }
         throw new Error(`HTTP error! status: ${response.status}`);
       }
-      
+
       const data = await response.json();
-      
+
       if (!validatePlayHistory(data)) {
         throw new Error('Invalid game history data');
       }
-      
+
       return deepFreeze(data);
     }
   };
@@ -185,12 +185,12 @@ frontend/src/
       expect(validatePlayHistory({})).toBe(false);
       expect(validatePlayHistory(null)).toBe(false);
     });
-    
+
     it('should validate round structure', () => {
       const invalidRound = { ...mockRound, turns: null };
       expect(validateRound(invalidRound)).toBe(false);
     });
-    
+
     it('should handle corrupted data gracefully', () => {
       const corrupted = { ...mockData, rounds: [{ invalid: true }] };
       expect(validatePlayHistory(corrupted)).toBe(false);
@@ -208,7 +208,7 @@ frontend/src/
   describe('usePlayHistory', () => {
     it('should fetch data on mount', async () => {
       const { result } = renderHook(() => usePlayHistory('23BEBA'));
-      
+
       // Initial state
       expect(result.current).toEqual({
         data: null,
@@ -216,18 +216,18 @@ frontend/src/
         error: null,
         retry: expect.any(Function)
       });
-      
+
       // After fetch
       await waitFor(() => {
         expect(result.current.loading).toBe(false);
         expect(result.current.data).toEqual(mockData);
       });
     });
-    
+
     it('should handle errors with retry capability', async () => {
       fetchMock.mockRejectOnce(new Error('Network error'));
       const { result } = renderHook(() => usePlayHistory('23BEBA'));
-      
+
       await waitFor(() => {
         expect(result.current.error).toEqual({
           message: 'Network error',
@@ -235,22 +235,22 @@ frontend/src/
           canRetry: true
         });
       });
-      
+
       // Test retry
       fetchMock.mockResponseOnce(JSON.stringify(mockData));
       act(() => result.current.retry());
-      
+
       await waitFor(() => {
         expect(result.current.data).toEqual(mockData);
         expect(result.current.error).toBe(null);
       });
     });
-    
+
     it('should ensure data immutability', async () => {
       const { result } = renderHook(() => usePlayHistory('23BEBA'));
-      
+
       await waitFor(() => expect(result.current.data).toBeTruthy());
-      
+
       expect(() => {
         result.current.data.rounds[0].winner = 'hacked';
       }).toThrow();
@@ -265,11 +265,11 @@ frontend/src/
     const [data, setData] = useState<PlayHistory | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<PlayHistoryError | null>(null);
-    
+
     const fetchData = useCallback(async () => {
       setLoading(true);
       setError(null);
-      
+
       try {
         const history = await playHistoryService.getHistory(roomId);
         setData(history);
@@ -283,11 +283,11 @@ frontend/src/
         setLoading(false);
       }
     }, [roomId]);
-    
+
     useEffect(() => {
       fetchData();
     }, [fetchData]);
-    
+
     return { data, loading, error, retry: fetchData };
   };
   ```
@@ -304,32 +304,32 @@ frontend/src/
       const { getByText } = render(<PlayHistoryPage />);
       expect(getByText('Loading game history...')).toBeInTheDocument();
     });
-    
+
     it('should render game history when loaded', async () => {
       const { getByText, getByRole } = render(<PlayHistoryPage />);
-      
+
       await waitFor(() => {
         // Header elements
         expect(getByText('Room 23BEBA - Round 1')).toBeInTheDocument();
         expect(getByRole('combobox', { name: 'Round:' })).toBeInTheDocument();
-        
+
         // Player overview
         expect(getByText('Andy')).toBeInTheDocument();
         expect(getByText('Bot 1')).toBeInTheDocument();
-        
+
         // No navigation elements (admin-only)
         expect(queryByText('Back to Game')).not.toBeInTheDocument();
       });
     });
-    
+
     it('should handle round selection', async () => {
       const { getByRole, getByText } = render(<PlayHistoryPage />);
-      
+
       await waitFor(() => {
         const selector = getByRole('combobox');
         fireEvent.change(selector, { target: { value: '2' } });
       });
-      
+
       expect(getByText('Room 23BEBA - Round 2')).toBeInTheDocument();
     });
   });
@@ -342,55 +342,55 @@ frontend/src/
     const { roomId } = useParams();
     const { data, loading, error, retry } = usePlayHistory(roomId);
     const [selectedRound, setSelectedRound] = useState(1);
-    
+
     if (loading) {
       return <LoadingState />;
     }
-    
+
     if (error) {
       return <ErrorState error={error} onRetry={retry} />;
     }
-    
+
     if (!data) {
       return <EmptyState />;
     }
-    
+
     const currentRound = data.rounds[selectedRound - 1];
-    
+
     return (
       <div className="min-h-screen bg-game-background text-game-text" data-testid="play-history-page">
         <div className="max-w-7xl mx-auto p-6">
-          <GameHeader 
+          <GameHeader
             roomId={roomId}
             round={currentRound}
             totalRounds={data.rounds.length}
             selectedRound={selectedRound}
             onRoundSelect={setSelectedRound}
           />
-          
+
           <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 mb-8">
-            <PlayerOverview 
+            <PlayerOverview
               players={data.players}
               roundData={currentRound}
             />
           </div>
-          
+
           <div className="bg-game-surface rounded-lg shadow-game-lg p-8 mb-6">
-            <DeclarationPhase 
+            <DeclarationPhase
               declarations={currentRound.declarations}
               players={data.players}
             />
           </div>
-          
+
           <div className="bg-game-surface rounded-lg shadow-game-lg p-8 mb-6">
-            <TurnTimeline 
+            <TurnTimeline
               turns={currentRound.turns}
               players={data.players}
             />
           </div>
-          
+
           <div className="bg-game-surface rounded-lg shadow-game-lg p-8">
-            <RoundSummary 
+            <RoundSummary
               scoring={currentRound.scoring}
               winner={currentRound.winner}
             />
@@ -413,10 +413,10 @@ frontend/src/
           <h1 className="text-3xl font-bold text-game-text">
             Room {roomId} - Round {selectedRound}
           </h1>
-          
+
           <div className="flex items-center gap-2">
             <label className="text-sm text-game-text/80">Round:</label>
-            <select 
+            <select
               value={selectedRound}
               onChange={(e) => onRoundSelect(Number(e.target.value))}
               className="bg-game-background border border-game-text/20 rounded px-3 py-1 text-game-text"
@@ -427,7 +427,7 @@ frontend/src/
             </select>
           </div>
         </div>
-        
+
         <div className="text-sm text-game-text/60">
           <span>Total Turns: {round.turns.length}</span>
           <span className="mx-4">•</span>
@@ -445,9 +445,9 @@ frontend/src/
     return players.map((player, index) => {
       const isStarter = roundData.starter === player.name;
       const playerStats = roundData.scoring.players[player.name];
-      
+
       return (
-        <div 
+        <div
           key={player.name}
           className={`
             bg-game-surface rounded-lg p-6 relative
@@ -459,9 +459,9 @@ frontend/src/
               STARTER
             </span>
           )}
-          
+
           <h3 className="text-xl font-semibold mb-4">{player.name}</h3>
-          
+
           <div className="space-y-2 text-sm">
             <div className="flex justify-between">
               <span className="text-game-text/60">Declared:</span>
@@ -474,7 +474,7 @@ frontend/src/
             <div className="flex justify-between">
               <span className="text-game-text/60">Score:</span>
               <span className={`font-mono font-bold ${
-                playerStats.score > 0 ? 'text-game-success' : 
+                playerStats.score > 0 ? 'text-game-success' :
                 playerStats.score < 0 ? 'text-game-danger' : ''
               }`}>
                 {playerStats.score > 0 ? '+' : ''}{playerStats.score}
@@ -496,12 +496,12 @@ frontend/src/
         <div className="text-sm text-game-text/60 mb-2">Hand Before Play</div>
         <div className="flex flex-wrap gap-2">
           {pieces.map((piece, index) => (
-            <span 
+            <span
               key={index}
               className={`
                 px-3 py-2 rounded-md text-sm font-mono
-                ${piece.color === 'red' 
-                  ? 'bg-game-piece-red/20 text-game-piece-red border border-game-piece-red/30' 
+                ${piece.color === 'red'
+                  ? 'bg-game-piece-red/20 text-game-piece-red border border-game-piece-red/30'
                   : 'bg-game-piece-black/20 text-game-piece-black border border-game-piece-black/30'
                 }
               `}
@@ -520,7 +520,7 @@ frontend/src/
   ```jsx
   const TurnSection = ({ turn, turnNumber }) => {
     const isTriplePlay = turn.plays.every(p => p.pieces.length === 3);
-    
+
     return (
       <div className="border-b border-game-text/10 pb-6 mb-6 last:border-0">
         <div className="flex items-center justify-between mb-4">
@@ -532,10 +532,10 @@ frontend/src/
             <span className="ml-2">• {turn.winnerPieces} pieces</span>
           </div>
         </div>
-        
+
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           {turn.plays.map((play) => (
-            <PlayCard 
+            <PlayCard
               key={play.player}
               play={play}
               isWinner={play.player === turn.winner}
@@ -584,7 +584,7 @@ const ErrorState = ({ error, onRetry }) => (
         <h2 className="text-xl font-semibold text-game-text mb-2">Failed to load game history</h2>
         <p className="text-game-text/60 mb-6">{error.message}</p>
         {error.canRetry && (
-          <button 
+          <button
             onClick={onRetry}
             className="bg-game-primary hover:bg-game-primary/80 text-white px-6 py-2 rounded-lg transition-colors"
           >

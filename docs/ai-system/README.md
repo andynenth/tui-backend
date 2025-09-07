@@ -37,7 +37,7 @@ ai-system/
 - [AI Debug Mode Guide](./debug-mode/AI_DEBUG_MODE_COMPREHENSIVE.md) - How to debug AI behavior
 - [Quick Reference](./debug-mode/AI_DEBUG_QUICK_REFERENCE.md) - Common commands and tips
 
-### For Developers  
+### For Developers
 - [AI Architecture](./overview/AI_ARCHITECTURE.md) - System design and components
 - [Implementation Details](./implementation/) - Deep dive into AI logic
 - [Testing Guide](./testing/AI_TESTING_WORKFLOW.md) - How to test AI changes

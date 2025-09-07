@@ -72,7 +72,7 @@ if (process.argv.includes('--production')) {
     .build({ ...buildOptions, metafile: true })
     .then((result) => {
       console.log('✅ Production build complete!');
-      
+
       // Bundle analysis
       if (result.metafile) {
         console.log('\n📊 Bundle Analysis:');
@@ -81,24 +81,24 @@ if (process.argv.includes('--production')) {
           color: true
         });
         console.log(analysis);
-        
+
         // Calculate bundle sizes
         const outputs = result.metafile.outputs;
         let totalSize = 0;
         let mainBundleSize = 0;
         let chunkCount = 0;
-        
+
         Object.entries(outputs).forEach(([path, info]) => {
           const size = info.bytes;
           totalSize += size;
-          
+
           if (path.includes('bundle.js')) {
             mainBundleSize = size;
           } else if (path.includes('chunks/')) {
             chunkCount++;
           }
         });
-        
+
         console.log('\n🎯 Bundle Size Summary:');
         console.log(`Main bundle: ${(mainBundleSize / 1024).toFixed(1)}KB`);
         console.log(`Total size: ${(totalSize / 1024).toFixed(1)}KB`);

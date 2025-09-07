@@ -9,11 +9,11 @@ export interface PlayHistoryService {
 
 class PlayHistoryServiceImpl implements PlayHistoryService {
   private baseUrl = '/api/rooms';
-  
+
   async getHistory(roomId: string): Promise<PlayHistory> {
     try {
       const response = await fetch(`${this.baseUrl}/${roomId}/play-history`);
-      
+
       if (!response.ok) {
         if (response.status === 404) {
           throw this.createError('Game history not found', 'NOT_FOUND', true);
@@ -24,16 +24,16 @@ class PlayHistoryServiceImpl implements PlayHistoryService {
           response.status >= 500
         );
       }
-      
+
       const rawData = await response.json();
-      
+
       // Transform the API response to match our expected format
       const transformedData = transformPlayHistoryResponse(rawData);
-      
+
       if (!validatePlayHistory(transformedData)) {
         throw this.createError('Invalid game history data', 'INVALID_DATA', false);
       }
-      
+
       // Deep freeze the data to ensure immutability
       return deepFreeze(transformedData);
     } catch (error) {
@@ -41,17 +41,17 @@ class PlayHistoryServiceImpl implements PlayHistoryService {
       if (this.isPlayHistoryError(error)) {
         throw error;
       }
-      
+
       // Handle network errors
       if (error instanceof TypeError && error.message.includes('fetch')) {
         throw this.createError('Network error', 'NETWORK_ERROR', true);
       }
-      
+
       // Handle JSON parse errors
       if (error instanceof SyntaxError) {
         throw this.createError('Invalid response format', 'PARSE_ERROR', false);
       }
-      
+
       // Generic error
       throw this.createError(
         error instanceof Error ? error.message : 'Unknown error',
@@ -60,7 +60,7 @@ class PlayHistoryServiceImpl implements PlayHistoryService {
       );
     }
   }
-  
+
   private createError(message: string, code: string, canRetry: boolean): PlayHistoryError {
     return {
       message,
@@ -68,7 +68,7 @@ class PlayHistoryServiceImpl implements PlayHistoryService {
       canRetry
     };
   }
-  
+
   private isPlayHistoryError(error: unknown): error is PlayHistoryError {
     return (
       typeof error === 'object' &&

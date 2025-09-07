@@ -34,7 +34,7 @@ ssh -i "$TARGET_KEY" ubuntu@$TARGET_IP << 'ENDSSH'
     fi
 
     echo -e "${YELLOW}📝 Creating nginx configuration for HTTP (no SSL yet)...${NC}"
-    
+
     # Create temporary nginx config for HTTP only
     sudo tee /etc/nginx/sites-available/liap-tui-http << 'EOF'
 server {
@@ -51,7 +51,7 @@ server {
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
         proxy_set_header X-Forwarded-Proto $scheme;
-        
+
         # WebSocket support
         proxy_read_timeout 86400;
     }
@@ -85,17 +85,17 @@ EOF
     echo -e "${YELLOW}🔄 Enabling nginx configuration...${NC}"
     sudo ln -sf /etc/nginx/sites-available/liap-tui-http /etc/nginx/sites-enabled/
     sudo rm -f /etc/nginx/sites-enabled/default
-    
+
     # Test nginx config
     echo -e "${YELLOW}🧪 Testing nginx configuration...${NC}"
     sudo nginx -t
-    
+
     # Reload nginx
     echo -e "${YELLOW}♻️  Reloading nginx...${NC}"
     sudo systemctl reload nginx
-    
+
     echo -e "${GREEN}✅ Nginx configured!${NC}"
-    
+
     # Test the setup
     echo -e "${YELLOW}🔍 Testing HTTP access...${NC}"
     if curl -s http://localhost/api/health | grep -q "healthy"; then

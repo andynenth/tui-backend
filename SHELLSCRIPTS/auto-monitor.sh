@@ -32,18 +32,18 @@ echo ""
 
 while true; do
     echo -n "$(date '+%H:%M:%S') - "
-    
+
     if check_health; then
         echo -n "Health: OK | "
     else
         echo -n "Health: FAIL | "
     fi
-    
+
     if check_resources; then
         echo "Server: OK"
     else
         echo "Server: UNREACHABLE"
     fi
-    
+
     sleep 60  # Check every minute
 done

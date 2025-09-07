@@ -17,23 +17,23 @@ services:
     environment:
       # Database
       - DATABASE_PATH=/app/data/game_events.db
-      
+
       # Application settings
       - API_HOST=0.0.0.0
       - API_PORT=5050
       - DEBUG=false
-      
+
       # Version (can be overridden)
       - APP_VERSION=${APP_VERSION:-}
-      
+
       # Game settings
       - MAX_SCORE=50
       - MAX_ROUNDS=20
       - BOT_ENABLED=true
-      
+
       # CORS for local testing
       - ALLOWED_ORIGINS=http://localhost,http://localhost:80
-      
+
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:5050/api/health"]

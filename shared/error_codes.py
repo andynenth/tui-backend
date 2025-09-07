@@ -11,7 +11,7 @@ from typing import Dict, Any, Optional
 
 class ErrorCode(IntEnum):
     """Standardized error codes for the Liap TUI application."""
-    
+
     # Validation Errors (1000-1999)
     VALIDATION_REQUIRED_FIELD = 1001
     VALIDATION_INVALID_FORMAT = 1002
@@ -19,13 +19,13 @@ class ErrorCode(IntEnum):
     VALIDATION_INVALID_TYPE = 1004
     VALIDATION_DUPLICATE_VALUE = 1005
     VALIDATION_CONSTRAINT_VIOLATION = 1006
-    
+
     # Authentication/Authorization (2000-2999)
     AUTH_INVALID_CREDENTIALS = 2001
     AUTH_SESSION_EXPIRED = 2002
     AUTH_INSUFFICIENT_PERMISSIONS = 2003
     AUTH_ACCOUNT_LOCKED = 2004
-    
+
     # Game Logic Errors (3000-3999)
     GAME_INVALID_ACTION = 3001
     GAME_NOT_YOUR_TURN = 3002
@@ -38,7 +38,7 @@ class ErrorCode(IntEnum):
     GAME_INSUFFICIENT_PIECES = 3009
     GAME_DECLARATION_CONSTRAINT = 3010
     GAME_WEAK_HAND_INVALID = 3011
-    
+
     # Network/Connection (4000-4999)
     NETWORK_CONNECTION_LOST = 4001
     NETWORK_TIMEOUT = 4002
@@ -46,7 +46,7 @@ class ErrorCode(IntEnum):
     NETWORK_MESSAGE_QUEUE_FULL = 4004
     NETWORK_INVALID_MESSAGE = 4005
     NETWORK_RECONNECTION_FAILED = 4006
-    
+
     # System Errors (5000-5999)
     SYSTEM_INTERNAL_ERROR = 5001
     SYSTEM_SERVICE_UNAVAILABLE = 5002
@@ -59,13 +59,13 @@ class ErrorSeverity:
     """Error severity levels for logging and user notification."""
     LOW = "low"
     MEDIUM = "medium"
-    HIGH = "high" 
+    HIGH = "high"
     CRITICAL = "critical"
 
 
 class StandardError:
     """Standardized error response format."""
-    
+
     def __init__(
         self,
         code: ErrorCode,
@@ -84,12 +84,12 @@ class StandardError:
         self.severity = severity
         self.request_id = request_id
         self.timestamp = self._get_timestamp()
-    
+
     def _get_timestamp(self) -> int:
         """Get current timestamp in milliseconds."""
         import time
         return int(time.time() * 1000)
-    
+
     def to_dict(self) -> Dict[str, Any]:
         """Convert error to dictionary format for JSON serialization."""
         return {
@@ -102,14 +102,14 @@ class StandardError:
             "timestamp": self.timestamp,
             "request_id": self.request_id
         }
-    
+
     def to_websocket_message(self) -> Dict[str, Any]:
         """Convert error to WebSocket message format."""
         return {
             "event": "error",
             "data": self.to_dict()
         }
-    
+
     @classmethod
     def from_dict(cls, data: Dict[str, Any]) -> 'StandardError':
         """Create StandardError from dictionary."""
@@ -142,7 +142,7 @@ ERROR_METADATA = {
         "severity": ErrorSeverity.LOW,
         "user_message": "Value is out of acceptable range"
     },
-    
+
     # Game logic errors - context-dependent retryability
     ErrorCode.GAME_INVALID_ACTION: {
         "retryable": False,
@@ -159,7 +159,7 @@ ERROR_METADATA = {
         "severity": ErrorSeverity.MEDIUM,
         "user_message": "Game room is full, please try again later"
     },
-    
+
     # Network errors - usually retryable, higher severity
     ErrorCode.NETWORK_CONNECTION_LOST: {
         "retryable": True,
@@ -171,7 +171,7 @@ ERROR_METADATA = {
         "severity": ErrorSeverity.MEDIUM,
         "user_message": "Request timed out, please try again"
     },
-    
+
     # System errors - retryable for transient issues, critical severity
     ErrorCode.SYSTEM_INTERNAL_ERROR: {
         "retryable": True,
@@ -204,7 +204,7 @@ def create_standard_error(
 ) -> StandardError:
     """Create a StandardError with metadata applied."""
     metadata = get_error_metadata(code)
-    
+
     return StandardError(
         code=code,
         message=message,

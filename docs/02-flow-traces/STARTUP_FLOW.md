@@ -25,21 +25,21 @@ sequenceDiagram
     participant Browser as Web Browser
     participant React as React App
     participant WS as WebSocket Service
-    
+
     OS->>Docker: docker run liap-tui
     Docker->>Python: python -m uvicorn
     Python->>FastAPI: Initialize application
     FastAPI->>Static: Mount static directory
-    
+
     Browser->>FastAPI: GET /
     FastAPI->>Browser: index.html
     Browser->>FastAPI: GET /bundle.js
     FastAPI->>Browser: JavaScript bundle
-    
+
     Browser->>React: Initialize React
     React->>WS: Create NetworkService
     React->>React: Router navigation
-    
+
     Note over React,WS: Ready for WebSocket connections
 ```
 
@@ -102,11 +102,11 @@ app.add_middleware(RateLimitMiddleware)
 # backend/shared_instances.py
 def initialize_shared_instances():
     global shared_room_manager, shared_bot_manager
-    
+
     # Create singleton instances
     shared_room_manager = AsyncRoomManager()
     shared_bot_manager = BotManager(shared_room_manager)
-    
+
     logger.info("✅ Shared instances initialized")
 
 # Called during import
@@ -128,10 +128,10 @@ def __init__(self):
         os.path.dirname(os.path.dirname(os.path.dirname(__file__))),
         "game_events.db"
     )
-    
+
     # Initialize database schema
     self._init_db()
-    
+
 def _init_db(self):
     """Initialize SQLite database with optimized schema."""
     with sqlite3.connect(self.db_path) as conn:
@@ -139,7 +139,7 @@ def _init_db(self):
         conn.execute('''CREATE TABLE IF NOT EXISTS game_events ...''')
         conn.execute('''CREATE TABLE IF NOT EXISTS game_summaries ...''')
         conn.execute('''CREATE TABLE IF NOT EXISTS game_snapshots ...''')
-        
+
     logger.info(f"✅ Database initialized at {self.db_path}")
 ```
 
@@ -278,19 +278,19 @@ const AppWithServices = () => {
     const initServices = async () => {
       // 1. Initialize theme
       initializeTheme();
-      
+
       // 2. Initialize network service
       await initializeServices();
-      
+
       // 3. Check for stored session
       if (hasValidSession()) {
         const session = getSession();
         setSessionToRecover(session);
       }
-      
+
       setServicesInitialized(true);
     };
-    
+
     initServices();
   }, []);
 };
@@ -311,24 +311,24 @@ const AppWithServices = () => {
 ```typescript
 export class NetworkService extends EventTarget {
   private static instance: NetworkService | null = null;
-  
+
   static getInstance(): NetworkService {
     if (!NetworkService.instance) {
       NetworkService.instance = new NetworkService();
     }
     return NetworkService.instance;
   }
-  
+
   private constructor() {
     super();
-    
+
     // Initialize configuration
     this.config = {
       heartbeatInterval: TIMING.HEARTBEAT_INTERVAL,
       maxReconnectAttempts: GAME.MAX_RECONNECT_ATTEMPTS,
       // ... other config
     };
-    
+
     // Initialize data structures
     this.connections = new Map();
     this.messageQueues = new Map();
@@ -349,7 +349,7 @@ export class NetworkService extends EventTarget {
 export const initializeTheme = () => {
   // Check localStorage
   const savedTheme = localStorage.getItem('liap-tui-theme');
-  
+
   if (savedTheme) {
     applyTheme(savedTheme);
   } else {
@@ -357,7 +357,7 @@ export const initializeTheme = () => {
     const prefersDark = window.matchMedia(
       '(prefers-color-scheme: dark)'
     ).matches;
-    
+
     applyTheme(prefersDark ? 'dark' : 'light');
   }
 };
@@ -391,12 +391,12 @@ return <AppRouter />;
 ```
 Time    Backend                         Frontend
 ----    -------                         --------
-0ms     Process starts                  
-10ms    Load environment               
-20ms    Initialize FastAPI             
-30ms    Register routes                
-40ms    Mount static files             
-50ms    Start accepting connections    
+0ms     Process starts
+10ms    Load environment
+20ms    Initialize FastAPI
+30ms    Register routes
+40ms    Mount static files
+50ms    Start accepting connections
 100ms   Health check available         Browser requests /
 150ms                                  Load HTML
 200ms                                  Load bundle.js
@@ -466,7 +466,7 @@ class ErrorBoundary extends React.Component {
 cd backend
 uvicorn api.main:app --reload --port 5050
 
-# Frontend with hot reload  
+# Frontend with hot reload
 cd frontend
 npm run dev  # ESBuild watch mode
 

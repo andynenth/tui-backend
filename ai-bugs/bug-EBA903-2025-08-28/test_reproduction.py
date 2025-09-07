@@ -4,7 +4,7 @@
 import sys
 from pathlib import Path
 
-# Add to path  
+# Add to path
 project_root = Path(__file__).parent.parent.parent
 sys.path.insert(0, str(project_root))
 
@@ -13,7 +13,7 @@ from tests.ai_regression.ai_decision_framework import AIDecisionTester
 def test_bug():
     """Test the bug scenario - Bot 4 disposing valuable openers"""
     tester = AIDecisionTester()
-    
+
     # Bot 4's exact scenario from room EBA903 round 2
     tester.add_scenario(
         name="Bug from Room EBA903 - Bot 4 Disposing Openers",
@@ -35,7 +35,7 @@ def test_bug():
         turn_number=1,
         is_starter=False
     )
-    
+
     # Contrast: Bot declaring 2 with same openers
     tester.add_scenario(
         name="Contrast - Bot Declaring 2",
@@ -57,9 +57,9 @@ def test_bug():
         turn_number=1,
         is_starter=False
     )
-    
+
     tester.run_all_scenarios()
-    
+
     print("\n" + "="*60)
     print("BUG ANALYSIS")
     print("="*60)

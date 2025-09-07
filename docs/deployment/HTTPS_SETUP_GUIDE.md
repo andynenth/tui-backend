@@ -31,7 +31,7 @@ sudo tee /etc/nginx/sites-available/liap-tui-ssl << 'EOF'
 server {
     listen 80;
     server_name your-domain.com www.your-domain.com;
-    
+
     # Redirect HTTP to HTTPS
     return 301 https://$server_name$request_uri;
 }
@@ -39,29 +39,29 @@ server {
 server {
     listen 443 ssl http2;
     server_name your-domain.com www.your-domain.com;
-    
+
     # SSL certificates (will be added by Certbot)
     # ssl_certificate /etc/letsencrypt/live/your-domain.com/fullchain.pem;
     # ssl_certificate_key /etc/letsencrypt/live/your-domain.com/privkey.pem;
-    
+
     # SSL configuration
     ssl_protocols TLSv1.2 TLSv1.3;
     ssl_ciphers HIGH:!aNULL:!MD5;
     ssl_prefer_server_ciphers on;
-    
+
     # Security headers
     add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;
     add_header X-Frame-Options "SAMEORIGIN" always;
     add_header X-Content-Type-Options "nosniff" always;
     add_header X-XSS-Protection "1; mode=block" always;
     add_header Referrer-Policy "no-referrer-when-downgrade" always;
-    
+
     # Gzip compression
     gzip on;
     gzip_vary on;
     gzip_min_length 1024;
     gzip_types text/plain text/css text/xml text/javascript application/javascript application/json;
-    
+
     # WebSocket support
     location /ws {
         proxy_pass http://localhost:5050;
@@ -74,7 +74,7 @@ server {
         proxy_set_header X-Forwarded-Proto $scheme;
         proxy_read_timeout 86400;
     }
-    
+
     # API endpoints
     location /api {
         proxy_pass http://localhost:5050;
@@ -83,14 +83,14 @@ server {
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
         proxy_set_header X-Forwarded-Proto $scheme;
     }
-    
+
     # Static files with caching
     location ~* \.(jpg|jpeg|png|gif|ico|css|js|woff|woff2|ttf|svg)$ {
         proxy_pass http://localhost:5050;
         expires 30d;
         add_header Cache-Control "public, immutable";
     }
-    
+
     # Default location
     location / {
         proxy_pass http://localhost:5050;
@@ -218,15 +218,15 @@ services:
       - API_HOST=0.0.0.0
       - API_PORT=5050
       - DEBUG=false
-      
+
       # HTTPS proxy settings
       - VIRTUAL_HOST=your-domain.com,www.your-domain.com
       - LETSENCRYPT_HOST=your-domain.com,www.your-domain.com
       - VIRTUAL_PORT=5050
-      
+
       # WebSocket support
       - VIRTUAL_PROTO=http
-      
+
       # CORS
       - ALLOWED_ORIGINS=https://your-domain.com,https://www.your-domain.com
     restart: unless-stopped

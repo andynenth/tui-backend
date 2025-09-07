@@ -286,7 +286,7 @@ class EventStore:
             conn = sqlite3.connect(self.db_path)
             conn.execute(
                 """
-                INSERT INTO game_events 
+                INSERT INTO game_events
                 (sequence, room_id, event_type, payload, player_id, timestamp, created_at)
                 VALUES (?, ?, ?, ?, ?, ?, ?)
             """,
@@ -325,7 +325,7 @@ class EventStore:
         cursor = conn.execute(
             """
             SELECT sequence, room_id, event_type, payload, player_id, timestamp, created_at
-            FROM game_events 
+            FROM game_events
             WHERE room_id = ? AND sequence > ?
             ORDER BY sequence ASC
         """,
@@ -369,7 +369,7 @@ class EventStore:
 
         query = """
             SELECT sequence, room_id, event_type, payload, player_id, timestamp, created_at
-            FROM game_events 
+            FROM game_events
             WHERE room_id = ?
             ORDER BY sequence ASC
         """
@@ -690,9 +690,9 @@ class EventStore:
         # Events by room
         cursor = conn.execute(
             """
-            SELECT room_id, COUNT(*) as event_count 
-            FROM game_events 
-            GROUP BY room_id 
+            SELECT room_id, COUNT(*) as event_count
+            FROM game_events
+            GROUP BY room_id
             ORDER BY event_count DESC
         """
         )
@@ -701,9 +701,9 @@ class EventStore:
         # Events by type
         cursor = conn.execute(
             """
-            SELECT event_type, COUNT(*) as event_count 
-            FROM game_events 
-            GROUP BY event_type 
+            SELECT event_type, COUNT(*) as event_count
+            FROM game_events
+            GROUP BY event_type
             ORDER BY event_count DESC
         """
         )
@@ -779,7 +779,7 @@ class EventStore:
 
         query = """
             SELECT sequence, room_id, event_type, payload, player_id, timestamp, created_at
-            FROM game_events 
+            FROM game_events
             WHERE room_id = ? AND event_type = ?
             ORDER BY sequence ASC
         """
@@ -866,7 +866,7 @@ class EventStore:
         conn = sqlite3.connect(self.db_path)
         cursor = conn.execute(
             """
-            SELECT sequence FROM game_events 
+            SELECT sequence FROM game_events
             WHERE room_id = ?
             ORDER BY sequence ASC
             """,

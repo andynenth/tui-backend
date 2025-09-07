@@ -13,11 +13,11 @@ export const usePlayHistory = (roomId: string): UsePlayHistoryResult => {
   const [data, setData] = useState<PlayHistory | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<PlayHistoryError | null>(null);
-  
+
   const fetchData = useCallback(async () => {
     setLoading(true);
     setError(null);
-    
+
     try {
       const history = await playHistoryService.getHistory(roomId);
       setData(history);
@@ -37,11 +37,11 @@ export const usePlayHistory = (roomId: string): UsePlayHistoryResult => {
       setLoading(false);
     }
   }, [roomId]);
-  
+
   useEffect(() => {
     fetchData();
   }, [fetchData]);
-  
+
   return {
     data,
     loading,

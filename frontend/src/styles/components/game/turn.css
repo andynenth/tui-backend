@@ -6,11 +6,11 @@
   /* Border colors - matches piece-tray.css and game-piece.css */
   --border-color-gray: rgba(173, 181, 189, 0.3);
   --border-color-gray-dark: rgba(173, 181, 189, 0.7);
-  
+
   /* Piece colors - from game-piece.css */
   --piece-color-red: #dc3545;
   --piece-color-black: #495057;
-  
+
   /* Status colors */
   --status-color-active: rgba(255, 193, 7, 0.6);
   --status-color-played: rgba(40, 167, 69, 0.6);

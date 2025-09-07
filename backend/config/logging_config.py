@@ -105,7 +105,9 @@ def get_logging_config() -> Dict[str, Any]:
         # Remove rate_limit_file from any loggers that use it
         for logger_config in config["loggers"].values():
             if isinstance(logger_config.get("handlers"), list):
-                logger_config["handlers"] = [h for h in logger_config["handlers"] if h != "rate_limit_file"]
+                logger_config["handlers"] = [
+                    h for h in logger_config["handlers"] if h != "rate_limit_file"
+                ]
     # Check if we can write logs before adding file handlers (for non-Docker environments)
     elif not can_write_logs():
         print("Warning: Cannot write to logs directory, disabling file logging")
@@ -115,7 +117,9 @@ def get_logging_config() -> Dict[str, Any]:
         # Remove rate_limit_file from any loggers that use it
         for logger_config in config["loggers"].values():
             if isinstance(logger_config.get("handlers"), list):
-                logger_config["handlers"] = [h for h in logger_config["handlers"] if h != "rate_limit_file"]
+                logger_config["handlers"] = [
+                    h for h in logger_config["handlers"] if h != "rate_limit_file"
+                ]
 
     return config
 
@@ -125,7 +129,7 @@ def can_write_logs():
     try:
         test_file = "logs/.test_write"
         os.makedirs("logs", exist_ok=True)
-        with open(test_file, 'w') as f:
+        with open(test_file, "w") as f:
             f.write("test")
         os.remove(test_file)
         return True

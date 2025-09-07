@@ -80,7 +80,7 @@ The backend uses an **Enterprise Architecture** pattern with:
 
 ### Prerequisites
 
-- **Python 3.9+** 
+- **Python 3.9+**
 - **Node.js 16+**
 - **Docker** (optional, for containerized development)
 
@@ -97,11 +97,11 @@ The backend uses an **Enterprise Architecture** pattern with:
    ```bash
    # Frontend dependencies (required for build to work)
    cd frontend && npm install
-   
+
    # Backend dependencies (if using virtual environment)
    source venv/bin/activate && pip install -r requirements.txt
    ```
-   
+
    **Why this matters**: The project now tracks `package-lock.json` in version control to ensure reproducible builds. This prevents "Cannot find module" errors that occur when dependencies aren't properly installed.
 
 3. **Start Development Environment**
@@ -164,7 +164,7 @@ docker build -t liap-tui .
 liap-tui/
 ├── backend/              # FastAPI backend
 │   ├── api/             # API routes and WebSocket handlers
-│   │   ├── routes/      
+│   │   ├── routes/
 │   │   │   ├── routes.py    # HTTP endpoints
 │   │   │   └── ws.py        # WebSocket handlers
 │   │   └── main.py      # FastAPI application
@@ -374,7 +374,7 @@ Reusable components (Button, GamePiece, etc.)
 cd backend
 python -m pytest tests/
 
-# Frontend tests  
+# Frontend tests
 cd frontend
 npm test
 

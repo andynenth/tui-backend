@@ -156,7 +156,7 @@ This document outlines the comprehensive data structure for recording all game e
       "beats_current": true
     },
     {
-      "play_type": "SINGLE", 
+      "play_type": "SINGLE",
       "pieces": ["ADVISOR_BLACK"],
       "value": 12,
       "rank": 1,

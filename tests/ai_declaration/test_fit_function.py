@@ -39,10 +39,10 @@ for room in test_rooms:
             print(f"  - Opener: {[str(p) for p in play['pieces']]}")
         else:
             print(f"  - {play['combo_type']}: {[str(p) for p in play['pieces']]} ({len(play['pieces'])} pieces)")
-    
+
     # Apply fit function
     fitted = fit_plays_to_pile_room(play_list.copy(), room)
-    
+
     print('After fit:')
     total = 0
     for play in fitted:

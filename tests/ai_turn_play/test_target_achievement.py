@@ -21,7 +21,7 @@ from backend.engine.ai_turn_strategy import (
 def test_opener_strategy():
     """Test: Bot starter should choose strategic piece count and play opener"""
     print("\n=== Test: Opener Strategy (Starter) ===")
-    
+
     # Create hand with clear opener but no combos
     hand = [
         Piece("GENERAL_RED"),    # 14 points - strong opener
@@ -30,7 +30,7 @@ def test_opener_strategy():
         Piece("ELEPHANT_BLACK"), # 9 points
         Piece("SOLDIER_BLACK"),  # 1 point
     ]
-    
+
     context = TurnPlayContext(
         my_name="Bot 1",
         my_hand=hand,
@@ -49,18 +49,18 @@ def test_opener_strategy():
             "Bot 4": {"captured": 1, "declared": 1}
         }
     )
-    
+
     # Test urgency calculation
     urgency = calculate_urgency(context)
     print(f"Urgency: {urgency} (need 3 wins in 4 turns)")
-    
+
     # Test play selection
     result = choose_strategic_play(hand, context)
     print(f"Bot plays: {[p.name for p in result]} (value: {sum(p.point for p in result)})")
-    
+
     # With high urgency (75%) and no combos, should play 1 piece
     assert len(result) == 1, f"Expected 1 piece with high urgency and no combos, got {len(result)}"
-    
+
     # NOTE: Current implementation may play burden pieces to save openers for later
     # This could be improved to play openers more aggressively with high urgency
     print(f"  Note: Played {result[0].name}({result[0].point}) - saving openers is valid strategy")
@@ -70,7 +70,7 @@ def test_opener_strategy():
 def test_urgent_capture_scenario():
     """Test: Bot starter should play aggressively when critically urgent"""
     print("\n=== Test: Urgent Capture Scenario (Starter) ===")
-    
+
     # Create hand with high-value pieces
     # Note: Game rules require same name AND color for pairs, so we can't test pairs easily
     hand = [
@@ -81,7 +81,7 @@ def test_urgent_capture_scenario():
         Piece("HORSE_RED"),      # 6 points
         Piece("SOLDIER_BLACK"),  # 1 point
     ]
-    
+
     context = TurnPlayContext(
         my_name="Bot 2",
         my_hand=hand,
@@ -100,15 +100,15 @@ def test_urgent_capture_scenario():
             "Bot 4": {"captured": 0, "declared": 1}
         }
     )
-    
+
     # Test urgency calculation
     urgency = calculate_urgency(context)
     print(f"Urgency: {urgency} (need 2 wins in 1 turn)")
-    
+
     # Test play selection
     result = choose_strategic_play(hand, context)
     print(f"Bot plays: {[f'{p.name}({p.point})' for p in result]} (total: {sum(p.point for p in result)} pts)")
-    
+
     # With critical urgency and no combos, should play 1 piece
     assert len(result) == 1, f"Expected 1 piece with critical urgency and no combos, got {len(result)} pieces"
     print(f"  Note: Played {result[0].name}({result[0].point}) - any play is valid with critical urgency")
@@ -118,7 +118,7 @@ def test_urgent_capture_scenario():
 def test_normal_progression():
     """Test: Bot responder should balance between disposing burden and maintaining options"""
     print("\n=== Test: Normal Progression (Responder) ===")
-    
+
     # Create hand with mix of pieces including a pair
     hand = [
         Piece("ADVISOR_BLACK"),  # 11 points - opener
@@ -129,7 +129,7 @@ def test_normal_progression():
         Piece("SOLDIER_BLACK"),  # 1 point - burden
         Piece("CANNON_RED"),     # 4 points - burden
     ]
-    
+
     context = TurnPlayContext(
         my_name="Bot 3",
         my_hand=hand,
@@ -148,19 +148,19 @@ def test_normal_progression():
             "Bot 4": {"captured": 1, "declared": 2}
         }
     )
-    
-    # Test hand evaluation  
+
+    # Test hand evaluation
     plan = generate_strategic_plan(hand, context)
     print(f"Strategic plan:")
     print(f"  Target remaining: {plan.target_remaining}")
     print(f"  Urgency: {plan.urgency_level}")
     print(f"  Openers: {len(plan.assigned_openers)}")
     print(f"  Combos: {len(plan.assigned_combos)}")
-    
+
     # Test play selection
     result = choose_strategic_play(hand, context)
     print(f"Bot plays: {[f'{p.name}({p.point})' for p in result]} (total: {sum(p.point for p in result)} pts)")
-    
+
     # Should dispose burden pieces as responder with medium urgency
     assert len(result) == 2, f"Expected 2 pieces as required, got {len(result)}"
     print("✅ Made reasonable play based on urgency level")
@@ -169,12 +169,12 @@ def test_normal_progression():
 def test_edge_case_impossible_target():
     """Test: Bot responder should still play reasonably when target is impossible"""
     print("\n=== Test: Edge Case - Impossible Target (Responder) ===")
-    
+
     hand = [
         Piece("SOLDIER_RED"),    # 2 points
         Piece("SOLDIER_BLACK"),  # 1 point
     ]
-    
+
     context = TurnPlayContext(
         my_name="Bot 4",
         my_hand=hand,
@@ -193,15 +193,15 @@ def test_edge_case_impossible_target():
             "Bot 4": {"captured": 0, "declared": 4}
         }
     )
-    
+
     # Test urgency calculation
     urgency = calculate_urgency(context)
     print(f"Urgency: {urgency} (need 4 wins in 1 turn - impossible!)")
-    
+
     # Test play selection
     result = choose_strategic_play(hand, context)
     print(f"Bot plays: {[f'{p.name}({p.point})' for p in result]} (total: {sum(p.point for p in result)} pts)")
-    
+
     # Should play both pieces as required
     assert len(result) == 2, f"Expected 2 pieces as required, got {len(result)}"
     print("✅ Handled impossible target gracefully")
@@ -210,7 +210,7 @@ def test_edge_case_impossible_target():
 def test_combo_first_strategy():
     """Test: New combo-first strategy for starters with straight combo"""
     print("\n=== Test: Combo-First Strategy (NEW) ===")
-    
+
     # Create hand with a straight combo and openers
     # STRAIGHT requires 3 pieces: CHARIOT, HORSE, CANNON (same color)
     hand = [
@@ -221,7 +221,7 @@ def test_combo_first_strategy():
         Piece("CANNON_RED"),     # 4 points - part of straight
         Piece("SOLDIER_BLACK"),  # 1 point
     ]
-    
+
     context = TurnPlayContext(
         my_name="Bot 6",
         my_hand=hand,
@@ -240,15 +240,15 @@ def test_combo_first_strategy():
             "Bot 4": {"captured": 0, "declared": 1}
         }
     )
-    
+
     # Test urgency calculation
     urgency = calculate_urgency(context)
     print(f"Urgency: {urgency} (need 4 wins in 6 turns)")
-    
+
     # Test play selection
     result = choose_strategic_play(hand, context)
     print(f"Bot plays: {[f'{p.name}({p.point})' for p in result]} (total: {sum(p.point for p in result)} pts)")
-    
+
     # With high urgency and a straight combo available (no overcapture risk), should choose the combo
     assert len(result) == 3, f"Expected straight combo (3 pieces), got {len(result)} pieces"
     assert set(p.name for p in result) == {"CHARIOT", "HORSE", "CANNON"}, "Should prioritize straight combo"
@@ -258,14 +258,14 @@ def test_combo_first_strategy():
 def test_already_at_target():
     """Verify overcapture avoidance still works"""
     print("\n=== Test: Already at Target (Responder) ===")
-    
+
     hand = [
         Piece("GENERAL_RED"),    # 14 points
         Piece("ADVISOR_BLACK"),  # 11 points
         Piece("SOLDIER_RED"),    # 2 points
         Piece("SOLDIER_BLACK"),  # 1 point
     ]
-    
+
     context = TurnPlayContext(
         my_name="Bot 5",
         my_hand=hand,
@@ -284,15 +284,15 @@ def test_already_at_target():
             "Bot 5": {"captured": 2, "declared": 2}
         }
     )
-    
+
     # Test urgency calculation
     urgency = calculate_urgency(context)
     print(f"Urgency: {urgency} (already at target)")
-    
+
     # Test play selection
     result = choose_strategic_play(hand, context)
     print(f"Bot plays: {[f'{p.name}({p.point})' for p in result]} (total: {sum(p.point for p in result)} pts)")
-    
+
     # Verify it played 2 pieces as required
     assert len(result) == 2, f"Expected 2 pieces as required, got {len(result)}"
     # Note: Current AI prioritizes burden disposal even at target, which may not be optimal
@@ -303,12 +303,12 @@ def test_already_at_target():
 if __name__ == "__main__":
     print("Testing Target Achievement Strategy with NEW AI Improvements")
     print("=" * 50)
-    
+
     test_opener_strategy()
     test_urgent_capture_scenario()
     test_normal_progression()
     test_edge_case_impossible_target()
     test_combo_first_strategy()  # NEW test for combo-first behavior
     test_already_at_target()
-    
+
     print("\n✅ All target achievement tests passed!")

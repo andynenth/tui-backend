@@ -12,7 +12,7 @@ The AI system already generates comprehensive decision data through verbose logg
 ```python
 # From ai.py lines 354-363 - STRATEGIC DECLARATION ANALYSIS
 🎯 STRATEGIC DECLARATION ANALYSIS
-Position: 2 (Starter: False)  
+Position: 2 (Starter: False)
 Previous declarations: [1, 0]
 Pile room: 7
 Field strength: weak
@@ -44,7 +44,7 @@ Final declaration: 4
 - **Previous Context**: Other players' declarations/actions
 - **Timing**: Decision response time in milliseconds
 
-**Visual Format**: 
+**Visual Format**:
 ```
 🤖 Bot_Player_2 | DECLARATION | Position 2 (Non-starter) | 143ms
    Previous declarations: [1, 0]
@@ -95,7 +95,7 @@ Final declaration: 4
 
 #### **Declaration Accuracy Tracking**
 **Data Source**: Declared vs actual piles won
-**Display**: 
+**Display**:
 - **Success Rate**: % of accurate declarations
 - **Over-Declaration**: When bot declared more than achieved
 - **Under-Declaration**: When bot declared less than achieved
@@ -114,7 +114,7 @@ Final declaration: 4
 
 #### **Combo Utilization Heatmap**
 **Data Source**: Combo types found vs used in declarations
-**Display**: 
+**Display**:
 - **Heat Map**: Frequency of each combo type discovery
 - **Utilization Rate**: How often discovered combos influence declarations
 - **Success Rate**: Win rate when using each combo type
@@ -123,7 +123,7 @@ Final declaration: 4
 **Data Source**: `analyze_opponent_patterns()` results
 **Display**:
 - **Low Declarer Detection**: When opponents have weak hands
-- **High Declarer Detection**: When opponents have strong hands  
+- **High Declarer Detection**: When opponents have strong hands
 - **Singles-Only Rounds**: Rounds where only single pieces played
 - **Response Strategy**: How bot adapts to opponent patterns
 
@@ -142,7 +142,7 @@ Final declaration: 4
 #### **Round Progression Analysis**
 **Display**:
 - **Early Round Strategy**: Rounds 1-5 behavior patterns
-- **Mid Game Adaptation**: Rounds 6-15 strategy evolution  
+- **Mid Game Adaptation**: Rounds 6-15 strategy evolution
 - **End Game Urgency**: Rounds 16-20 risk-taking patterns
 - **Score Pressure Response**: Behavior when behind/ahead
 
@@ -182,22 +182,22 @@ class BotDecisionData:
     decision_type: str  # 'declare', 'play', 'redeal'
     timestamp: float
     room_id: str
-    
+
     # Game Context
     round_number: int
     position_in_order: int
     is_starter: bool
-    
+
     # Decision Context (from verbose output)
     context: Dict[str, Any] = field(default_factory=dict)
-    # Contains: previous_declarations, pile_room, field_strength, 
+    # Contains: previous_declarations, pile_room, field_strength,
     #          has_general_red, combo_opportunity, combo_counts,
     #          opener_score, final_decision
-    
+
     # Performance Metrics
     response_time_ms: float
     memory_usage_mb: float
-    
+
     # Outcome Tracking (filled after round completion)
     actual_result: Optional[int] = None
     success: Optional[bool] = None
@@ -211,7 +211,7 @@ class BotDecisionData:
 - **Trigger**: After `ai.choose_declare()` completes
 - **Data**: All verbose output from strategic analysis
 
-#### **Play Phase**  
+#### **Play Phase**
 - **Location**: `bot_manager.py` in `_bot_play()` method
 - **Trigger**: After `ai.choose_best_play()` completes
 - **Data**: Play type, pieces selected, points gained
@@ -251,7 +251,7 @@ class BotDecisionData:
 2. **Event store integration** - Store decision data
 3. **Basic API endpoints** - Serve historical data
 
-### **Phase 2: Real-Time Display** (Week 2-3)  
+### **Phase 2: Real-Time Display** (Week 2-3)
 1. **Live decision feed** - Real-time decision streaming
 2. **Strategic breakdown** - 9-phase analysis visualization
 3. **WebSocket integration** - Live dashboard updates
@@ -263,7 +263,7 @@ class BotDecisionData:
 
 ### **Phase 4: Polish** (Week 5)
 1. **Settings integration** - Dashboard toggle in game settings
-2. **Error handling** - Graceful failure management  
+2. **Error handling** - Graceful failure management
 3. **Export features** - Data export and reporting
 
 ---
@@ -277,7 +277,7 @@ class BotDecisionData:
    Found: 3 combos (2 viable), Opener score: 2.0
    Decision: Declared 3 piles → Actually won 3 ✅
 
-🤖 BotBob | PLAY | Pos 2 | 134ms | Turn 3/8  
+🤖 BotBob | PLAY | Pos 2 | 134ms | Turn 3/8
    Required: 2 pieces, Hand strength: Strong
    Played: STRAIGHT (ADVISOR_RED, GENERAL_BLACK) - 25pts
    Result: Won turn, gained 6 pieces
@@ -294,7 +294,7 @@ class BotDecisionData:
    Field Strength: NORMAL 🟡
    GENERAL_RED: ❌ Not in hand
 
-🃏 Combo Discovery  
+🃏 Combo Discovery
    Total Found: 3 combos
    Strong Types: 1× THREE_OF_A_KIND, 1× STRAIGHT
    Filtered Out: None
@@ -304,7 +304,7 @@ class BotDecisionData:
    Opener Score: 2.0/4.0 ⭐⭐☆☆
    Reliable: ADVISOR_RED (11pts)
    Field Impact: +0.0 (normal field)
-   
+
 💯 Final Decision
    Base Score: 3
    Constraints: None applied

@@ -115,7 +115,7 @@ Example response:
 Phase 1 is complete! The remaining phases are:
 
 - **Phase 2**: Event Compression (Week 2)
-- **Phase 3**: Schema Optimization (Week 3)  
+- **Phase 3**: Schema Optimization (Week 3)
 - **Phase 4**: Real-time Cache (Week 4)
 
 Each phase will build on this foundation to further optimize the database performance.

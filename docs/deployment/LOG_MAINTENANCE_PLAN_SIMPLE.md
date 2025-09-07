@@ -40,7 +40,7 @@ class SimpleMaintenanceScheduler:
     def __init__(self, event_store):
         self.event_store = event_store
         self.scheduler = AsyncIOScheduler()
-        
+
     def start(self):
         # Daily cleanup at 3 AM
         self.scheduler.add_job(
@@ -51,73 +51,73 @@ class SimpleMaintenanceScheduler:
             id='daily_cleanup'
         )
         self.scheduler.start()
-    
+
     async def daily_cleanup(self):
         """Simple daily maintenance"""
         try:
             # 1. Archive yesterday's events
             yesterday = datetime.now() - timedelta(days=1)
             await self.archive_day(yesterday)
-            
+
             # 2. Remove events older than 3 days from main DB
             await self.event_store.cleanup_old_events(hours=72)
-            
+
             # 3. Vacuum database to reclaim space
             conn = sqlite3.connect('game_events.db')
             conn.execute('VACUUM')
             conn.close()
-            
+
             # 4. Delete archives older than 30 days
             self.cleanup_old_archives(days=30)
-            
+
             # 5. Log summary
             self.log_maintenance_summary()
-            
+
         except Exception as e:
             logger.error(f"Maintenance failed: {e}")
-    
+
     async def archive_day(self, date):
         """Archive a single day's events"""
         date_str = date.strftime('%Y_%m_%d')
         temp_db = f"temp_{date_str}.db"
         archive_path = f"archives/game_events_{date_str}.db.gz"
-        
+
         # Skip if already archived
         if os.path.exists(archive_path):
             return
-        
+
         # Export day's events to temporary database
         conn_main = sqlite3.connect('game_events.db')
         conn_temp = sqlite3.connect(temp_db)
-        
+
         # Copy schema
         conn_main.backup(conn_temp, pages=0)
-        
+
         # Copy only that day's events
         query = """
-        INSERT INTO game_events 
-        SELECT * FROM main.game_events 
+        INSERT INTO game_events
+        SELECT * FROM main.game_events
         WHERE date(created_at) = date(?)
         """
         conn_temp.execute(query, (date.isoformat(),))
         conn_temp.commit()
-        
+
         # Close connections
         conn_main.close()
         conn_temp.close()
-        
+
         # Compress
         with open(temp_db, 'rb') as f_in:
             with gzip.open(archive_path, 'wb', compresslevel=9) as f_out:
                 shutil.copyfileobj(f_in, f_out)
-        
+
         # Cleanup
         os.remove(temp_db)
-    
+
     def cleanup_old_archives(self, days):
         """Delete archives older than specified days"""
         cutoff = datetime.now() - timedelta(days=days)
-        
+
         for filename in os.listdir('archives'):
             if filename.startswith('game_events_') and filename.endswith('.db.gz'):
                 # Parse date from filename
@@ -154,15 +154,15 @@ tar -czf "$BACKUP_DIR/liap_tui_archives_$DATE.tar.gz" archives/
 @router.get("/api/maintenance/status")
 async def maintenance_status():
     """Simple maintenance status endpoint"""
-    
+
     # Calculate sizes
     db_size = os.path.getsize('game_events.db') / 1024 / 1024  # MB
     archive_count = len(glob.glob('archives/*.gz'))
     archive_size = sum(os.path.getsize(f) for f in glob.glob('archives/*.gz')) / 1024 / 1024
-    
+
     # Get date range
     oldest_archive = min(glob.glob('archives/*.gz'), default=None)
-    
+
     return {
         "database": {
             "size_mb": round(db_size, 2),

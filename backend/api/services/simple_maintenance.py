@@ -136,7 +136,7 @@ class SimpleMaintenanceScheduler:
 
             # Use parameterized query for safety
             query = """
-            SELECT * FROM game_events 
+            SELECT * FROM game_events
             WHERE date(created_at) = date(?)
             """
 

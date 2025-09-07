@@ -15,12 +15,16 @@ def calculate_score(declared: int, actual: int) -> int:
     """
     Calculate base score based on declared and actual piles captured.
 
+    DEPRECATED: This function uses OLD scoring rules where bonuses are included
+    in the base score. Use calculate_final_score() for the new rules where
+    multipliers only apply to base points.
+
     Args:
         declared (int): The number of piles the player aimed to capture.
         actual (int): The number of piles the player actually captured.
 
     Returns:
-        int: The score before applying any multipliers.
+        int: The score before applying any multipliers (OLD RULES).
     """
     if declared == 0:
         if actual == 0:
@@ -37,6 +41,10 @@ def calculate_score(declared: int, actual: int) -> int:
 def calculate_round_scores(players, pile_counts, redeal_multiplier):
     """
     Apply score calculation to all players at the end of the round.
+
+    DEPRECATED: This function appears to be unused and has a bug where code
+    expects it to return a dict but it returns a list. The actual game uses
+    ScoringState._calculate_round_scores() instead.
 
     Args:
         players (List[Player]): All players in the game.
@@ -74,3 +82,109 @@ def calculate_round_scores(players, pile_counts, redeal_multiplier):
         )
 
     return score_data
+
+
+# ------------------------------------------------------------------------
+# NEW SCORING FUNCTIONS - Implement current rules correctly
+# ------------------------------------------------------------------------
+
+
+def calculate_score_components(declared: int, actual: int) -> dict:
+    """
+    Calculate scoring components based on declared and actual piles.
+
+    This implements the NEW scoring rules where multipliers only apply
+    to base points, not to bonuses.
+
+    Args:
+        declared (int): The number of piles the player aimed to capture.
+        actual (int): The number of piles the player actually captured.
+
+    Returns:
+        dict: {
+            'base_points': int,    # The X value (can be positive or negative)
+            'bonus': int,          # Fixed bonus (0, 3, or 5)
+            'is_perfect': bool,    # Whether it's a perfect prediction
+            'hit_type': str        # 'perfect_zero', 'perfect', 'miss', 'failed_zero'
+        }
+    """
+    if declared == 0:
+        if actual == 0:
+            # Perfect zero prediction
+            return {
+                "base_points": 0,
+                "bonus": 3,
+                "is_perfect": True,
+                "hit_type": "perfect_zero",
+            }
+        else:
+            # Failed zero declaration
+            return {
+                "base_points": -actual,
+                "bonus": 0,
+                "is_perfect": False,
+                "hit_type": "failed_zero",
+            }
+    else:
+        if actual == declared:
+            # Perfect non-zero prediction
+            return {
+                "base_points": declared,
+                "bonus": 5,
+                "is_perfect": True,
+                "hit_type": "perfect",
+            }
+        else:
+            # Missed target
+            return {
+                "base_points": -abs(declared - actual),
+                "bonus": 0,
+                "is_perfect": False,
+                "hit_type": "miss",
+            }
+
+
+def calculate_final_score(declared: int, actual: int, multiplier: int = 1) -> dict:
+    """
+    Calculate final score with multiplier applied correctly.
+
+    This implements the NEW rules where multipliers only apply to base points,
+    not to bonuses (+3 or +5).
+
+    Args:
+        declared (int): The number of piles the player aimed to capture.
+        actual (int): The number of piles the player actually captured.
+        multiplier (int): Score multiplier due to redeals (e.g., ×2, ×3...)
+
+    Returns:
+        dict: {
+            'final_score': int,     # The final score after multiplier
+            'base_points': int,     # Base points (before multiplier)
+            'bonus': int,           # Fixed bonus (not multiplied)
+            'multiplier': int,      # The multiplier used
+            'hit_value': int,       # For UI display (base × multiplier)
+            'is_perfect': bool,     # Whether it's a perfect prediction
+            'hit_type': str         # Type of result
+        }
+    """
+    components = calculate_score_components(declared, actual)
+
+    # Apply multiplier ONLY to base points
+    if components["hit_type"] == "perfect_zero":
+        # Special case: +3 bonus with no multiplier
+        final_score = components["bonus"]
+        hit_value = 0
+    else:
+        # All other cases: multiply base points, add bonus after
+        hit_value = components["base_points"] * multiplier
+        final_score = hit_value + components["bonus"]
+
+    return {
+        "final_score": final_score,
+        "base_points": components["base_points"],
+        "bonus": components["bonus"],
+        "multiplier": multiplier,
+        "hit_value": hit_value,
+        "is_perfect": components["is_perfect"],
+        "hit_type": components["hit_type"],
+    }

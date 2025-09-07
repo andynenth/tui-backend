@@ -25,7 +25,7 @@ my_hand=bot.hand,
 
 ### 3. `my_captured` ✅ WORKING
 - **Source**: `pile_counts.get(bot.name, 0)`
-- **Path**: 
+- **Path**:
   1. `game_state.pile_counts` (if exists)
   2. Initialized in game.py line 45
   3. Updated in turn_state.py `_award_piles()` method
@@ -46,7 +46,7 @@ my_declared=bot.declared,
 ```
 
 ### 5. `required_piece_count` ✅ WORKING
-- **Source**: 
+- **Source**:
   1. Primary: `phase_data.get("required_piece_count")`
   2. Fallback: `game_state.required_piece_count`
 - **Path**: Set by turn starter in turn_state.py
@@ -81,7 +81,7 @@ pieces_per_player=len(bot.hand),
 
 ### 8. `am_i_starter` ✅ WORKING
 - **Source**: `(current_turn_starter == bot.name)`
-- **Path**: 
+- **Path**:
   1. Primary: `phase_data.get("current_turn_starter")`
   2. Fallback: `game_state.last_turn_winner.name`
 - **Status**: ✅ Fully functional
@@ -121,13 +121,13 @@ revealed_pieces=[],  # TODO: Track revealed pieces
 
 ### 11. `player_states` ✅ WORKING
 - **Source**: Dictionary comprehension from game_state.players
-- **Path**: 
+- **Path**:
   - `captured`: From `pile_counts.get(p.name, 0)`
   - `declared`: From `p.declared`
 - **Status**: ✅ Fully functional
 - **Code**: Lines 710-711 in bot_manager.py
 ```python
-player_states={p.name: {"captured": pile_counts.get(p.name, 0), 
+player_states={p.name: {"captured": pile_counts.get(p.name, 0),
                         "declared": p.declared} for p in game_state.players}
 ```
 

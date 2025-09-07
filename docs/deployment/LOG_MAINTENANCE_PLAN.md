@@ -37,7 +37,7 @@ class MaintenanceScheduler:
     def __init__(self, event_store):
         self.event_store = event_store
         self.scheduler = AsyncIOScheduler()
-        
+
     def start(self):
         # Daily cleanup at 3 AM
         self.scheduler.add_job(
@@ -47,7 +47,7 @@ class MaintenanceScheduler:
             minute=0,
             id='daily_cleanup'
         )
-        
+
         # Hourly stats collection
         self.scheduler.add_job(
             self.collect_stats,
@@ -55,9 +55,9 @@ class MaintenanceScheduler:
             hours=1,
             id='hourly_stats'
         )
-        
+
         self.scheduler.start()
-    
+
     async def cleanup_old_events(self):
         """Remove events older than retention period"""
         retention_days = int(os.getenv('EVENT_RETENTION_DAYS', '7'))
@@ -252,23 +252,23 @@ async def automated_cleanup():
         # 1. Check current size
         size_mb = get_database_size_mb()
         logger.info(f"Database size: {size_mb}MB")
-        
+
         # 2. Archive old events
         if ARCHIVE_ENABLED:
             await archive_old_events()
-        
+
         # 3. Delete old events
         deleted = await event_store.cleanup_old_events(
             hours=RETENTION_DAYS * 24
         )
         logger.info(f"Deleted {deleted} events")
-        
+
         # 4. Vacuum database
         await vacuum_database()
-        
+
         # 5. Report success
         await send_maintenance_report(size_mb, deleted)
-        
+
     except Exception as e:
         logger.error(f"Cleanup failed: {e}")
         await send_alert("Cleanup job failed", str(e))

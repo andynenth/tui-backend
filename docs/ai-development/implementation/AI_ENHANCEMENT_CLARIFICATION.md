@@ -15,7 +15,7 @@
   - Double straight
 - **Strong Opening Detection**: Recognizes GENERAL pieces or high straights (20+ points)
 - **Position Awareness**: Adjusts declaration based on being first player (+1 to score)
-- **Rule Compliance**: 
+- **Rule Compliance**:
   - Avoids forbidden declarations (sum = 8 for last player)
   - Respects must-declare-nonzero after 2 consecutive zero declarations
 - **Intelligent Scoring**: Calculates declaration score (1-7) based on hand strength
@@ -28,7 +28,7 @@
 - **Fallback Strategy**: When no valid play exists, discards lowest-value pieces
 
 #### **Redeal Phase**
-- **Basic Probability Logic**: 
+- **Basic Probability Logic**:
   - 80% accept if max piece ≤ 9
   - 60% accept if hand strength < 60 points
   - 30% accept otherwise
@@ -55,7 +55,7 @@ Final declaration: 3 piles
 
 # Current bot play selection:
 Required pieces: 3
-Valid plays found: 
+Valid plays found:
   - STRAIGHT (K-Q-J): 36 points ✓ Selected
   - THREE SINGLES: 24 points
   - OTHER COMBINATIONS: Lower points
@@ -73,7 +73,7 @@ Valid plays found:
 #### **Opponent Declaration Tracking**
 - **What**: Remember patterns like "Player X often declares 3-4 when they have strong hands"
 - **Why**: Predict total declarations to avoid forbidden values (sum ≠ 8)
-- **Implementation**: 
+- **Implementation**:
   ```python
   declaration_history = {
     "Player2": [3, 4, 3, 5, 3],  # Past declarations
@@ -90,7 +90,7 @@ Valid plays found:
 #### **Score-Based Aggression**
 - **What**: Declare higher when behind, lower when ahead
 - **Why**: Risk management - protect lead or catch up
-- **Example**: 
+- **Example**:
   - Leading by 15+ points → declare 1-2 (safe)
   - Behind by 20+ points → declare 4-6 (aggressive)
 
@@ -111,7 +111,7 @@ Valid plays found:
 #### **Strategic Combination Saving**
 - **What**: Don't always play best combination immediately
 - **Why**: Save strong plays for crucial moments
-- **Example**: 
+- **Example**:
   - Have: [Straight of 15 points] + [Pair of 8 points]
   - Situation: Need to win exactly 2 more turns
   - Strategy: Play pair first, save straight for guaranteed win
@@ -119,7 +119,7 @@ Valid plays found:
 #### **Counter-Play Logic**
 - **What**: Recognize and respond to opponent strategies
 - **Why**: Prevent opponents from achieving their goals
-- **Example**: 
+- **Example**:
   - Opponent needs 1 more pile, has been playing singles
   - Bot forces them to play multiple pieces by playing pairs
 
@@ -135,7 +135,7 @@ Valid plays found:
 #### **Winning Hand Evaluation**
 - **What**: Compare hand to statistical winning patterns
 - **Why**: Better assessment than just max piece value
-- **Example**: 
+- **Example**:
   - Hand with 3 pairs + 2 singles → Strong (multiple winning turns)
   - Hand with 8 unconnected pieces → Weak (despite some high cards)
 

@@ -22,7 +22,7 @@
 GET /api/maintenance/status
 
 # View configuration
-GET /api/maintenance/config  
+GET /api/maintenance/config
 
 # Manually trigger cleanup
 POST /api/maintenance/trigger-cleanup

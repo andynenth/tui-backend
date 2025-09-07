@@ -10,7 +10,7 @@ Before diving into enhancements, here's what's already available:
 
 - **18 Strategic Test Cases**: Comprehensive validation of AI declaration logic
 - **Verbose Debug Mode**: Detailed decision breakdown with reasoning
-- **Performance Benchmarking**: Speed and concurrency testing  
+- **Performance Benchmarking**: Speed and concurrency testing
 - **Real-time API Debugging**: Live game event monitoring
 - **Event Store Analysis**: Historical game data and replay capabilities
 - **Comprehensive Logging**: Multi-level decision tracking
@@ -29,15 +29,15 @@ ADVANCED_TEST_SCENARIOS = [
     # Endgame scenarios
     ("endgame_catch_up", "Bot behind in score, final rounds"),
     ("endgame_protect_lead", "Bot ahead, defensive play"),
-    
+
     # Opponent modeling
-    ("human_vs_bot_patterns", "Mixed human/bot games"), 
+    ("human_vs_bot_patterns", "Mixed human/bot games"),
     ("bot_vs_bot_coordination", "Multiple bot interactions"),
-    
+
     # Edge cases
     ("extreme_pile_pressure", "Very limited pile room scenarios"),
     ("general_red_combinations", "All GENERAL_RED strategic uses"),
-    
+
     # Performance stress tests
     ("rapid_decision_scenarios", "Quick succession decisions"),
     ("memory_pressure_tests", "Large game state scenarios")
@@ -54,7 +54,7 @@ class BotRegressionTester:
             'accuracy_rate': 0.95,
             'consistency_score': 0.90
         }
-    
+
     async def run_regression_suite(self):
         """Run full regression test comparing to baseline"""
         current_results = await self.run_all_scenarios()
@@ -107,7 +107,7 @@ async def get_bot_analysis_data(room_id: str):
         "strategic_context": await get_game_context(room_id)
     }
 
-# WebSocket for live updates  
+# WebSocket for live updates
 @router.websocket("/dashboard/live/{room_id}")
 async def dashboard_websocket(websocket: WebSocket, room_id: str):
     """Live dashboard updates"""
@@ -130,7 +130,7 @@ const DecisionBreakdown = ({ decision }) => (
     <FieldStrengthMeter strength={decision.field_strength} />
     <ComboViability combos={decision.viable_combos} />
     <OpenerReliability pieces={decision.openers} />
-    <FinalScore 
+    <FinalScore
       base={decision.base_score}
       adjustments={decision.adjustments}
       final={decision.final_declaration}
@@ -145,7 +145,7 @@ const DecisionBreakdown = ({ decision }) => (
 const PerformanceCharts = () => (
   <div className="performance-grid">
     <DecisionTimingChart />      // Response time distribution
-    <AccuracyTrendChart />       // Decision quality over time  
+    <AccuracyTrendChart />       // Decision quality over time
     <ComparativeAnalysis />      // Bot vs human patterns
     <StrategicEffectiveness />   // Win rate correlation
   </div>
@@ -197,7 +197,7 @@ class BotTournament:
             'win_rate', 'avg_score', 'declaration_accuracy',
             'strategic_effectiveness', 'consistency'
         ]
-    
+
     async def run_round_robin(self):
         """All bots play against all others"""
         results = {}
@@ -206,14 +206,14 @@ class BotTournament:
                 if bot1 != bot2:
                     matchup_results = await self.play_matchup(bot1, bot2)
                     results[(bot1, bot2)] = matchup_results
-        
+
         return self.analyze_tournament_results(results)
-    
+
     async def run_statistical_analysis(self, min_games=100):
         """Generate statistically significant performance data"""
         sample_size = max(min_games, len(self.bots) * 20)
         games_played = await self.simulate_games(sample_size)
-        
+
         return {
             'confidence_intervals': self.calculate_confidence_intervals(games_played),
             'statistical_significance': self.test_significance(games_played),
@@ -228,12 +228,12 @@ class StrategicAnalyzer:
         """Analyze declaration strategies and effectiveness"""
         patterns = {
             'conservative_bias': self.measure_conservative_tendency(),
-            'context_sensitivity': self.measure_context_awareness(), 
+            'context_sensitivity': self.measure_context_awareness(),
             'combo_recognition': self.measure_combo_utilization(),
             'opponent_adaptation': self.measure_opponent_modeling()
         }
         return patterns
-    
+
     def evaluate_play_quality(self, turn_history):
         """Evaluate actual piece play decisions"""
         quality_metrics = {
@@ -253,13 +253,13 @@ class AIVersionComparer:
         """Statistical comparison between AI versions"""
         results_a = await self.test_version(version_a, test_scenarios)
         results_b = await self.test_version(version_b, test_scenarios)
-        
+
         comparison = {
             'statistical_difference': self.t_test(results_a, results_b),
             'performance_delta': self.calculate_improvement(results_a, results_b),
             'scenario_breakdown': self.compare_by_scenario(results_a, results_b)
         }
-        
+
         return self.generate_comparison_report(comparison)
 ```
 
@@ -354,7 +354,7 @@ Final declaration: 4
 
 ### Bot Declares 0 with Strong Hand
 **Symptoms**: Bot has good pieces but declares 0
-**Likely Causes**: 
+**Likely Causes**:
 - Pile room constraint (previous declarations sum to 8)
 - No viable combos (opponents declared high, bot has no opener)
 - GENERAL_RED strategic focus (saving for specific combo)
@@ -364,7 +364,7 @@ Final declaration: 4
 2. Verify `viable_combos` count vs `strong_combos` count
 3. Look for GENERAL_RED special logic activation
 
-### Bot Performance Degradation  
+### Bot Performance Degradation
 **Symptoms**: Slower decisions, timeout errors
 **Diagnostic Steps**:
 1. Run performance benchmark: `python benchmark_async.py`
@@ -396,7 +396,7 @@ class DecisionTreeAnalyzer:
             'edges': [],
             'decision_paths': []
         }
-        
+
         for decision in decision_history:
             node = {
                 'id': decision['context_hash'],
@@ -406,7 +406,7 @@ class DecisionTreeAnalyzer:
                 'success_rate': self.calculate_outcome_success(decision)
             }
             tree_data['nodes'].append(node)
-        
+
         return self.build_visualization_json(tree_data)
 
 class StrategyPatternAnalyzer:
@@ -427,12 +427,12 @@ class WinRateAnalyzer:
     def correlate_decisions_with_outcomes(self, extended_game_history):
         """Find which decision patterns lead to wins"""
         correlations = {}
-        
+
         for game in extended_game_history:
             declarations = game['declarations']
-            plays = game['turn_plays'] 
+            plays = game['turn_plays']
             outcome = game['winner']
-            
+
             # Analyze declaration accuracy vs game outcome
             declaration_accuracy = self.measure_declaration_vs_actual(declarations, plays)
             correlations['declaration_accuracy'] = {
@@ -440,21 +440,21 @@ class WinRateAnalyzer:
                 'significance': self.test_statistical_significance(),
                 'optimal_range': self.find_optimal_accuracy_range()
             }
-            
+
             # Analyze strategic aggressiveness vs wins
             aggressiveness = self.measure_strategic_aggressiveness(declarations)
             correlations['aggressiveness'] = {
                 'correlation': self.calculate_correlation(aggressiveness, outcome),
                 'context_dependency': self.analyze_context_effects()
             }
-        
+
         return correlations
 
 class LearningCurveAnalyzer:
     def analyze_improvement_over_time(self, chronological_games):
         """Track bot performance improvement patterns"""
         metrics_over_time = []
-        
+
         for game_batch in self.batch_by_time_period(chronological_games):
             batch_metrics = {
                 'timestamp': game_batch['period'],
@@ -463,7 +463,7 @@ class LearningCurveAnalyzer:
                 'strategic_sophistication': self.measure_sophistication(game_batch['games'])
             }
             metrics_over_time.append(batch_metrics)
-        
+
         return {
             'learning_curves': metrics_over_time,
             'improvement_rate': self.calculate_improvement_slope(),
@@ -478,7 +478,7 @@ class BotBehaviorPredictor:
     def predict_decision_quality(self, game_context):
         """Predict how well bot will perform in given context"""
         context_features = self.extract_context_features(game_context)
-        
+
         # Use historical data to predict performance
         performance_prediction = {
             'expected_win_probability': self.predict_win_rate(context_features),
@@ -486,7 +486,7 @@ class BotBehaviorPredictor:
             'strategic_risk_level': self.assess_strategic_risk(context_features),
             'confidence_interval': self.calculate_prediction_confidence()
         }
-        
+
         return performance_prediction
 ```
 

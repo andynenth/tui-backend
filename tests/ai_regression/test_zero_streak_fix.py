@@ -21,7 +21,7 @@ from backend.engine.ai import choose_declare
 
 def test_must_declare_nonzero_with_no_pile_room():
     """Test that bot declares 1 even with no pile room when must_declare_nonzero=True"""
-    
+
     # Create a weak hand with no openers
     test_hand = [
         Piece("SOLDIER_RED"),      # 2 pts
@@ -33,10 +33,10 @@ def test_must_declare_nonzero_with_no_pile_room():
         Piece("HORSE_BLACK"),      # 5 pts
         Piece("HORSE_RED")         # 6 pts
     ]
-    
+
     # Simulate scenario where previous players declared 8 total (no pile room)
     previous_declarations = [3, 3, 2]  # Total = 8
-    
+
     # Bot has zero streak and must declare non-zero
     declaration = choose_declare(
         hand=test_hand,
@@ -46,7 +46,7 @@ def test_must_declare_nonzero_with_no_pile_room():
         must_declare_nonzero=True,
         verbose=True
     )
-    
+
     assert declaration >= 1, f"Bot with zero streak must declare at least 1, got {declaration}"
     print(f"✅ Test passed: Bot correctly declared {declaration} (>= 1) with no pile room")
     return True
@@ -54,7 +54,7 @@ def test_must_declare_nonzero_with_no_pile_room():
 
 def test_must_declare_nonzero_with_no_opener():
     """Test that bot declares 1 when no opener found but must_declare_nonzero=True"""
-    
+
     # Create a weak hand with no pieces >= 11 points
     test_hand = [
         Piece("SOLDIER_RED"),      # 2 pts
@@ -66,10 +66,10 @@ def test_must_declare_nonzero_with_no_opener():
         Piece("HORSE_BLACK"),      # 5 pts
         Piece("ELEPHANT_BLACK")    # 9 pts (still not an opener)
     ]
-    
+
     # Some pile room available but no strong pieces
     previous_declarations = [2, 2, 1]  # Total = 5, room = 3
-    
+
     # Bot has zero streak and must declare non-zero
     declaration = choose_declare(
         hand=test_hand,
@@ -79,7 +79,7 @@ def test_must_declare_nonzero_with_no_opener():
         must_declare_nonzero=True,
         verbose=True
     )
-    
+
     assert declaration >= 1, f"Bot with zero streak must declare at least 1, got {declaration}"
     print(f"✅ Test passed: Bot correctly declared {declaration} (>= 1) with no opener")
     return True
@@ -87,7 +87,7 @@ def test_must_declare_nonzero_with_no_opener():
 
 def test_last_player_with_forbidden_sum_and_zero_streak():
     """Test that last player avoids both forbidden sum AND respects zero streak rule"""
-    
+
     # Create a decent hand
     test_hand = [
         Piece("GENERAL_RED"),      # 14 pts - opener
@@ -99,10 +99,10 @@ def test_last_player_with_forbidden_sum_and_zero_streak():
         Piece("SOLDIER_RED"),      # 2 pts
         Piece("SOLDIER_RED")       # 2 pts
     ]
-    
+
     # Previous declarations sum to 7, so can't declare 1 (would make 8)
     previous_declarations = [3, 2, 2]  # Total = 7
-    
+
     # Bot has zero streak and must declare non-zero
     # So bot can't declare 0 (zero streak) or 1 (forbidden sum)
     declaration = choose_declare(
@@ -113,7 +113,7 @@ def test_last_player_with_forbidden_sum_and_zero_streak():
         must_declare_nonzero=True,
         verbose=True
     )
-    
+
     assert declaration >= 2, f"Bot must declare at least 2 (avoiding 0 and 1), got {declaration}"
     assert declaration != 1, f"Bot must not declare 1 (would make sum 8)"
     print(f"✅ Test passed: Bot correctly declared {declaration} (avoiding both 0 and 1)")
@@ -123,34 +123,34 @@ def test_last_player_with_forbidden_sum_and_zero_streak():
 if __name__ == "__main__":
     print("Running zero streak declaration fix tests...")
     print("=" * 60)
-    
+
     success = True
-    
+
     # Test 1: No pile room scenario
     try:
         test_must_declare_nonzero_with_no_pile_room()
     except AssertionError as e:
         print(f"❌ Test 1 failed: {e}")
         success = False
-    
+
     print()
-    
+
     # Test 2: No opener scenario
     try:
         test_must_declare_nonzero_with_no_opener()
     except AssertionError as e:
         print(f"❌ Test 2 failed: {e}")
         success = False
-    
+
     print()
-    
+
     # Test 3: Combined forbidden scenarios
     try:
         test_last_player_with_forbidden_sum_and_zero_streak()
     except AssertionError as e:
         print(f"❌ Test 3 failed: {e}")
         success = False
-    
+
     print("=" * 60)
     if success:
         print("✅ All zero streak tests passed!")

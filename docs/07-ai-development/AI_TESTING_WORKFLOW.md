@@ -10,7 +10,7 @@ Before ANY testing:
 # Python code quality
 source venv/bin/activate && cd backend && pylint [changed_files]
 
-# Frontend code quality  
+# Frontend code quality
 cd frontend && npm run lint
 cd frontend && npm run type-check
 
@@ -64,7 +64,7 @@ mcp__playwright__browser_snapshot()  # Verify page loaded
 ```
 # Create room with bots
 1. Click "Enter Lobby"
-2. Click "Create Room" 
+2. Click "Create Room"
 3. Note room ID from URL
 4. Verify 3 bots auto-added
 5. Click "Start Game"
@@ -327,13 +327,13 @@ def get_event_count(room_id, event_type=None):
     url = f"http://localhost:5050/api/debug/events/{room_id}"
     if event_type:
         url += f"?event_type={event_type}"
-    
+
     result = subprocess.run(
         ["curl", "-s", url],
         capture_output=True,
         text=True
     )
-    
+
     try:
         data = json.loads(result.stdout)
         return data.get("total_events", 0)

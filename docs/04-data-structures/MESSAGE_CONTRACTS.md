@@ -32,7 +32,7 @@ This document defines the complete message contracts and formats for the Liap Tu
 interface ClientMessage {
     event: string;              // Required: Event name
     data: Record<string, any>;  // Required: Event payload
-    
+
     // Optional metadata
     sequence?: number;          // Client-side sequence number
     timestamp?: number;         // Client timestamp (ms)
@@ -45,7 +45,7 @@ interface ClientMessage {
 interface ServerMessage {
     event: string;              // Required: Event type
     data: Record<string, any>;  // Required: Event data
-    
+
     // Optional fields
     error?: ErrorInfo;          // Error information
     room_id?: string;           // Room context
@@ -117,7 +117,7 @@ interface Player {
     is_bot: boolean;            // AI player
     is_host: boolean;           // Room host
     is_connected: boolean;      // Connection status
-    
+
     // Game state (when in game)
     score?: number;             // Total score
     declared?: number;          // Declared piles
@@ -158,16 +158,16 @@ interface RoomSettings {
 enum EventCategory {
     // Connection lifecycle
     CONNECTION = "connection",   // ready, ping, sync
-    
-    // Room management  
+
+    // Room management
     ROOM = "room",              // create, join, leave
-    
+
     // Game flow
     GAME = "game",              // start, phase changes
-    
+
     // Player actions
     ACTION = "action",          // declare, play, redeal
-    
+
     // System events
     SYSTEM = "system",          // errors, broadcasts
 }
@@ -289,7 +289,7 @@ interface RoomCreated {
 }
 ```
 
-#### room_update  
+#### room_update
 ```typescript
 interface RoomUpdate {
     event: "room_update";
@@ -304,7 +304,7 @@ interface RoomUpdate {
             is_host: boolean;
             is_connected: boolean;
         } | null>;              // null for empty slots
-        
+
         // Optional fields
         settings?: RoomSettings;
         spectators?: number;    // Count of spectators
@@ -325,21 +325,21 @@ interface PhaseChange {
         sequence: number;       // Event sequence
         timestamp: number;      // Server timestamp
         reason: string;         // Human-readable reason
-        
+
         // Game context
         allowed_actions: string[]; // Available actions
         timeout?: number;       // Phase timeout (seconds)
-        
+
         // Phase-specific data
         phase_data: PhaseData;  // Varies by phase
-        
+
         // Player states
         players: Record<string, PlayerState>;
     };
 }
 
 // Phase-specific data types
-type PhaseData = 
+type PhaseData =
     | PreparationData
     | DeclarationData
     | TurnData
@@ -375,13 +375,13 @@ interface ErrorMessage {
         message: string;        // User-friendly message
         type: ErrorType;        // Category
         code: string;           // Error code
-        
+
         // Optional context
         details?: any;          // Additional info
         field?: string;         // Related field
         recovery?: string;      // Suggested action
     };
-    
+
     // Correlation
     sequence?: number;          // Echo request sequence
     correlation_id?: string;    // Request correlation
@@ -389,7 +389,7 @@ interface ErrorMessage {
 
 enum ErrorType {
     VALIDATION = "validation_error",
-    PERMISSION = "permission_error", 
+    PERMISSION = "permission_error",
     GAME_STATE = "game_error",
     CONNECTION = "connection_error",
     SYSTEM = "system_error"
@@ -423,21 +423,21 @@ interface ValidationRules {
         minLength: 1;
         maxLength: 50;
     };
-    
+
     room_id: {
         type: 'string';
         pattern: RegExp;        // /^[A-Z0-9]{6,8}$/
         minLength: 6;
         maxLength: 8;
     };
-    
+
     declaration: {
         type: 'number';
         min: 0;
         max: 8;
         integer: true;
     };
-    
+
     piece_indices: {
         type: 'array';
         minItems: 0;
@@ -455,20 +455,20 @@ interface ValidationRules {
 ```typescript
 // Declaration validation
 const validateDeclaration = (
-    value: number, 
+    value: number,
     totalSoFar: number,
     isLastPlayer: boolean,
     previousZeros: number
 ): boolean => {
     // Basic range
     if (value < 0 || value > 8) return false;
-    
+
     // Can't make total = 8
     if (isLastPlayer && totalSoFar + value === 8) return false;
-    
+
     // After 2 zeros, must declare non-zero
     if (previousZeros >= 2 && value === 0) return false;
-    
+
     return true;
 };
 
@@ -479,7 +479,7 @@ const validatePlay = (
 ): boolean => {
     // Check count
     if (requiredCount && pieces.length !== requiredCount) return false;
-    
+
     // Check valid combination
     return isValidCombination(pieces);
 };
@@ -497,16 +497,16 @@ const validatePlay = (
 → { event: "client_ready", data: {} }
 
 // 3. Create room
-→ { 
-    event: "create_room", 
-    data: { player_name: "Alice" } 
+→ {
+    event: "create_room",
+    data: { player_name: "Alice" }
 }
-← { 
-    event: "room_created", 
-    data: { 
-        room_id: "ROOM123", 
-        host_name: "Alice" 
-    } 
+← {
+    event: "room_created",
+    data: {
+        room_id: "ROOM123",
+        host_name: "Alice"
+    }
 }
 
 // 4. Disconnect from lobby, connect to room
@@ -515,12 +515,12 @@ const validatePlay = (
 
 // 5. Client ready for room
 → { event: "client_ready", data: {} }
-← { 
-    event: "room_update", 
-    data: { 
+← {
+    event: "room_update",
+    data: {
         room_id: "ROOM123",
-        players: [{ name: "Alice", slot: 1, ... }] 
-    } 
+        players: [{ name: "Alice", slot: 1, ... }]
+    }
 }
 
 // 6. Add bots
@@ -531,16 +531,16 @@ const validatePlay = (
 // 7. Start game
 → { event: "start_game", data: {} }
 ← { event: "game_started", data: { success: true } }
-← { 
-    event: "phase_change", 
-    data: { phase: "preparation", ... } 
+← {
+    event: "phase_change",
+    data: { phase: "preparation", ... }
 }
 ```
 
 ### Turn Sequence Flow
 ```typescript
 // 1. Turn starts
-← { 
+← {
     event: "phase_change",
     data: {
         phase: "turn",
@@ -552,7 +552,7 @@ const validatePlay = (
 }
 
 // 2. Alice plays
-→ { 
+→ {
     event: "play",
     data: {
         player_name: "Alice",
@@ -680,16 +680,16 @@ describe('Message Contracts', () => {
             event: 'create_room',
             data: { player_name: 'Alice' }
         };
-        
+
         expect(validateMessage(message)).toBe(true);
     });
-    
+
     it('should reject invalid player name', () => {
         const message = {
             event: 'create_room',
             data: { player_name: '<script>' }
         };
-        
+
         const result = validateMessage(message);
         expect(result.valid).toBe(false);
         expect(result.errors[0].field).toBe('player_name');
@@ -706,11 +706,11 @@ from websocket_client import GameClient
 async def test_room_creation_contract():
     """Test complete room creation flow matches contract"""
     client = GameClient()
-    
+
     # Connect and create room
     await client.connect("lobby")
     response = await client.create_room("TestPlayer")
-    
+
     # Verify response format
     assert response["event"] == "room_created"
     assert "room_id" in response["data"]
@@ -751,12 +751,12 @@ async def test_room_creation_contract():
 const handlePlay = (data: any) => {
     // New format
     const indices = data.indices || data.piece_indices;
-    
+
     // Legacy format support
     if (data.pieces) {
         return handleLegacyPlay(data.pieces);
     }
-    
+
     return processPlay(indices);
 };
 ```

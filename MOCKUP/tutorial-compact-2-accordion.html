@@ -633,12 +633,12 @@
         function toggleAccordion(header) {
             const item = header.parentElement;
             const wasExpanded = item.classList.contains('expanded');
-            
+
             // Close all
             document.querySelectorAll('.accordion-item').forEach(i => {
                 i.classList.remove('expanded');
             });
-            
+
             // Open clicked if it was closed
             if (!wasExpanded) {
                 item.classList.add('expanded');
@@ -651,11 +651,11 @@
             items.forEach(i => i.classList.remove('expanded'));
             items[index].classList.add('expanded');
             items[index].scrollIntoView({ behavior: 'smooth' });
-            
+
             // Update nav icons
             document.querySelectorAll('.nav-icon').forEach(icon => icon.classList.remove('active'));
             document.querySelectorAll('.nav-icon')[index].classList.add('active');
-            
+
             updateProgress(items[index]);
         }
 
@@ -665,7 +665,7 @@
             const progress = ((index + 1) / items.length) * 100;
             document.querySelector('.progress-fill').style.width = progress + '%';
             document.querySelector('.step-indicator').textContent = `Section ${index + 1} of ${items.length}`;
-            
+
             // Update nav buttons
             const prevBtn = document.querySelectorAll('.footer-btn')[0];
             const nextBtn = document.querySelectorAll('.footer-btn')[1];
@@ -678,7 +678,7 @@
             btn.addEventListener('click', () => {
                 const items = document.querySelectorAll('.accordion-item');
                 const current = Array.from(items).findIndex(item => item.classList.contains('expanded'));
-                
+
                 if (i === 0 && current > 0) {
                     scrollToSection(current - 1);
                 } else if (i === 1 && current < items.length - 1) {

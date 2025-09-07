@@ -17,7 +17,7 @@ assignees: ''
 - [ ] Testing
 - [ ] Documentation
 - [ ] Build/Deploy Process
-- [ ] Other: 
+- [ ] Other:
 
 ### Current Situation
 <!-- Describe the current state -->
@@ -34,7 +34,7 @@ assignees: ''
 - [ ] Enhances code readability
 - [ ] Better performance
 - [ ] Easier testing
-- [ ] Other: 
+- [ ] Other:
 
 ### Implementation Effort
 <!-- Estimate the effort required -->
@@ -49,11 +49,11 @@ assignees: ''
 
 ### Success Metrics
 <!-- How do we measure if this improvement worked? -->
-- 
+-
 
 ### Risks or Trade-offs
 <!-- Are there any downsides to consider? -->
-- 
+-
 
 ### Checklist
 - [ ] I've reviewed CODE_QUALITY_CHECKLIST.md

@@ -23,7 +23,7 @@ from conftest import AIDecisionTester
 def test_opener_assignment_regression():
     """Ensure openers are assigned based on declaration target"""
     tester = AIDecisionTester()
-    
+
     # Original Bug: Bot 4 from room EBA903 Round 2
     tester.add_scenario(
         name="Bot 4 Original Bug - Declare 4 with 4 Openers",
@@ -45,7 +45,7 @@ def test_opener_assignment_regression():
         turn_number=1,
         is_starter=False
     )
-    
+
     # Contrast: Same hand but declaring 2
     tester.add_scenario(
         name="Same Hand Declaring 2",
@@ -67,7 +67,7 @@ def test_opener_assignment_regression():
         turn_number=1,
         is_starter=False
     )
-    
+
     # Edge case: Declaring more than available openers
     tester.add_scenario(
         name="Declare 6 with 4 Openers",
@@ -75,7 +75,7 @@ def test_opener_assignment_regression():
         bot_name="Ambitious Bot",
         hand_specs=[
             ("GENERAL_RED", 1),      # 14 points - opener
-            ("GENERAL_BLACK", 1),    # 13 points - opener  
+            ("GENERAL_BLACK", 1),    # 13 points - opener
             ("ADVISOR_RED", 1),      # 12 points - opener
             ("ADVISOR_BLACK", 1),    # 11 points - opener
             ("CHARIOT_RED", 1),      # 8 points
@@ -89,7 +89,7 @@ def test_opener_assignment_regression():
         turn_number=1,
         is_starter=False
     )
-    
+
     # Edge case: Limited openers
     tester.add_scenario(
         name="Declare 3 with 2 Openers",
@@ -110,10 +110,10 @@ def test_opener_assignment_regression():
         turn_number=1,
         is_starter=False
     )
-    
+
     # Capture results
     test_results = []
-    
+
     for scenario in tester.scenarios:
         hand = tester.create_hand_from_specs(scenario['hand_specs'])
         context = tester.create_context(
@@ -127,19 +127,19 @@ def test_opener_assignment_regression():
         )
         result = tester.analyze_decision(context, show_plan_details=True, show_urgency=False)
         test_results.append(result)
-    
+
     # Verify expectations
     print("\n" + "="*60)
     print("REGRESSION TEST RESULTS")
     print("="*60)
-    
+
     # Check Bot 4 fix
     bot4_result = test_results[0]
     if bot4_result:
         assigned_openers = bot4_result['plan'].get('assigned_openers', [])
         if len(assigned_openers) == 4:
             print("✅ Bot 4 correctly assigned all 4 openers when declaring 4")
-            
+
             # Also check what was played
             chosen = bot4_result['chosen_play']
             if all(p.point < 11 for p in chosen):
@@ -150,7 +150,7 @@ def test_opener_assignment_regression():
         else:
             print(f"❌ REGRESSION: Bot 4 only assigned {len(assigned_openers)} openers instead of 4!")
             return False
-    
+
     # Check conservative bot
     conservative_result = test_results[1]
     if conservative_result:
@@ -160,7 +160,7 @@ def test_opener_assignment_regression():
         else:
             print(f"❌ ERROR: Conservative Bot assigned {len(assigned_openers)} openers instead of 2")
             return False
-    
+
     # Check edge cases
     ambitious_result = test_results[2]
     if ambitious_result:
@@ -170,7 +170,7 @@ def test_opener_assignment_regression():
         else:
             print(f"❌ ERROR: Ambitious Bot assigned {len(assigned_openers)} openers")
             return False
-    
+
     limited_result = test_results[3]
     if limited_result:
         assigned_openers = limited_result['plan'].get('assigned_openers', [])
@@ -179,7 +179,7 @@ def test_opener_assignment_regression():
         else:
             print(f"❌ ERROR: Limited Bot assigned {len(assigned_openers)} openers")
             return False
-    
+
     return True
 
 if __name__ == "__main__":

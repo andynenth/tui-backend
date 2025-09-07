@@ -15,7 +15,7 @@ The heart of the AI system is a strategic decision engine that makes intelligent
 The AI uses a **9-phase decision process** for declarations:
 
 1. **Context Building** - Gathers game state information
-2. **Combo Discovery** - Finds all valid piece combinations  
+2. **Combo Discovery** - Finds all valid piece combinations
 3. **Opener Evaluation** - Assesses high-value pieces (11+ points)
 4. **Combo Filtering** - Determines which combos are actually playable
 5. **Base Score Calculation** - Counts viable piles from combos and openers
@@ -51,7 +51,7 @@ score = min(score, pile_room)  # Hard ceiling
 ```python
 avg_declaration = sum(previous_declarations) / len(previous_declarations)
 if avg_declaration <= 1.0: return "weak"      # Opponents have poor hands
-elif avg_declaration >= 3.5: return "strong"  # Opponents have excellent hands  
+elif avg_declaration >= 3.5: return "strong"  # Opponents have excellent hands
 else: return "normal"
 ```
 
@@ -65,7 +65,7 @@ else: return "normal"
 
 1. **GENERAL_RED Game Changer**: When holding the strongest piece (14 points) in a weak field, the AI can execute combos that would normally be unplayable.
 
-2. **Context-Aware Opener Valuation**: 
+2. **Context-Aware Opener Valuation**:
    - GENERAL (13-14 points): Always reliable (100%)
    - ADVISOR (11-12 points): Reliability varies by field strength (70-100%)
 
@@ -79,14 +79,14 @@ Provides non-blocking AI operations for better performance:
 
 ```python
 class AsyncBotStrategy:
-    async def choose_declaration(self, hand, is_first_player, position_in_order, 
+    async def choose_declaration(self, hand, is_first_player, position_in_order,
                                previous_declarations, must_declare_nonzero=False):
         # Runs CPU-intensive AI decision in thread pool
         return await loop.run_in_executor(None, ai.choose_declare, ...)
-        
+
     async def choose_best_play(self, hand, required_count=None):
         # Async play selection with performance monitoring
-        
+
     async def should_accept_redeal(self, hand, round_number, current_score, opponent_scores):
         # Intelligent redeal decisions based on hand strength and game state
 ```
@@ -115,7 +115,7 @@ Manages bot behavior throughout the game lifecycle using enterprise architecture
 ```python
 class BotManager:
     _instance = None  # Global bot coordination
-    
+
     def register_game(self, room_id, game, state_machine):
         # Creates GameBotHandler for each game room
 ```
@@ -151,7 +151,7 @@ The AI system integrates deeply with the game's enterprise state machine:
 - Triggers bot declarations through BotManager
 - Enforces game rules (sum ≠ 8, streak limits)
 
-#### Turn Phase (`backend/engine/state_machine/states/turn_state.py`) 
+#### Turn Phase (`backend/engine/state_machine/states/turn_state.py`)
 - Handles piece play validation and sequencing
 - Manages turn resolution and winner determination
 - Coordinates bot play timing and order
@@ -170,7 +170,7 @@ The AI system leverages the game's rule engine to:
 ```python
 PLAY_TYPE_PRIORITY = [
     "SINGLE", "PAIR", "THREE_OF_A_KIND", "STRAIGHT",
-    "FOUR_OF_A_KIND", "EXTENDED_STRAIGHT", "EXTENDED_STRAIGHT_5", 
+    "FOUR_OF_A_KIND", "EXTENDED_STRAIGHT", "EXTENDED_STRAIGHT_5",
     "FIVE_OF_A_KIND", "DOUBLE_STRAIGHT"
 ]
 
@@ -206,7 +206,7 @@ Hand: [ADVISOR_RED, CHARIOT_BLACK, HORSE_BLACK, CANNON_BLACK, SOLDIER_RED, SOLDI
 Context: Position 2, Previous: [5, 4], Field: "strong"
 Analysis:
 - Pile room: 8 - (5+4) = -1 → 0 (no room!)
-- Strong combos: STRAIGHT (CHARIOT-HORSE-CANNON)  
+- Strong combos: STRAIGHT (CHARIOT-HORSE-CANNON)
 - Viable combos: None (no pile room)
 - Openers: ADVISOR_RED (reliability 0.7 in strong field)
 Result: Declares 0 (can't play anything due to pile room constraint)
@@ -217,7 +217,7 @@ Result: Declares 0 (can't play anything due to pile room constraint)
 **Scenario**: GENERAL_RED in weak field enables combo play
 ```python
 Hand: [GENERAL_RED, SOLDIER_BLACK×4, CHARIOT_RED, HORSE_RED, CANNON_RED]
-Context: Position 2, Previous: [1, 0], Field: "weak"  
+Context: Position 2, Previous: [1, 0], Field: "weak"
 Analysis:
 - Has GENERAL_RED + weak field = acts like starter
 - Strong combos: FOUR_OF_A_KIND (soldiers), STRAIGHT (chariot-horse-cannon)
@@ -231,7 +231,7 @@ Result: Declares 5 (strategic focus on FOUR_OF_A_KIND with GENERAL_RED)
 ### WebSocket Communication
 All AI actions flow through the WebSocket system:
 - Real-time game state updates
-- Action validation and feedback  
+- Action validation and feedback
 - Automatic UI synchronization
 - Error handling and recovery
 
@@ -255,7 +255,7 @@ The AI system seamlessly integrates with the React frontend:
 3. **Randomization**: Add controlled variation for unpredictability
 4. **Learning System**: Improve from game outcomes
 
-### Performance Optimizations  
+### Performance Optimizations
 1. **Decision Caching**: Cache complex calculations
 2. **Parallel Processing**: Increase concurrent bot capacity
 3. **Predictive Analysis**: Pre-calculate likely scenarios

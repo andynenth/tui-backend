@@ -15,7 +15,7 @@ The AI correctly identifies GENERAL_RED as a reliable opener (14 points, always 
 
 **Problem Examples:**
 - `general_red_01`: Expected 8, Got 5 (-3 piles)
-- `general_red_combo_01`: Expected 4, Got 1 (-3 piles) 
+- `general_red_combo_01`: Expected 4, Got 1 (-3 piles)
 - `general_red_combo_03`: Expected 6, Got 5 (-1 pile)
 
 ### Issue 2: Field Strength Interaction Modeling
@@ -44,7 +44,7 @@ When GENERAL_RED combines with other strong pieces (ADVISOR_BLACK), the AI doesn
 - **Hand**: GENERAL_RED(14) + 4×SOLDIER_BLACK(1) + CHARIOT_RED(8) + HORSE_RED(6) + CANNON_RED(4)
 - **Context**: Position 2, prev=[1,0], weak field, 7 pile room
 - **Expected vs Got**: 8 vs 5 (-3 piles)
-- **Strategic Issue**: 
+- **Strategic Issue**:
   - Has FOUR_OF_A_KIND(4×SOLDIER_BLACK) = 4 piles
   - Has STRAIGHT(CHARIOT_RED/HORSE_RED/CANNON_RED) = 3 piles
   - GENERAL_RED provides guaranteed control to play both combos
@@ -69,7 +69,7 @@ When GENERAL_RED combines with other strong pieces (ADVISOR_BLACK), the AI doesn
 - **Expected vs Got**: 2 vs 1 (-1 pile)
 - **Strategic Issue**: In very weak field with [0,0] declarations:
   - GENERAL_RED(14) guaranteed winner
-  - ELEPHANT_RED(10) likely winner against weak opponents  
+  - ELEPHANT_RED(10) likely winner against weak opponents
   - Should reliably get 2 piles, but AI only sees 1
 
 #### ✅ general_red_field_02 & general_red_field_03: Correct Field Modeling
@@ -81,7 +81,7 @@ When GENERAL_RED combines with other strong pieces (ADVISOR_BLACK), the AI doesn
 - **Hand**: GENERAL_RED(14) + 3×SOLDIER_RED(2) + others
 - **Context**: Position 2, prev=[1,2], normal field, 5 pile room
 - **Expected vs Got**: 4 vs 1 (-3 piles)
-- **Strategic Issue**: 
+- **Strategic Issue**:
   - Has THREE_OF_A_KIND(3×SOLDIER_RED) = 3 piles
   - GENERAL_RED provides control to reliably play the combo
   - Should be 3 (combo) + 1 (GENERAL_RED opener) = 4 piles
@@ -154,7 +154,7 @@ To validate fixes, these scenarios should achieve expected values:
 1. **general_red_01**: 8 piles (4 FOUR_KIND + 3 STRAIGHT + 1 opener)
 2. **general_red_03**: 3 piles (multi-opener advantage)
 3. **general_red_field_01**: 2 piles (very weak field strength)
-4. **general_red_combo_01**: 4 piles (3 THREE_KIND + 1 opener)  
+4. **general_red_combo_01**: 4 piles (3 THREE_KIND + 1 opener)
 5. **general_red_combo_03**: 6 piles (5 FIVE_KIND + 1 opener)
 
 The fixes should maintain correctness for the 4 scenarios that already pass while addressing the strategic gaps in the failing scenarios.

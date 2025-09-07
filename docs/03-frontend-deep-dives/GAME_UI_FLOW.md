@@ -32,41 +32,41 @@ The Game UI Flow system manages the visual representation of game states and pla
 graph TB
     subgraph "Game UI Components"
         GamePage[Game Page<br/>Container]
-        
+
         subgraph "Phase Components"
             PrepPhase[Preparation<br/>Phase UI]
             DeclPhase[Declaration<br/>Phase UI]
             TurnPhase[Turn<br/>Phase UI]
             ScorePhase[Scoring<br/>Phase UI]
         end
-        
+
         subgraph "Shared Components"
             PlayerHand[Player<br/>Hand]
             GameBoard[Game<br/>Board]
             PlayerInfo[Player<br/>Info]
             TurnIndicator[Turn<br/>Indicator]
         end
-        
+
         subgraph "UI Elements"
             PieceCard[Piece<br/>Card]
             AnimSystem[Animation<br/>System]
             Notifications[Notification<br/>System]
         end
     end
-    
+
     GamePage --> PrepPhase
     GamePage --> DeclPhase
     GamePage --> TurnPhase
     GamePage --> ScorePhase
-    
+
     PrepPhase --> PlayerHand
     DeclPhase --> PlayerInfo
     TurnPhase --> GameBoard
     ScorePhase --> PlayerInfo
-    
+
     PlayerHand --> PieceCard
     GameBoard --> AnimSystem
-    
+
     style GamePage fill:#4CAF50
     style AnimSystem fill:#FF9800
 ```
@@ -264,7 +264,7 @@ export const DeclarationPhase: React.FC<DeclarationPhaseProps> = ({
                         onChange={setSelectedValue}
                         invalidValues={[]} // Server validates total != 8
                     />
-                    
+
                     <button
                         className="declare-button"
                         onClick={handleDeclare}
@@ -318,7 +318,7 @@ const DeclarationHints: React.FC<{
     // Calculate strategic hints
     const strongPieces = playerHand.filter(p => p.point >= 7).length;
     const pairs = calculatePairs(playerHand);
-    
+
     return (
         <div className="declaration-hints">
             <h4>Strategy Tips:</h4>
@@ -372,17 +372,17 @@ export const TurnPhase: React.FC<TurnPhaseProps> = ({
             if (prev.includes(pieceId)) {
                 return prev.filter(id => id !== pieceId);
             }
-            
+
             // Validate selection
             const newSelection = [...prev, pieceId];
-            const selectedPieceObjects = pieces.filter(p => 
+            const selectedPieceObjects = pieces.filter(p =>
                 newSelection.includes(p.id)
             );
-            
+
             if (PlayValidator.isValidSelection(selectedPieceObjects, requiredCount)) {
                 return newSelection;
             }
-            
+
             return prev;
         });
     };
@@ -458,7 +458,7 @@ export const TurnPhase: React.FC<TurnPhaseProps> = ({
                     >
                         {selectedPieces.length === 0 ? 'Pass' : `Play ${selectedPieces.length} Pieces`}
                     </button>
-                    
+
                     {selectedPieces.length > 0 && (
                         <button
                             className="clear-button"
@@ -492,7 +492,7 @@ const GameBoard: React.FC<{
                     <span className="pile-count">{pileCount}</span>
                     <span className="pile-label">pieces in pile</span>
                 </div>
-                
+
                 {lastWinner && (
                     <div className="last-winner">
                         {lastWinner} won last turn
@@ -607,7 +607,7 @@ const ScoreAnimation: React.FC<{
     change: number;
 }> = ({ playerName, oldScore, newScore, change }) => {
     const [displayScore, setDisplayScore] = useState(oldScore);
-    
+
     useEffect(() => {
         // Animate score change
         const duration = 1000;
@@ -615,11 +615,11 @@ const ScoreAnimation: React.FC<{
         const increment = change / steps;
         let current = oldScore;
         let step = 0;
-        
+
         const interval = setInterval(() => {
             step++;
             current += increment;
-            
+
             if (step >= steps) {
                 setDisplayScore(newScore);
                 clearInterval(interval);
@@ -627,10 +627,10 @@ const ScoreAnimation: React.FC<{
                 setDisplayScore(Math.round(current));
             }
         }, duration / steps);
-        
+
         return () => clearInterval(interval);
     }, [oldScore, newScore, change]);
-    
+
     return (
         <div className="score-animation">
             <span className="player-name">{playerName}</span>
@@ -654,11 +654,11 @@ const ScoreAnimation: React.FC<{
 export class AnimationSystem {
     private animations: Map<string, Animation> = new Map();
     private rafId: number | null = null;
-    
+
     constructor() {
         this.startAnimationLoop();
     }
-    
+
     private startAnimationLoop() {
         const animate = (timestamp: number) => {
             this.updateAnimations(timestamp);
@@ -666,15 +666,15 @@ export class AnimationSystem {
         };
         this.rafId = requestAnimationFrame(animate);
     }
-    
+
     public addAnimation(id: string, animation: Animation) {
         this.animations.set(id, animation);
     }
-    
+
     public removeAnimation(id: string) {
         this.animations.delete(id);
     }
-    
+
     private updateAnimations(timestamp: number) {
         for (const [id, animation] of this.animations) {
             if (animation.update(timestamp)) {
@@ -700,7 +700,7 @@ export class CardAnimation implements Animation {
     startTime: number;
     duration: number = 500;
     easing = Easing.easeOutCubic;
-    
+
     constructor(
         private element: HTMLElement,
         private from: Position,
@@ -708,17 +708,17 @@ export class CardAnimation implements Animation {
     ) {
         this.startTime = performance.now();
     }
-    
+
     update(timestamp: number): boolean {
         const elapsed = timestamp - this.startTime;
         const progress = Math.min(elapsed / this.duration, 1);
         const easedProgress = this.easing(progress);
-        
+
         const x = this.from.x + (this.to.x - this.from.x) * easedProgress;
         const y = this.from.y + (this.to.y - this.from.y) * easedProgress;
-        
+
         this.element.style.transform = `translate(${x}px, ${y}px)`;
-        
+
         return progress >= 1;
     }
 }
@@ -731,52 +731,52 @@ export class CardAnimation implements Animation {
 export const useAnimation = <T extends HTMLElement>() => {
     const elementRef = useRef<T>(null);
     const animationRef = useRef<AnimationSystem | null>(null);
-    
+
     useEffect(() => {
         animationRef.current = new AnimationSystem();
-        
+
         return () => {
             if (animationRef.current) {
                 animationRef.current.destroy();
             }
         };
     }, []);
-    
+
     const animateCard = useCallback((
         from: Position,
         to: Position,
         duration = 500
     ) => {
         if (!elementRef.current || !animationRef.current) return;
-        
+
         const animation = new CardAnimation(
             elementRef.current,
             from,
             to
         );
-        
+
         animationRef.current.addAnimation(
             `card-${Date.now()}`,
             animation
         );
     }, []);
-    
+
     const animateScale = useCallback((
         from: number,
         to: number,
         duration = 300
     ) => {
         if (!elementRef.current) return;
-        
+
         const element = elementRef.current;
         element.style.transform = `scale(${from})`;
-        
+
         requestAnimationFrame(() => {
             element.style.transition = `transform ${duration}ms ease-out`;
             element.style.transform = `scale(${to})`;
         });
     }, []);
-    
+
     return {
         elementRef,
         animateCard,
@@ -800,32 +800,32 @@ export const PieceCard: React.FC<PieceCardProps> = ({
 }) => {
     const [isPressed, setIsPressed] = useState(false);
     const { elementRef, animateScale } = useAnimation<HTMLDivElement>();
-    
+
     const handlePointerDown = (e: React.PointerEvent) => {
         if (!selectable) return;
-        
+
         setIsPressed(true);
         animateScale(1, 0.95);
-        
+
         // Prevent text selection
         e.preventDefault();
     };
-    
+
     const handlePointerUp = () => {
         if (!selectable || !isPressed) return;
-        
+
         setIsPressed(false);
         animateScale(0.95, 1);
         onClick?.(piece.id);
     };
-    
+
     const handlePointerLeave = () => {
         if (isPressed) {
             setIsPressed(false);
             animateScale(0.95, 1);
         }
     };
-    
+
     return (
         <div
             ref={elementRef}
@@ -860,60 +860,60 @@ export const useDragDrop = (
 ) => {
     const [draggedItem, setDraggedItem] = useState<string | null>(null);
     const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
-    
+
     const handleDragStart = useCallback((
         e: React.DragEvent,
         itemId: string
     ) => {
         setDraggedItem(itemId);
-        
+
         // Calculate offset
         const rect = e.currentTarget.getBoundingClientRect();
         setDragOffset({
             x: e.clientX - rect.left,
             y: e.clientY - rect.top
         });
-        
+
         // Set drag image
         if (e.dataTransfer) {
             e.dataTransfer.effectAllowed = 'move';
             e.dataTransfer.setData('text/plain', itemId);
-            
+
             // Create custom drag image
             const dragImage = e.currentTarget.cloneNode(true) as HTMLElement;
             dragImage.style.transform = 'rotate(-5deg)';
             document.body.appendChild(dragImage);
             e.dataTransfer.setDragImage(dragImage, dragOffset.x, dragOffset.y);
-            
+
             setTimeout(() => document.body.removeChild(dragImage), 0);
         }
     }, [dragOffset]);
-    
+
     const handleDragEnd = useCallback(() => {
         setDraggedItem(null);
     }, []);
-    
+
     const handleDragOver = useCallback((e: React.DragEvent) => {
         e.preventDefault();
         if (e.dataTransfer) {
             e.dataTransfer.dropEffect = 'move';
         }
     }, []);
-    
+
     const handleDrop = useCallback((
         e: React.DragEvent,
         targetId: string
     ) => {
         e.preventDefault();
-        
+
         const draggedId = e.dataTransfer?.getData('text/plain');
         if (draggedId && draggedId !== targetId) {
             onDrop(draggedId, targetId);
         }
-        
+
         setDraggedItem(null);
     }, [onDrop]);
-    
+
     return {
         draggedItem,
         handleDragStart,
@@ -933,34 +933,34 @@ export const useDragDrop = (
 export const useGameSync = () => {
     const { gameState, updateGameState } = useGame();
     const networkService = useRef(NetworkService.getInstance());
-    
+
     useEffect(() => {
         const handlePhaseChange = (event: CustomEvent) => {
             const { phase, phase_data, game_state } = event.detail.data;
-            
+
             updateGameState({
                 phase,
                 phase_data,
                 ...game_state
             });
-            
+
             // Trigger phase transition animation
             triggerPhaseTransition(phase);
         };
-        
+
         const handlePlayerAction = (event: CustomEvent) => {
             const { player, action, details } = event.detail.data;
-            
+
             // Update local state optimistically
             updateGameState(state => ({
                 ...state,
                 lastAction: { player, action, details }
             }));
-            
+
             // Show action notification
             showActionNotification(player, action);
         };
-        
+
         const handleHandUpdate = (event: CustomEvent) => {
             const { pieces } = event.detail.data;
             updateGameState(state => ({
@@ -968,20 +968,20 @@ export const useGameSync = () => {
                 playerHand: pieces
             }));
         };
-        
+
         // Register listeners
         const service = networkService.current;
         service.addEventListener('phase_change', handlePhaseChange);
         service.addEventListener('player_action', handlePlayerAction);
         service.addEventListener('hand_updated', handleHandUpdate);
-        
+
         return () => {
             service.removeEventListener('phase_change', handlePhaseChange);
             service.removeEventListener('player_action', handlePlayerAction);
             service.removeEventListener('hand_updated', handleHandUpdate);
         };
     }, [updateGameState]);
-    
+
     return gameState;
 };
 ```
@@ -992,7 +992,7 @@ export const useGameSync = () => {
 // frontend/src/utils/optimisticUpdates.ts
 export class OptimisticUpdateManager {
     private pendingUpdates: Map<string, PendingUpdate> = new Map();
-    
+
     applyOptimisticUpdate<T>(
         id: string,
         currentState: T,
@@ -1007,11 +1007,11 @@ export class OptimisticUpdateManager {
                 this.rollback(id);
             }, rollbackTimeout)
         });
-        
+
         // Apply update
         return { ...currentState, ...update };
     }
-    
+
     confirmUpdate(id: string) {
         const pending = this.pendingUpdates.get(id);
         if (pending) {
@@ -1019,7 +1019,7 @@ export class OptimisticUpdateManager {
             this.pendingUpdates.delete(id);
         }
     }
-    
+
     rollback(id: string): any {
         const pending = this.pendingUpdates.get(id);
         if (pending) {
@@ -1034,21 +1034,21 @@ export class OptimisticUpdateManager {
 // Usage in component
 const handlePlay = async (pieces: string[]) => {
     const updateId = `play-${Date.now()}`;
-    
+
     // Optimistic update
-    setGameState(state => 
+    setGameState(state =>
         optimisticManager.applyOptimisticUpdate(
             updateId,
             state,
             {
-                playerHand: state.playerHand.filter(p => 
+                playerHand: state.playerHand.filter(p =>
                     !pieces.includes(p.id)
                 ),
                 pendingPlay: true
             }
         )
     );
-    
+
     try {
         await networkService.send('play', { piece_ids: pieces });
         optimisticManager.confirmUpdate(updateId);
@@ -1071,18 +1071,18 @@ const handlePlay = async (pieces: string[]) => {
 // frontend/src/systems/EventBus.ts
 export class GameEventBus extends EventTarget {
     private static instance: GameEventBus;
-    
+
     static getInstance(): GameEventBus {
         if (!GameEventBus.instance) {
             GameEventBus.instance = new GameEventBus();
         }
         return GameEventBus.instance;
     }
-    
+
     emit<T>(event: string, data: T) {
         this.dispatchEvent(new CustomEvent(event, { detail: data }));
     }
-    
+
     on<T>(event: string, handler: (data: T) => void) {
         const listener = (e: Event) => {
             handler((e as CustomEvent<T>).detail);
@@ -1116,7 +1116,7 @@ interface GameUIContextValue {
     animationSpeed: number;
     soundEnabled: boolean;
     vibrationEnabled: boolean;
-    
+
     selectPiece: (id: string) => void;
     deselectPiece: (id: string) => void;
     setHoveredPiece: (id: string | null) => void;
@@ -1125,8 +1125,8 @@ interface GameUIContextValue {
 
 export const GameUIContext = React.createContext<GameUIContextValue | null>(null);
 
-export const GameUIProvider: React.FC<{ children: ReactNode }> = ({ 
-    children 
+export const GameUIProvider: React.FC<{ children: ReactNode }> = ({
+    children
 }) => {
     const [selectedPieces, setSelectedPieces] = useState<string[]>([]);
     const [hoveredPiece, setHoveredPiece] = useState<string | null>(null);
@@ -1135,19 +1135,19 @@ export const GameUIProvider: React.FC<{ children: ReactNode }> = ({
         soundEnabled: true,
         vibrationEnabled: true
     });
-    
+
     const selectPiece = useCallback((id: string) => {
         setSelectedPieces(prev => [...prev, id]);
-        
+
         if (settings.soundEnabled) {
             playSound('piece-select');
         }
-        
+
         if (settings.vibrationEnabled && 'vibrate' in navigator) {
             navigator.vibrate(50);
         }
     }, [settings]);
-    
+
     const value = useMemo(() => ({
         selectedPieces,
         hoveredPiece,
@@ -1157,7 +1157,7 @@ export const GameUIProvider: React.FC<{ children: ReactNode }> = ({
         setHoveredPiece,
         updateSettings
     }), [selectedPieces, hoveredPiece, settings]);
-    
+
     return (
         <GameUIContext.Provider value={value}>
             {children}
@@ -1178,7 +1178,7 @@ export const GameUIProvider: React.FC<{ children: ReactNode }> = ({
   --bp-tablet: 768px;
   --bp-desktop: 1024px;
   --bp-wide: 1440px;
-  
+
   /* Container widths */
   --container-mobile: 100%;
   --container-tablet: 720px;
@@ -1193,7 +1193,7 @@ export const GameUIProvider: React.FC<{ children: ReactNode }> = ({
     --card-size: 60px;
     --card-font-size: 0.8rem;
   }
-  
+
   .player-hand {
     flex-wrap: wrap;
     max-height: 40vh;
@@ -1231,12 +1231,12 @@ export const useResponsive = () => {
         isDesktop: window.innerWidth > 768,
         orientation: window.innerWidth > window.innerHeight ? 'landscape' : 'portrait'
     });
-    
+
     useEffect(() => {
         const handleResize = debounce(() => {
             const width = window.innerWidth;
             const height = window.innerHeight;
-            
+
             setViewport({
                 width,
                 height,
@@ -1246,23 +1246,23 @@ export const useResponsive = () => {
                 orientation: width > height ? 'landscape' : 'portrait'
             });
         }, 250);
-        
+
         window.addEventListener('resize', handleResize);
         window.addEventListener('orientationchange', handleResize);
-        
+
         return () => {
             window.removeEventListener('resize', handleResize);
             window.removeEventListener('orientationchange', handleResize);
         };
     }, []);
-    
+
     return viewport;
 };
 
 // Responsive game layout
 export const ResponsiveGameLayout: React.FC = () => {
     const { isMobile, orientation } = useResponsive();
-    
+
     if (isMobile && orientation === 'portrait') {
         return <MobilePortraitLayout />;
     } else if (isMobile && orientation === 'landscape') {
@@ -1315,18 +1315,18 @@ export const VirtualPieceList: React.FC<{
 }> = ({ pieces, height }) => {
     const rowHeight = 80;
     const buffer = 5;
-    
+
     const [scrollTop, setScrollTop] = useState(0);
-    
+
     const startIndex = Math.max(0, Math.floor(scrollTop / rowHeight) - buffer);
     const endIndex = Math.min(
         pieces.length,
         Math.ceil((scrollTop + height) / rowHeight) + buffer
     );
-    
+
     const visiblePieces = pieces.slice(startIndex, endIndex);
     const offsetY = startIndex * rowHeight;
-    
+
     return (
         <div
             className="virtual-list"
@@ -1380,15 +1380,15 @@ export const useDebouncedState = <T>(
 ): [T, T, (value: T) => void] => {
     const [value, setValue] = useState(initialValue);
     const [debouncedValue, setDebouncedValue] = useState(initialValue);
-    
+
     useEffect(() => {
         const handler = setTimeout(() => {
             setDebouncedValue(value);
         }, delay);
-        
+
         return () => clearTimeout(handler);
     }, [value, delay]);
-    
+
     return [value, debouncedValue, setValue];
 };
 ```
@@ -1409,14 +1409,14 @@ describe('PieceCard', () => {
         color: 'RED',
         point: 10
     };
-    
+
     it('renders piece information', () => {
         const { getByText } = render(<PieceCard piece={mockPiece} />);
-        
+
         expect(getByText('帥')).toBeInTheDocument();
         expect(getByText('10')).toBeInTheDocument();
     });
-    
+
     it('handles click when selectable', () => {
         const handleClick = jest.fn();
         const { getByRole } = render(
@@ -1426,16 +1426,16 @@ describe('PieceCard', () => {
                 onClick={handleClick}
             />
         );
-        
+
         fireEvent.click(getByRole('button'));
         expect(handleClick).toHaveBeenCalledWith('p1');
     });
-    
+
     it('shows selected state', () => {
         const { container } = render(
             <PieceCard piece={mockPiece} selected={true} />
         );
-        
+
         expect(container.firstChild).toHaveClass('selected');
     });
 });
@@ -1462,10 +1462,10 @@ describe('TurnPhase', () => {
             { id: 'p2', rank: 'GENERAL', color: 'BLACK', point: 10 }
         ]
     };
-    
+
     it('allows piece selection on player turn', async () => {
         const handleAction = jest.fn();
-        
+
         const { getByLabelText } = render(
             <GameProvider initialState={{ currentPlayer: 'Alice' }}>
                 <TurnPhase
@@ -1474,20 +1474,20 @@ describe('TurnPhase', () => {
                 />
             </GameProvider>
         );
-        
+
         // Click first piece
         fireEvent.click(getByLabelText('GENERAL RED piece'));
-        
+
         // Click second piece
         fireEvent.click(getByLabelText('GENERAL BLACK piece'));
-        
+
         // Play button should be enabled
         const playButton = getByText('Play 2 Pieces');
         expect(playButton).not.toBeDisabled();
-        
+
         // Click play
         fireEvent.click(playButton);
-        
+
         await waitFor(() => {
             expect(handleAction).toHaveBeenCalledWith({
                 type: 'play',
@@ -1517,10 +1517,10 @@ test.describe('Game Phase Visuals', () => {
                 phase_data: { weak_hands: [] }
             });
         });
-        
+
         await expect(page).toHaveScreenshot('preparation-phase.png');
     });
-    
+
     test('turn phase with selections', async ({ page }) => {
         await page.goto('/game/test-room');
         await page.evaluate(() => {
@@ -1532,11 +1532,11 @@ test.describe('Game Phase Visuals', () => {
                 }
             });
         });
-        
+
         // Select pieces
         await page.click('[aria-label="GENERAL RED piece"]');
         await page.click('[aria-label="ADVISOR RED piece"]');
-        
+
         await expect(page).toHaveScreenshot('turn-phase-selected.png');
     });
 });

@@ -39,7 +39,7 @@ fi
 # Function to get Ubuntu 22.04 AMI ID for the region
 get_ubuntu_ami() {
     echo -e "${YELLOW}🔍 Finding Ubuntu 22.04 LTS AMI for ${REGION}...${NC}"
-    
+
     AMI_ID=$(aws ec2 describe-images \
         --region $REGION \
         --owners 099720109477 \
@@ -48,12 +48,12 @@ get_ubuntu_ami() {
             "Name=state,Values=available" \
         --query 'Images[0].ImageId' \
         --output text)
-    
+
     if [ "$AMI_ID" = "None" ] || [ -z "$AMI_ID" ]; then
         echo -e "${RED}❌ Error: Could not find Ubuntu 22.04 AMI${NC}"
         exit 1
     fi
-    
+
     echo -e "${GREEN}✅ Found AMI: ${AMI_ID}${NC}"
 }
 
@@ -66,17 +66,17 @@ echo -e "\n${YELLOW}🔑 Checking SSH Key Pair...${NC}"
 if [ -z "$KEY_NAME" ]; then
     echo -e "${YELLOW}Enter your SSH key pair name (or press Enter to create new):${NC}"
     read -r KEY_INPUT
-    
+
     if [ -z "$KEY_INPUT" ]; then
         KEY_NAME="liap-tui-key-$(date +%s)"
         echo -e "${YELLOW}Creating new key pair: ${KEY_NAME}${NC}"
-        
+
         aws ec2 create-key-pair \
             --key-name $KEY_NAME \
             --query 'KeyMaterial' \
             --output text \
             --region $REGION > "${KEY_NAME}.pem"
-        
+
         chmod 400 "${KEY_NAME}.pem"
         echo -e "${GREEN}✅ Key pair created and saved to: ${KEY_NAME}.pem${NC}"
         echo -e "${YELLOW}⚠️  IMPORTANT: Keep this file safe\! You'll need it to connect to your instance.${NC}"
@@ -98,14 +98,14 @@ SG_ID=$(aws ec2 describe-security-groups \
 
 if [ -z "$SG_ID" ] || [ "$SG_ID" = "None" ]; then
     echo -e "${YELLOW}Creating new security group...${NC}"
-    
+
     SG_ID=$(aws ec2 create-security-group \
         --group-name $SECURITY_GROUP_NAME \
         --description "Security group for Liap Tui game server" \
         --region $REGION \
         --query 'GroupId' \
         --output text)
-    
+
     # Add SSH rule (your IP only)
     MY_IP=$(curl -s https://checkip.amazonaws.com)
     aws ec2 authorize-security-group-ingress \
@@ -114,7 +114,7 @@ if [ -z "$SG_ID" ] || [ "$SG_ID" = "None" ]; then
         --port 22 \
         --cidr ${MY_IP}/32 \
         --region $REGION
-    
+
     # Add HTTP rule (open to all)
     aws ec2 authorize-security-group-ingress \
         --group-id $SG_ID \
@@ -122,7 +122,7 @@ if [ -z "$SG_ID" ] || [ "$SG_ID" = "None" ]; then
         --port 80 \
         --cidr 0.0.0.0/0 \
         --region $REGION
-    
+
     # Add HTTPS rule for future use
     aws ec2 authorize-security-group-ingress \
         --group-id $SG_ID \
@@ -130,7 +130,7 @@ if [ -z "$SG_ID" ] || [ "$SG_ID" = "None" ]; then
         --port 443 \
         --cidr 0.0.0.0/0 \
         --region $REGION
-    
+
     echo -e "${GREEN}✅ Security group created: ${SG_ID}${NC}"
 else
     echo -e "${GREEN}✅ Using existing security group: ${SG_ID}${NC}"
@@ -232,7 +232,7 @@ Region: ${REGION}
 
 Connection Command:
   ssh -i ${KEY_NAME}.pem ubuntu@${ELASTIC_IP}
-  
+
 Or use:
   ./connect-to-ec2.sh
 

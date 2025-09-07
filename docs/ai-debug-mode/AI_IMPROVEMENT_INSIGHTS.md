@@ -14,7 +14,7 @@ Fix: Check hand strength before high declarations
 **Bug**: Zero declaration with strong hand
 ```
 Pattern: Bot has 2+ openers but declares 0
-Example: GENERAL_BLACK, ADVISOR_RED in hand → declares 0  
+Example: GENERAL_BLACK, ADVISOR_RED in hand → declares 0
 Impact: Wastes winning potential
 Fix: Force minimum declaration with strong hands
 ```
@@ -32,7 +32,7 @@ Fix: Respect pile room calculations
 ```
 Pattern: Bot at 3/3 piles plays GENERAL on weak turn
 Example: Already met target, plays GENERAL vs SOLDIER
-Impact: Loses valuable pieces unnecessarily  
+Impact: Loses valuable pieces unnecessarily
 Fix: Play weakest possible when at target
 ```
 
@@ -58,7 +58,7 @@ Fix: Preserve combos unless necessary
 **Ideal**: 60-80% exact matches (declared = captured)
 ```
 Good: Bot 1 declared 3, captured 3 (100%)
-OK: Bot 2 declared 4, captured 3 (75%)  
+OK: Bot 2 declared 4, captured 3 (75%)
 Bad: Bot 3 declared 5, captured 1 (20%)
 ```
 
@@ -79,7 +79,7 @@ Imbalanced: P1=45%, P2=20%, P3=20%, P4=15%
 - Last player wins <15% → Position disadvantage
 - Any position <10% → Systematic disadvantage
 
-### 3. Score Distributions  
+### 3. Score Distributions
 **Healthy Game Patterns**:
 ```
 Winner: 50-80 points (achieved target)
@@ -222,7 +222,7 @@ Adjust viable combo thresholds based on field strength
 3. How to balance short-term vs long-term gains?
 4. What indicates a "must-win" situation?
 
-### Technical Questions  
+### Technical Questions
 1. Why do certain decisions take longer?
 2. Are there memory leaks in long simulations?
 3. Which calculations could be cached?

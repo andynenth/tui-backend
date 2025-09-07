@@ -7,7 +7,7 @@ This document has been consolidated into a comprehensive reference.
 Please see: [Comprehensive Monitoring & Observability Guide](./MONITORING_COMPREHENSIVE.md)
 
 Specifically, performance monitoring is covered in:
-- **Section**: "Performance Monitoring" 
+- **Section**: "Performance Monitoring"
 - **Section**: "Performance Thresholds"
 - **Section**: "Play History Performance"
 
@@ -383,7 +383,7 @@ if trend.slope > 0:
 spikes = detect_performance_spikes(time_series_data)
 correlate_with_events(spikes, [
     "deployments",
-    "traffic_surges", 
+    "traffic_surges",
     "database_maintenance",
     "cache_clears"
 ])
@@ -398,7 +398,7 @@ datasource:
   - name: liap-tui-metrics
     type: prometheus
     url: http://localhost:8001/api/metrics
-    
+
 dashboard:
   - title: API Performance
     panels:
@@ -416,7 +416,7 @@ alerts:
     for: 5m
     annotations:
       summary: "High error rate detected"
-      
+
   - name: SlowResponse
     expr: p95_response_time > 2000
     for: 10m

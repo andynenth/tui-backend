@@ -80,7 +80,7 @@ Correct expected: 0 ✅
 #### Strategic Pattern Recognition
 ```
 When: P1 & P2 declare very low (0-1) AND Player has no opener/combos
-Risk: Unknown P4 could have monster hand (GENERAL_RED + combos)  
+Risk: Unknown P4 could have monster hand (GENERAL_RED + combos)
 Response: Conservative declaration (0-1) protects against asymmetric threat
 Principle: "Better to under-declare than lose catastrophically to unknown strength"
 ```
@@ -99,7 +99,7 @@ Principle: "Better to under-declare than lose catastrophically to unknown streng
 
 3. **Test Scenario Updates**:
    - Change expected value: 3 → 0
-   - Update description: "Information Asymmetry Risk Assessment"  
+   - Update description: "Information Asymmetry Risk Assessment"
    - Update strategic focus: "Unknown Player 4 threat when P1&P2 are weak"
    - Increase difficulty: BASIC → ADVANCED
 
@@ -151,7 +151,7 @@ Principle: "Don't overestimate junk pieces even in weak fields"
 
 **Hand Composition Analysis**:
 - **Tier 1 (Reliable)**: ADVISOR_RED (12) - 1 pile
-- **Tier 2 (Marginal)**: CHARIOT_RED (8) - unreliable even in weak field  
+- **Tier 2 (Marginal)**: CHARIOT_RED (8) - unreliable even in weak field
 - **Tier 3 (Junk)**: HORSE_BLACK (6), CANNON_BLACK (7), SOLDIERs (1) - no winning potential
 
 **Technical Requirements**:
@@ -198,7 +198,7 @@ Correct expected: 0 ✅
 
 #### Current Flawed Logic
 - AI sees STRAIGHT (CHARIOT-HORSE-CANNON RED) totaling 18 points
-- AI thinks "weak field enables weak combos" 
+- AI thinks "weak field enables weak combos"
 - Declares 2 expecting 18-point straight might work in very weak field
 
 #### Correct Strategic Reasoning
@@ -287,7 +287,7 @@ Correct expected: 1 ✅
 ```
 When: Single strong opener (13+ points) + Medium/weak supporting pieces (≤10 points)
 Assessment: Opener provides exactly 1 pile, supporting pieces unreliable even in weak field
-Response: Conservative declaration matching realistic winning potential  
+Response: Conservative declaration matching realistic winning potential
 Principle: "Even stronger openers don't magically transform weak supporting pieces"
 ```
 
@@ -434,7 +434,7 @@ Correct expected: 0-1 ✅
 #### Strategic Pattern Recognition
 ```
 When: Strong opener (13+ points) + Medium pieces (9-10) + Normal field ([2])
-Assessment: Opener reliable (1 pile), medium pieces marginal (0-1 additional)  
+Assessment: Opener reliable (1 pile), medium pieces marginal (0-1 additional)
 Response: Conservative declaration (1) with possible upside to 2
 Principle: "Normal fields make medium pieces unreliable, even with strong opener"
 ```
@@ -652,7 +652,7 @@ Principle: "Sometimes losing efficiently is better than trying to win marginally
 **Validated Scenarios**:
 ```
 combo_viable_02: Hand with great combos, no control, expects 0 ✅
-combo_viable_05: Strong combo vs weak field, no opportunity, expects 0 ✅  
+combo_viable_05: Strong combo vs weak field, no opportunity, expects 0 ✅
 combo_viable_06: Excellent combo vs strong opponent control, expects 0 ✅
 ```
 
@@ -663,11 +663,11 @@ This validates the strategic framework we've been developing:
 #### **combo_viable_02**: Great Combos + No Control = 0
 - **Hand**: THREE_OF_A_KIND + STRAIGHT combos available
 - **Position**: Non-starter, no opener
-- **Field**: [2, 3] = competent opponents  
+- **Field**: [2, 3] = competent opponents
 - **Forfeit Strategy**: Use ELEPHANT pieces as forfeits rather than fight for marginal wins
 - **Correct Assessment**: 0 piles ✅
 
-#### **combo_viable_05**: Strong Combo + No Opportunity = 0  
+#### **combo_viable_05**: Strong Combo + No Opportunity = 0
 - **Hand**: 21-point STRAIGHT (high quality)
 - **Position**: Non-starter, no opener
 - **Field**: [0, 1] = weak field but no opportunity creation
@@ -683,18 +683,18 @@ This validates the strategic framework we've been developing:
 **Key Strategic Insights VALIDATED**:
 
 1. **Combo Control Requirement**: Even excellent combos need control or opportunity
-2. **Forfeit Strategy**: Use medium pieces (ELEPHANTs) strategically as forfeits  
+2. **Forfeit Strategy**: Use medium pieces (ELEPHANTs) strategically as forfeits
 3. **Realistic Assessment**: Great hand ≠ guaranteed wins without position/control
 4. **Field Dynamics**: Opponent strength patterns affect combo viability
 
-**Implementation Validation**: 
+**Implementation Validation**:
 These scenarios confirm our strategic framework is sound:
 - Information asymmetry detection ✅
-- Control mechanism requirements ✅  
+- Control mechanism requirements ✅
 - Forfeit strategy recognition ✅
 - Realistic combo viability assessment ✅
 
-**Technical Requirements**: 
+**Technical Requirements**:
 The AI needs to implement the patterns we've identified:
 - Combo opportunity detection based on opponent declarations
 - Control mechanism assessment (starter, opener, field strength)
@@ -736,7 +736,7 @@ Expected: 3 → 6 ✅
 #### **Risk Assessment**:
 **Opponent Higher Straight Probability**: ~20-35%
 - **Big RED Straight**: GENERAL_RED + ADVISOR_RED + ELEPHANT_RED (~3-9%)
-- **Big BLACK Straight**: GENERAL_BLACK + ADVISOR_BLACK + ELEPHANT_BLACK (~6-12%) 
+- **Big BLACK Straight**: GENERAL_BLACK + ADVISOR_BLACK + ELEPHANT_BLACK (~6-12%)
 - **Small RED Straight**: CHARIOT_RED + HORSE_RED + CANNON_RED (~10-15%)
 
 **Strategic Reality**: Even with moderate risk, starter position provides control advantage to play both combos before opponents can interfere.
@@ -792,7 +792,7 @@ combo_quality_04: Expected 0 → 0 ✅ (already correct value, wrong reasoning)
 - **Available**: Only singles (ELEPHANT_RED vs ELEPHANT_BLACK = different pieces)
 - **Expected**: 2 → 0 ✅
 
-#### **combo_quality_04 Analysis**:  
+#### **combo_quality_04 Analysis**:
 - **Hand**: `[CANNON_RED, CANNON_BLACK, SOLDIER_RED, SOLDIER_BLACK, ELEPHANT_RED, CHARIOT_BLACK, HORSE_RED, ADVISOR_BLACK]`
 - **Previous Assessment**: "CANNON pair (12pts) + SOLDIER pair (2pts)" ❌
 - **Correct Assessment**: NO PAIRS POSSIBLE - all pieces are different colors
@@ -846,7 +846,7 @@ Expected: 2 → 4 ✅
 
 #### **Available Assets**:
 1. **BLACK STRAIGHT**: CHARIOT_BLACK + HORSE_BLACK + CANNON_BLACK (3 piles) ✅
-2. **RED SOLDIER PAIR**: SOLDIER_RED + SOLDIER_RED (2 piles) ✅  
+2. **RED SOLDIER PAIR**: SOLDIER_RED + SOLDIER_RED (2 piles) ✅
 3. **Strong Openers**: ADVISOR_RED (12 pts), ADVISOR_BLACK (11 pts)
 4. **Medium Piece**: ELEPHANT_BLACK (9 pts)
 
@@ -858,7 +858,7 @@ Expected: 2 → 4 ✅
 - **Challenge**: Managing forfeit of 3 pieces (ADVISOR_RED, ADVISOR_BLACK, ELEPHANT_BLACK)
 
 **Option 2: Optimal Balanced Strategy** → **4 piles** ✅
-- Play BLACK STRAIGHT (3 piles) 
+- Play BLACK STRAIGHT (3 piles)
 - Use ADVISOR_RED as opener (1 pile)
 - **Strategic forfeiting**: ADVISOR_BLACK + ELEPHANT_BLACK
 - **Advantage**: Only 2 pieces to forfeit, manageable complexity
@@ -877,7 +877,7 @@ Expected: 2 → 4 ✅
 
 #### **Previous Assessment Flaws**:
 - **Ignored starter advantage**: Massive oversight of guaranteed combo control
-- **Missed forfeit strategy**: No consideration of strategic piece disposal  
+- **Missed forfeit strategy**: No consideration of strategic piece disposal
 - **Undervalued BLACK STRAIGHT**: 15-point combo (7+5+3) completely ignored
 - **False pair assumption**: "ADVISOR pair" impossible (different colors)
 
@@ -922,7 +922,7 @@ Current expected: 2 → 1 ✅
 
 **Strategic Analysis**:
 
-#### **Original Problem**: 
+#### **Original Problem**:
 - Hand description claimed "THREE_OF_A_KIND ELEPHANT" but only had 2 ELEPHANT pieces (one RED, one BLACK)
 - No valid THREE_OF_A_KIND possible with different colored pieces
 - Expected 2 piles despite fundamental rule violation
@@ -1084,7 +1084,7 @@ Scenarios where opponents play 5+ pieces:
 Scenario ID: room_mismatch_04
 Hand: [CHARIOT_RED, CHARIOT_BLACK, HORSE_RED, HORSE_BLACK, CANNON_RED, CANNON_BLACK, SOLDIER_RED, SOLDIER_BLACK]
 Position: 2 (Non-starter)
-Previous declarations: [1, 1] 
+Previous declarations: [1, 1]
 Current expected: 6 → 0 ✅
 ```
 
@@ -1093,7 +1093,7 @@ Current expected: 6 → 0 ✅
 #### **Hand Assets**:
 1. **Three Potential Pairs**:
    - CHARIOT_RED + CHARIOT_BLACK → **INVALID** (different colors)
-   - HORSE_RED + HORSE_BLACK → **INVALID** (different colors)  
+   - HORSE_RED + HORSE_BLACK → **INVALID** (different colors)
    - CANNON_RED + CANNON_BLACK → **INVALID** (different colors)
 2. **Actual Pairs**: None - all mixed color combinations
 3. **Room Available**: 8 - (1+1) = 6 piles
@@ -1199,7 +1199,7 @@ Current expected: 1 → 2 ✅
 
 **Issue Identified**: AI implementation bug in `backend/engine/ai.py` lines 271-282 prevents GENERAL_RED from utilizing multiple combos simultaneously.
 
-**Affected Scenarios**: 
+**Affected Scenarios**:
 - `general_red_01`: Expected 8, AI gives 5 (-3 gap)
 - `general_red_combo_03`: Expected 6, AI gives 5 (-1 gap)
 
@@ -1241,7 +1241,7 @@ if context.has_general_red and any(c[0] in ["FOUR_OF_A_KIND", "FIVE_OF_A_KIND"] 
 
 **Issue Identified**: `filter_viable_combos()` function too conservative in normal field conditions when GENERAL_RED provides guaranteed control.
 
-**Affected Scenarios**: 
+**Affected Scenarios**:
 - `general_red_combo_01`: Expected 4, AI gives 1 (-3 gap)
 
 **Root Cause Analysis**:
@@ -1280,7 +1280,7 @@ elif context.has_general_red and context.field_strength == "weak":
 
 **Issue Identified**: AI doesn't properly value strategic flexibility when multiple premium openers are available.
 
-**Affected Scenarios**: 
+**Affected Scenarios**:
 - `general_red_03`: Expected 3, AI gives 2 (-1 gap)
 
 **Strategic Analysis**:
@@ -1311,12 +1311,12 @@ elif context.has_general_red and context.field_strength == "weak":
 
 **Issue Identified**: AI doesn't model GENERAL_RED's strength dominance in very weak fields.
 
-**Affected Scenarios**: 
+**Affected Scenarios**:
 - `general_red_field_01`: Expected 2, AI gives 1 (-1 gap)
 
 **Strategic Analysis**:
 - **Field Context**: Very weak field [0,0] = opponents have terrible hands
-- **Hand Assets**: GENERAL_RED(14pts) + ELEPHANT_RED(10pts) 
+- **Hand Assets**: GENERAL_RED(14pts) + ELEPHANT_RED(10pts)
 - **Strategic Reality**: In very weak field, both pieces should easily win
 - **Current Logic**: Only counts GENERAL_RED, ignores secondary piece strength advantage
 - **Missing Value**: Strength dominance exploitation in weak fields
@@ -1329,7 +1329,7 @@ elif context.has_general_red and context.field_strength == "weak":
    - Scale advantage based on field weakness degree
 
 2. **Strength Differential Assessment**:
-   - Account for point advantage in weak field scenarios  
+   - Account for point advantage in weak field scenarios
    - Balance strength dominance with realistic opponent capabilities
    - Maintain conservative approach in mixed/strong fields
 
@@ -1345,7 +1345,7 @@ elif context.has_general_red and context.field_strength == "weak":
 
 **Affected Scenarios**: All 4 scenarios fail (0/4 passing)
 - `edge_nonzero_01`: Expected 1, AI gives 0 (rule violation)
-- `edge_nonzero_02`: Expected 3, AI gives 1 (undervaluation)  
+- `edge_nonzero_02`: Expected 3, AI gives 1 (undervaluation)
 - `edge_nonzero_03`: Expected 1, AI gives 0 (rule violation)
 - `edge_nonzero_04`: Expected 1, AI gives 0 (rule violation)
 
@@ -1519,7 +1519,7 @@ Strategic scenarios where unknown players create disproportionate risk due to un
 ### Field Assessment
 Strategic evaluation of opponent strength based on declarations and visible information.
 
-### Combo Assessment  
+### Combo Assessment
 Strategic evaluation of combination viability based on control and opportunity factors.
 
 ### Opener Reliability
@@ -1538,7 +1538,7 @@ Strategic evaluation of single-piece openers based on field strength and positio
 
 ### Priority Levels
 - **High**: Fundamental strategic flaws affecting core game theory
-- **Medium**: Important tactical improvements for specific scenarios  
+- **Medium**: Important tactical improvements for specific scenarios
 - **Low**: Edge case refinements and optimization
 
 ### Testing Requirements
@@ -1552,7 +1552,7 @@ Strategic evaluation of single-piece openers based on field strength and positio
 
 **Next Steps**:
 1. Continue comprehensive testing to identify additional strategic improvements
-2. Collect all issues before batch implementation  
+2. Collect all issues before batch implementation
 3. Develop comprehensive strategic enhancement architecture
 4. Implement and validate all improvements together
 

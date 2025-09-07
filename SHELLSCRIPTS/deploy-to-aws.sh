@@ -75,7 +75,7 @@ if [ "$HEALTH_CHECK" == "healthy" ]; then
     echo -e "${GREEN}✅ Deployment successful!${NC}"
     echo -e "${GREEN}🌐 Application URL: http://${ALB_DNS}/${NC}"
     echo -e "${GREEN}📊 Version ${VERSION} is now live!${NC}"
-    
+
     # Optional: Check maintenance endpoint if v1.1.0 or later
     if curl -s http://${ALB_DNS}/api/maintenance/status > /dev/null 2>&1; then
         echo -e "${GREEN}🧹 Log maintenance system is active${NC}"

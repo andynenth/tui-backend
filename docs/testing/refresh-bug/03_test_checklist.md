@@ -10,7 +10,7 @@ Test every possible game state and action point by refreshing the browser and ve
 - [ ] During weak hand dialog (if applicable)
 - [ ] After weak hand resolution
 
-## 2. DECLARATION PHASE  
+## 2. DECLARATION PHASE
 - [ ] Initial declaration phase (before any declarations)
 - [ ] After 1 player declared
 - [ ] After 2 players declared
@@ -56,7 +56,7 @@ For each refresh test, verify:
 ```
 Test Case: [Description]
 Pre-Refresh State: [Details]
-Post-Refresh State: [Details]  
+Post-Refresh State: [Details]
 Result: PASS/FAIL
 Issues: [Any problems found]
 ```

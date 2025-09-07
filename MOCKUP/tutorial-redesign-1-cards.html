@@ -297,7 +297,7 @@
             .tutorial-content {
                 padding: 20px;
             }
-            
+
             .cards-grid {
                 grid-template-columns: 1fr;
             }
@@ -354,13 +354,13 @@
         <!-- Content Area -->
         <div class="tutorial-content">
             <h1 class="slide-title">Welcome to Castellan!</h1>
-            
+
             <div class="cards-grid">
                 <div class="info-card" onclick="this.classList.toggle('revealed')">
                     <div class="card-icon">🏰</div>
                     <div class="card-title">What is Castellan?</div>
                     <div class="card-description">
-                        A medieval strategy game where you command knights and nobles to capture territories. 
+                        A medieval strategy game where you command knights and nobles to capture territories.
                         Predict your victories and outsmart your opponents!
                     </div>
                     <div class="card-example">Click cards to reveal more!</div>
@@ -379,7 +379,7 @@
                     <div class="card-icon">🎯</div>
                     <div class="card-title">How to Win</div>
                     <div class="card-description">
-                        Score points by accurately predicting how many battles you'll win. 
+                        Score points by accurately predicting how many battles you'll win.
                         It's not about winning the most—it's about winning exactly what you predict!
                     </div>
                     <div class="card-example">Prediction = Reality = Bonus Points!</div>
@@ -389,7 +389,7 @@
                     <div class="card-icon">⚔️</div>
                     <div class="card-title">Quick Rules</div>
                     <div class="card-description">
-                        Higher value pieces beat lower ones. Play singles, pairs, or combinations. 
+                        Higher value pieces beat lower ones. Play singles, pairs, or combinations.
                         Strategic forfeits let you control your victories.
                     </div>
                     <div class="card-example">General (11) > Soldier (1)</div>
@@ -425,7 +425,7 @@
         // Add interactivity
         const cards = document.querySelectorAll('.info-card');
         let revealedCount = 0;
-        
+
         cards.forEach(card => {
             card.addEventListener('click', () => {
                 if (!card.classList.contains('revealed')) {

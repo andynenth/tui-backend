@@ -8,7 +8,7 @@ These 5 mockups demonstrate how play history data from Liap Tui can be used for 
 ### 1. **Player Profiling**
 - **Player Type**: Human vs AI distinction
 - **AI Version**: Track AI improvements over versions
-- **Play Style Indicators**: 
+- **Play Style Indicators**:
   - Declaration patterns (conservative vs aggressive)
   - Opening move preferences
   - Risk tolerance levels
@@ -16,7 +16,7 @@ These 5 mockups demonstrate how play history data from Liap Tui can be used for 
 ### 2. **Strategic Decision Points**
 
 #### Declaration Phase Analysis
-- **Declaration Patterns**: 
+- **Declaration Patterns**:
   - Position-based strategies (first/last to declare)
   - Risk assessment (1 pile = low risk, 3+ piles = high risk)
   - Total declaration sum dynamics

@@ -41,7 +41,7 @@ Before contributing, ensure you have:
    ```bash
    # Quick setup using our script
    ./start.sh
-   
+
    # Or manual setup (see Developer Onboarding Guide)
    ```
 
@@ -56,7 +56,7 @@ Before contributing, ensure you have:
    ```bash
    # Backend tests
    cd backend && python -m pytest tests/
-   
+
    # Frontend tests
    cd frontend && npm test
    ```
@@ -98,11 +98,11 @@ We use a **GitHub Flow** model with the following branches:
    ```bash
    git add .
    git commit -m "feat: add new game phase UI component
-   
+
    - Implement TurnResultsUI with winner display
    - Add animation for pile score updates
    - Update GameContainer to handle new phase
-   
+
    Fixes #123"
    ```
 
@@ -197,24 +197,24 @@ except Exception as e:
 ```python
 class GameState:
     """Base class for all game phases.
-    
+
     This class provides the enterprise architecture pattern with automatic
     broadcasting and event sourcing. All game phases should inherit from
     this class and use the update_phase_data() method for state changes.
-    
+
     Attributes:
         phase_data: Dict containing phase-specific state
         change_history: List of all state changes with timestamps
         sequence_number: Monotonic sequence for message ordering
     """
-    
+
     async def update_phase_data(self, updates: dict, reason: str) -> None:
         """Update phase data with automatic broadcasting.
-        
+
         Args:
             updates: Dictionary of state changes to apply
             reason: Human-readable description of why the change is happening
-            
+
         Raises:
             ValueError: If updates contain invalid keys
             TypeError: If updates are not JSON-serializable
@@ -243,13 +243,13 @@ const calculateValidDeclarations = (
   isLastPlayer: boolean
 ): number[] => {
   const validOptions = [0, 1, 2, 3, 4, 5, 6, 7, 8];
-  
+
   if (isLastPlayer) {
     const currentTotal = Object.values(currentDeclarations)
       .reduce((sum, val) => sum + val, 0);
     return validOptions.filter(option => currentTotal + option !== 8);
   }
-  
+
   return validOptions;
 };
 ```
@@ -257,20 +257,20 @@ const calculateValidDeclarations = (
 #### React Component Patterns
 ```jsx
 // Use functional components with hooks
-const DeclarationUI = ({ 
-  declarations, 
-  isMyTurn, 
-  validOptions, 
-  onDeclare 
+const DeclarationUI = ({
+  declarations,
+  isMyTurn,
+  validOptions,
+  onDeclare
 }) => {
   const [selectedValue, setSelectedValue] = useState(null);
   const [showConfirmation, setShowConfirmation] = useState(false);
-  
+
   // Memoize expensive calculations
   const declarationProgress = useMemo(() => {
     return Object.keys(declarations).length / 4;
   }, [declarations]);
-  
+
   // Clear selection when turn changes
   useEffect(() => {
     if (!isMyTurn) {
@@ -278,21 +278,21 @@ const DeclarationUI = ({
       setShowConfirmation(false);
     }
   }, [isMyTurn]);
-  
+
   const handleDeclare = useCallback((value) => {
     setSelectedValue(value);
     setShowConfirmation(true);
   }, []);
-  
+
   const confirmDeclaration = useCallback(() => {
     onDeclare(selectedValue);
     setShowConfirmation(false);
   }, [selectedValue, onDeclare]);
-  
+
   if (!isMyTurn) {
     return <WaitingForTurn />;
   }
-  
+
   return (
     <div className="declaration-ui">
       {/* Component JSX */}
@@ -310,7 +310,7 @@ export default React.memo(DeclarationUI);
 class GameService {
   private state: GameState = initialGameState;
   private listeners: Set<(state: GameState) => void> = new Set();
-  
+
   // Immutable state updates
   private updateState(updates: Partial<GameState>): void {
     this.state = {
@@ -318,16 +318,16 @@ class GameService {
       ...updates,
       timestamp: Date.now()
     };
-    
+
     this.notifyListeners();
   }
-  
+
   // Validate actions before sending
   public async makeDeclaration(value: number): Promise<void> {
     if (!this.isValidDeclaration(value)) {
       throw new Error(`Invalid declaration: ${value}`);
     }
-    
+
     // Optimistic update
     this.updateState({
       declarations: {
@@ -335,7 +335,7 @@ class GameService {
         [this.state.playerName]: value
       }
     });
-    
+
     try {
       await this.networkService.sendAction('declare', { value });
     } catch (error) {
@@ -365,7 +365,7 @@ class TestDeclarationState:
     def declaration_state(self):
         # Create test state with known configuration
         return DeclarationState(test_game, test_room)
-    
+
     async def test_valid_declaration(self, declaration_state):
         """Test that valid declarations are accepted."""
         action = GameAction(
@@ -373,12 +373,12 @@ class TestDeclarationState:
             player_name="Player1",
             payload={"value": 3}
         )
-        
+
         result = await declaration_state._handle_action(action)
-        
+
         assert result.success
         assert declaration_state.phase_data['declarations']['Player1'] == 3
-    
+
     async def test_invalid_declaration_value(self, declaration_state):
         """Test that invalid declaration values are rejected."""
         action = GameAction(
@@ -386,10 +386,10 @@ class TestDeclarationState:
             player_name="Player1",
             payload={"value": 9}  # Invalid: must be 0-8
         )
-        
+
         with pytest.raises(ValidationError):
             await declaration_state._handle_action(action)
-    
+
     async def test_last_player_cannot_make_total_eight(self, declaration_state):
         """Test the last player restriction."""
         # Set up scenario where total would be 8
@@ -399,13 +399,13 @@ class TestDeclarationState:
             'Player3': 1
         }
         declaration_state.phase_data['current_declarer'] = 'Player4'
-        
+
         action = GameAction(
             type=ActionType.DECLARE,
             player_name="Player4",
             payload={"value": 2}  # Would make total = 8
         )
-        
+
         with pytest.raises(ValidationError, match="cannot make total equal 8"):
             await declaration_state._handle_action(action)
 ```
@@ -416,21 +416,21 @@ class TestDeclarationState:
 async def test_complete_game_flow():
     """Test a complete game from start to finish."""
     game_manager = GameManager()
-    
+
     # Create room and add players
     room = await game_manager.create_room("TestHost")
     await game_manager.join_room(room.room_id, "Player1")
     await game_manager.join_room(room.room_id, "Player2")
     await game_manager.add_bot(room.room_id, 3)
     await game_manager.add_bot(room.room_id, 4)
-    
+
     # Start game
     await game_manager.start_game(room.room_id)
     assert room.game.state_machine.current_phase == GamePhase.PREPARATION
-    
+
     # Continue through all phases...
     # Test weak hand handling, declarations, turns, scoring
-    
+
     # Verify final state
     assert room.game.is_complete
     assert len(room.game.winners) >= 1
@@ -451,48 +451,48 @@ describe('DeclarationUI', () => {
     validOptions: [0, 1, 2, 3, 4, 5, 6, 7, 8],
     onDeclare: jest.fn()
   };
-  
+
   test('renders declaration options when it is player turn', () => {
     render(<DeclarationUI {...defaultProps} />);
-    
+
     // Should show all valid options
     for (let i = 0; i <= 8; i++) {
       expect(screen.getByText(i.toString())).toBeInTheDocument();
     }
   });
-  
+
   test('shows waiting state when not player turn', () => {
     const props = { ...defaultProps, isMyTurn: false };
     render(<DeclarationUI {...props} />);
-    
+
     expect(screen.getByText(/waiting for/i)).toBeInTheDocument();
     expect(screen.queryByRole('button')).not.toBeInTheDocument();
   });
-  
+
   test('calls onDeclare when declaration is confirmed', () => {
     const onDeclare = jest.fn();
     const props = { ...defaultProps, onDeclare };
-    
+
     render(<DeclarationUI {...props} />);
-    
+
     // Click declaration option
     fireEvent.click(screen.getByText('3'));
-    
+
     // Confirm in modal
     fireEvent.click(screen.getByText(/confirm/i));
-    
+
     expect(onDeclare).toHaveBeenCalledWith(3);
   });
-  
+
   test('filters out invalid options for last player', () => {
     const props = {
       ...defaultProps,
       declarations: { Player1: 2, Player2: 3, Player3: 1 },
       validOptions: [0, 1, 3, 4, 5, 6, 7, 8] // Excludes 2 (would make total 8)
     };
-    
+
     render(<DeclarationUI {...props} />);
-    
+
     expect(screen.queryByText('2')).not.toBeInTheDocument();
     expect(screen.getByText('3')).toBeInTheDocument();
   });
@@ -510,27 +510,27 @@ jest.mock('../src/services/NetworkService');
 describe('GameService', () => {
   let gameService;
   let mockNetworkService;
-  
+
   beforeEach(() => {
     mockNetworkService = new NetworkService();
     gameService = new GameService(mockNetworkService);
   });
-  
+
   test('makeDeclaration validates input before sending', async () => {
     await expect(gameService.makeDeclaration(9))
       .rejects.toThrow('Declaration must be between 0 and 8');
-    
+
     expect(mockNetworkService.sendAction).not.toHaveBeenCalled();
   });
-  
+
   test('makeDeclaration sends correct action format', async () => {
     gameService.updateGameState({
       playerName: 'TestPlayer',
       currentDeclarer: 'TestPlayer'
     });
-    
+
     await gameService.makeDeclaration(3);
-    
+
     expect(mockNetworkService.sendAction).toHaveBeenCalledWith('declare', {
       player_name: 'TestPlayer',
       value: 3
@@ -560,7 +560,7 @@ describe('GameService', () => {
    black .  # Format code
    pylint engine/ api/ tests/  # Lint code
    python -m pytest tests/ -v  # Run tests
-   
+
    # Frontend
    cd frontend
    npm run lint  # Lint code
@@ -591,25 +591,25 @@ describe('GameService', () => {
    ```markdown
    ## Summary
    Brief description of what this PR does and why.
-   
+
    ## Changes Made
    - [ ] Added new TurnResultsUI component
    - [ ] Implemented winner animation
    - [ ] Updated GameContainer to handle new phase
    - [ ] Added comprehensive tests
-   
+
    ## Testing
    - [ ] Unit tests pass
    - [ ] Integration tests pass
    - [ ] Manual testing completed
    - [ ] No breaking changes
-   
+
    ## Screenshots/Videos
    (If UI changes, include screenshots or GIFs)
-   
+
    ## Breaking Changes
    None / Describe any breaking changes
-   
+
    ## Checklist
    - [ ] Code follows style guidelines
    - [ ] Self-review completed
@@ -731,20 +731,20 @@ Mockups, user stories, or other relevant information.
 ```python
 def calculate_play_value(pieces: List[Piece]) -> int:
     """Calculate the total point value of a piece combination.
-    
+
     This function sums the point values of all pieces in a play,
     which is used to determine the winner when play types are equal.
-    
+
     Args:
         pieces: List of piece objects to calculate value for
-        
+
     Returns:
         Total point value as integer
-        
+
     Raises:
         ValueError: If pieces list is empty
         TypeError: If pieces contain non-Piece objects
-        
+
     Example:
         >>> pieces = [Piece("GENERAL_RED", 10), Piece("HORSE_RED", 4)]
         >>> calculate_play_value(pieces)
@@ -756,16 +756,16 @@ def calculate_play_value(pieces: List[Piece]) -> int:
 ```typescript
 /**
  * Validates a declaration value for the current game state.
- * 
+ *
  * Checks if the proposed declaration is within valid range (0-8)
  * and doesn't violate the "last player cannot make total 8" rule.
- * 
+ *
  * @param value - The declaration value to validate (0-8)
  * @param currentDeclarations - Map of existing player declarations
  * @param totalPlayers - Total number of players in the game
  * @param isLastPlayer - Whether this is the last player to declare
  * @returns True if declaration is valid, false otherwise
- * 
+ *
  * @example
  * ```typescript
  * const isValid = validateDeclaration(3, {Player1: 2, Player2: 1}, 4, false);
@@ -827,19 +827,19 @@ We use **Semantic Versioning** (semver):
 3. **Release Notes**
    ```markdown
    ## v1.2.0 (2024-01-15)
-   
+
    ### ✨ New Features
    - Added tournament mode with bracket management
    - Implemented spectator mode for watching games
-   
+
    ### 🐛 Bug Fixes
    - Fixed WebSocket reconnection issue (#123)
    - Resolved state machine deadlock in turn phase (#124)
-   
+
    ### 📝 Documentation
    - Updated API reference with new endpoints
    - Added troubleshooting guide for common issues
-   
+
    ### ⚡ Performance
    - Optimized WebSocket message serialization
    - Reduced memory usage in long-running games
@@ -928,7 +928,7 @@ repos:
         entry: black
         language: system
         files: \.py$
-        
+
       - id: eslint
         name: eslint
         entry: npx eslint
@@ -948,10 +948,10 @@ import pstats
 def profile_game_action():
     profiler = cProfile.Profile()
     profiler.enable()
-    
+
     # Run game action
     result = await process_game_action(action)
-    
+
     profiler.disable()
     stats = pstats.Stats(profiler)
     stats.sort_stats('cumulative')
@@ -970,7 +970,7 @@ console.log(`Declaration took ${endTime - startTime} ms`);
 
 ## Conclusion
 
-Thank you for contributing to Liap Tui! Your efforts help preserve a traditional game while showcasing modern software development practices. 
+Thank you for contributing to Liap Tui! Your efforts help preserve a traditional game while showcasing modern software development practices.
 
 By following these guidelines, you'll help maintain the high quality and reliability that makes this project a great example of enterprise-grade game development.
 

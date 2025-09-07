@@ -37,11 +37,11 @@ graph TB
         Queue[Message Queue]
         Handlers[Event Handlers]
     end
-    
+
     subgraph "Network Layer"
         EC2[Direct EC2<br/>Connection]
     end
-    
+
     subgraph "Server Side"
         FastAPI[FastAPI Server]
         WS_Handler[WebSocket Handler]
@@ -49,20 +49,20 @@ graph TB
         RoomMgr[Room Manager]
         SM[State Machine]
     end
-    
+
     React --> NS
     NS --> WS_Client
     NS --> Queue
     NS --> Handlers
-    
+
     WS_Client <--> EC2
     EC2 <--> FastAPI
-    
+
     FastAPI --> WS_Handler
     WS_Handler --> ConnMgr
     WS_Handler --> RoomMgr
     RoomMgr --> SM
-    
+
     style NS fill:#81c784
     style SM fill:#ba68c8
     style EC2 fill:#ff8a65
@@ -91,21 +91,21 @@ sequenceDiagram
     participant NS as NetworkService
     participant WS as WebSocket
     participant Server as FastAPI Server
-    
+
     App->>NS: connectToRoom(roomId)
     NS->>NS: Check existing connection
     NS->>WS: new WebSocket(url)
-    
+
     Note over WS,Server: WebSocket Handshake
-    
+
     WS->>Server: HTTP Upgrade Request
     Server->>WS: 101 Switching Protocols
-    
+
     WS->>NS: onopen event
     NS->>NS: Set connection state
     NS->>NS: Start heartbeat
     NS->>App: Emit 'connected' event
-    
+
     Note over NS: Begin processing queued messages
 ```
 
@@ -282,7 +282,7 @@ if (valid_play) {
 # Server broadcasts to all players in room
 async def broadcast(room_id: str, event: str, data: dict):
     connections = connection_manager.get_connections(room_id)
-    
+
     for websocket in connections:
         try:
             await websocket.send_json({
@@ -330,22 +330,22 @@ await self.update_phase_data({
 // Exponential backoff reconnection
 private async attemptReconnect(roomId: string) {
   const maxAttempts = this.config.maxReconnectAttempts;
-  
+
   for (let attempt = 0; attempt < maxAttempts; attempt++) {
     try {
       await this.connectToRoom(roomId);
-      
+
       // Success - process queued messages
       await this.processQueuedMessages(roomId);
       break;
-      
+
     } catch (error) {
       // Calculate backoff delay
       const delay = Math.min(
         1000 * Math.pow(2, attempt),
         30000 // Max 30 seconds
       );
-      
+
       await new Promise(resolve => setTimeout(resolve, delay));
     }
   }
@@ -358,7 +358,7 @@ private async attemptReconnect(roomId: string) {
 // Queue messages during disconnection
 send(roomId: string, event: string, data: any) {
   const connection = this.connections.get(roomId);
-  
+
   if (connection?.readyState === WebSocket.OPEN) {
     // Send immediately
     connection.send(JSON.stringify({
@@ -384,17 +384,17 @@ networkService.on('error', (error) => {
     case 'INVALID_PLAY':
       showToast('Invalid move: ' + error.message);
       break;
-      
+
     case 'ROOM_FULL':
       navigate('/lobby');
       showToast('Room is full');
       break;
-      
+
     case 'NOT_YOUR_TURN':
       // Refresh game state
       requestStateSync();
       break;
-      
+
     default:
       console.error('Unhandled error:', error);
   }
@@ -622,7 +622,7 @@ While we use text/JSON for simplicity, large games could benefit from:
 // NetworkService maintains connection pool
 class NetworkService {
   private connections: Map<string, WebSocket> = new Map();
-  
+
   // Reuse connections when possible
   connectToRoom(roomId: string) {
     const existing = this.connections.get(roomId);
@@ -662,7 +662,7 @@ logging.getLogger("uvicorn.protocols.websockets").setLevel(logging.DEBUG)
 @router.websocket("/ws/{room_id}")
 async def websocket_endpoint(websocket: WebSocket, room_id: str):
     logger.info(f"WebSocket connection: {room_id}")
-    
+
     async for message in websocket.iter_json():
         logger.debug(f"Received: {message}")
         # Process message

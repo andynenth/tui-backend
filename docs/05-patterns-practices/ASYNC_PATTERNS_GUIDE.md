@@ -95,7 +95,7 @@ class GameLogic:
     def process_turn(self, player, action):
         # Sync implementation
         return result
-    
+
     # Create async version
     process_turn_async = create_async_method(process_turn)
 
@@ -113,12 +113,12 @@ class AsyncRoom:
     def __init__(self):
         self._join_lock = asyncio.Lock()
         self._state_lock = asyncio.Lock()
-    
+
     async def join_room(self, player_name):
         async with self._join_lock:
             # Only one join at a time
             return self._add_player(player_name)
-    
+
     async def modify_state(self):
         async with self._state_lock:
             # Protected state modification
@@ -137,7 +137,7 @@ async def websocket_endpoint(websocket: WebSocket, room_id: str):
     if not room:
         await websocket.close(code=4004, reason="Room not found")
         return
-    
+
     # Join room asynchronously
     try:
         slot = await room.join_room(player_name)
@@ -250,11 +250,11 @@ import pytest
 @pytest.mark.asyncio
 async def test_room_operations():
     manager = AsyncCompatRoomManager(RoomManager())
-    
+
     # Test room creation
     room_id = await manager.create_room("TestHost")
     assert room_id is not None
-    
+
     # Test room retrieval
     room = await manager.get_room(room_id)
     assert room.host_name == "TestHost"
@@ -266,7 +266,7 @@ async def test_room_operations():
 @pytest.mark.asyncio
 async def test_concurrent_joins():
     room = AsyncCompatRoom(Room("TEST", "Host"))
-    
+
     # Join multiple players concurrently
     results = await asyncio.gather(
         room.join_room("Player1"),
@@ -274,7 +274,7 @@ async def test_concurrent_joins():
         room.join_room("Player3"),
         return_exceptions=True
     )
-    
+
     # Verify results
     successful = [r for r in results if not isinstance(r, Exception)]
     assert len(successful) == 3
@@ -289,7 +289,7 @@ from tests.async_test_utils import AsyncTestHelper
 async def test_no_deadlock():
     helper = AsyncTestHelper()
     room = AsyncCompatRoom(Room("TEST", "Host"))
-    
+
     # Ensure operation completes without deadlock
     await helper.assert_no_deadlock(
         lambda: room.join_room("Player"),

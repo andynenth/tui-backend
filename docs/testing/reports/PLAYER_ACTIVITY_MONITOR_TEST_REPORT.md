@@ -32,7 +32,7 @@ The Player Activity Monitor has been successfully implemented with the following
 - **Detection Rules Implemented**:
   - No heartbeat hang: Triggers after 90 seconds without heartbeat
   - Waiting action hang: Triggers after 60 seconds when it's player's turn
-  
+
 - **HangDiagnostic Data Captured**:
   - Player and room identification
   - Game phase and context
@@ -45,7 +45,7 @@ The Player Activity Monitor has been successfully implemented with the following
 - **REST Endpoints**:
   - `/api/debug/player-activity/{room_id}`: Current player activity status
   - `/api/debug/hang-diagnostics`: Recent hang diagnostic snapshots
-  
+
 - **WebSocket Endpoint**:
   - `/api/debug/ws/activity-monitor`: Real-time activity monitoring
 
@@ -63,7 +63,7 @@ Response: 200 OK
   "hang_detections": []
 }
 
-# Hang diagnostics endpoint  
+# Hang diagnostics endpoint
 GET /api/debug/hang-diagnostics
 Response: 200 OK
 {
@@ -132,7 +132,7 @@ ws.onmessage = (event) => {
 ### Completed ✅
 - Enhanced heartbeat with diagnostic data
 - Activity tracking service
-- Hang detection engine  
+- Hang detection engine
 - Debug API endpoints
 - Integration with existing systems
 - No database changes required

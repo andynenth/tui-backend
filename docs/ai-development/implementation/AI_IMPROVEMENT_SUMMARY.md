@@ -43,7 +43,7 @@ elif combo_size == 3 and context.field_strength == "weak":
 - Still maintains appropriate caution with quality thresholds
 - Better balance between aggression and safety
 
-### 2. **Improved Strategic Sophistication** 
+### 2. **Improved Strategic Sophistication**
 - Enhanced combo filtering reduces false negatives
 - Maintains excellent risk management
 - Preserves all existing strategic strengths

@@ -58,35 +58,35 @@ if [ -z "$SG_ID" ] || [ "$SG_ID" == "None" ]; then
         --description "Security group for Liap Tui game server" \
         --region $REGION \
         --output text --query 'GroupId')
-    
+
     # Add security group rules
     echo "Adding security rules..."
-    
+
     # SSH (restrict to your IP)
     MY_IP=$(curl -s https://checkip.amazonaws.com)
     aws ec2 authorize-security-group-ingress \
         --group-id $SG_ID \
         --protocol tcp --port 22 --cidr ${MY_IP}/32 \
         --region $REGION
-    
+
     # HTTP
     aws ec2 authorize-security-group-ingress \
         --group-id $SG_ID \
         --protocol tcp --port 80 --cidr 0.0.0.0/0 \
         --region $REGION
-    
+
     # HTTPS
     aws ec2 authorize-security-group-ingress \
         --group-id $SG_ID \
         --protocol tcp --port 443 --cidr 0.0.0.0/0 \
         --region $REGION
-    
+
     # Game port (for testing)
     aws ec2 authorize-security-group-ingress \
         --group-id $SG_ID \
         --protocol tcp --port 5050 --cidr 0.0.0.0/0 \
         --region $REGION
-    
+
     echo -e "${GREEN}✅ Security group created: $SG_ID${NC}"
 else
     echo -e "${YELLOW}Security group already exists: $SG_ID${NC}"

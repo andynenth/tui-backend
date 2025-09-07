@@ -44,12 +44,12 @@ class Room:
         self.started = (
             False  # Boolean flag indicating if the game in this room has started.
         )
-        self.game: Optional[Game] = (
-            None  # The Game instance associated with this room, initially None.
-        )
-        self.game_state_machine: Optional[GameStateMachine] = (
-            None  # State machine for game logic
-        )
+        self.game: Optional[
+            Game
+        ] = None  # The Game instance associated with this room, initially None.
+        self.game_state_machine: Optional[
+            GameStateMachine
+        ] = None  # State machine for game logic
 
         self._assign_lock = asyncio.Lock()  # Prevent concurrent slot assignments
         self._join_lock = asyncio.Lock()  # Prevent concurrent room joins
@@ -127,7 +127,6 @@ class Room:
             self._pending_operations.add(operation_id)
 
             async with self._assign_lock:
-
                 # Validate slot number first
                 if slot < 0 or slot > 3:
                     raise ValueError("Invalid slot number")
@@ -167,7 +166,6 @@ class Room:
             self._pending_operations.add(operation_id)
 
             async with self._join_lock:
-
                 # Check if player already exists (more thorough check)
                 existing_slots = []
                 for i, player in enumerate(self.players):
@@ -216,7 +214,6 @@ class Room:
             self._pending_operations.add(operation_id)
 
             async with self._state_lock:
-
                 if self.started:
                     raise ValueError("Game already started")
 
@@ -465,9 +462,9 @@ class Room:
                     and player.name == name_or_none
                     and not player.is_bot
                 ):
-                    self.players[i] = (
-                        None  # Clear the old slot if the player is found elsewhere.
-                    )
+                    self.players[
+                        i
+                    ] = None  # Clear the old slot if the player is found elsewhere.
                     break
 
         # Assign the new player/bot or clear the slot.

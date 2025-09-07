@@ -26,7 +26,7 @@ const ErrorState = ({ error, onRetry }) => (
         <h2 className="text-xl font-semibold text-white mb-2">Failed to load game history</h2>
         <p className="text-[#999] mb-6">{error.message}</p>
         {error.canRetry && (
-          <button 
+          <button
             onClick={onRetry}
             className="bg-[#3498db] hover:bg-[#3498db]/80 text-white px-6 py-2 rounded-lg transition-colors"
           >
@@ -50,7 +50,7 @@ export const PlayHistoryPage = () => {
   const { roomId } = useParams();
   const { data, loading, error, retry } = usePlayHistory(roomId);
   const [selectedRound, setSelectedRound] = useState(1);
-  
+
   // Add play-history-page and dark classes to body
   useEffect(() => {
     document.body.classList.add('play-history-page', 'dark');
@@ -58,57 +58,57 @@ export const PlayHistoryPage = () => {
       document.body.classList.remove('play-history-page', 'dark');
     };
   }, []);
-  
+
   if (loading) {
     return <LoadingState />;
   }
-  
+
   if (error) {
     return <ErrorState error={error} onRetry={retry} />;
   }
-  
+
   if (!data) {
     return <EmptyState />;
   }
-  
+
   const currentRound = data.rounds[selectedRound - 1];
-  
+
   // Basic implementation with mock data
   return (
     <div className="min-h-screen bg-[#0a0a0a] text-white" data-testid="play-history-page">
       <div className="max-w-[1400px] mx-auto p-5">
-        <GameHeader 
+        <GameHeader
           roomId={roomId}
           round={currentRound}
           totalRounds={data.rounds.length}
           selectedRound={selectedRound}
           onRoundSelect={setSelectedRound}
         />
-        
+
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-[15px] mb-[30px]">
-          <PlayerOverview 
+          <PlayerOverview
             players={data.players}
             roundData={currentRound}
           />
         </div>
-        
+
         <div className="bg-[#1a1a1a] rounded-xl shadow-[0_4px_20px_rgba(0,0,0,0.5)] p-[25px] mb-[30px]">
-          <DeclarationPhase 
+          <DeclarationPhase
             declarations={currentRound.declarations || []}
             handsDealt={currentRound.handsDealt}
             players={data.players}
           />
         </div>
-        
+
         <div className="bg-[#1a1a1a] rounded-xl shadow-[0_4px_20px_rgba(0,0,0,0.5)] p-[25px] mb-[30px]">
-          <TurnTimeline 
+          <TurnTimeline
             turns={currentRound.turns || []}
             players={data.players}
           />
         </div>
-        
+
         <div className="bg-gradient-to-br from-[#2a2a2a] to-[#1a1a1a] rounded-xl shadow-[0_4px_20px_rgba(0,0,0,0.5)] p-[30px]">
-          <RoundSummary 
+          <RoundSummary
             scoring={currentRound.scoring}
             winner={currentRound.winner}
             finalCaptures={currentRound.finalCaptures}
@@ -127,10 +127,10 @@ const GameHeader = ({ roomId, round, totalRounds, selectedRound, onRoundSelect }
         <h1 className="text-2xl font-bold text-white">
           Room {roomId} - Round {selectedRound}
         </h1>
-        
+
         <div className="flex items-center gap-[10px] bg-white/10 px-[15px] py-[5px] rounded-[20px]">
           <label className="text-sm text-[#999]">Round:</label>
-          <select 
+          <select
             value={selectedRound}
             onChange={(e) => onRoundSelect(Number(e.target.value))}
             className="bg-transparent border-none text-base font-semibold text-white focus:outline-none cursor-pointer"
@@ -141,7 +141,7 @@ const GameHeader = ({ roomId, round, totalRounds, selectedRound, onRoundSelect }
           </select>
         </div>
       </div>
-      
+
       <div className="text-sm text-[#999] flex gap-[30px]">
         <span>Total Turns: {round.turns?.length || 0}</span>
         <span>Winner: <span className="text-[#27ae60] font-semibold">{round.winner || 'Unknown'}</span></span>
@@ -156,9 +156,9 @@ const PlayerOverview = ({ players, roundData }) => {
     const isStarter = roundData.starter === player.name;
     const playerStats = roundData.scoring?.players?.[player.name] || {};
     const isAI = player.type === 'bot';
-    
+
     return (
-      <div 
+      <div
         key={player.name}
         className={`
           bg-[#1a1a1a] rounded-[10px] p-5 relative border-2 transition-all
@@ -170,7 +170,7 @@ const PlayerOverview = ({ players, roundData }) => {
             STARTER
           </span>
         )}
-        
+
         <div className="flex items-center gap-[10px] mb-[5px]">
           <h3 className="text-lg font-semibold text-[#f0f0f0]">{player.name}</h3>
           {isAI && (
@@ -179,7 +179,7 @@ const PlayerOverview = ({ players, roundData }) => {
             </span>
           )}
         </div>
-        
+
         <div className="grid grid-cols-3 gap-[10px] mt-[10px]">
           <div className="text-center">
             <div className="text-xl font-bold text-[#3498db]">{playerStats.declared || 0}</div>
@@ -191,7 +191,7 @@ const PlayerOverview = ({ players, roundData }) => {
           </div>
           <div className="text-center">
             <div className={`text-xl font-bold ${
-              playerStats.score > 0 ? 'text-[#27ae60]' : 
+              playerStats.score > 0 ? 'text-[#27ae60]' :
               playerStats.score < 0 ? 'text-[#e74c3c]' : 'text-[#3498db]'
             }`}>
               {playerStats.score > 0 ? '+' : ''}{playerStats.score || 0}
@@ -225,11 +225,11 @@ const DeclarationPhase = ({ declarations, handsDealt, players }) => {
               <div className="text-sm text-[#999] mb-2">
                 {declaration.player} (Position {index + 1})
               </div>
-              
+
               <div className="text-[32px] font-bold text-[#e74c3c] mb-[5px]">
                 {declaration.declared}
               </div>
-              
+
               <div className="text-xs text-[#666]">
                 {isForced ? (
                   <span className="text-[#e74c3c] italic">Forced zero</span>
@@ -237,7 +237,7 @@ const DeclarationPhase = ({ declarations, handsDealt, players }) => {
                   <span>Room: {8 - declaration.declared} piles</span>
                 )}
               </div>
-              
+
               <div className="mt-3">
                 <HandBeforePlay pieces={hand} />
               </div>
@@ -253,13 +253,13 @@ const DeclarationPhase = ({ declarations, handsDealt, players }) => {
 const PieceDisplay = ({ piece }) => {
   const isGeneral = piece.type === 'GENERAL' && piece.color === 'red' && piece.point === 14;
   return (
-    <span 
+    <span
       className={`
         px-2 py-1 rounded text-[11px] font-medium
-        ${piece.color === 'red' 
-          ? isGeneral 
-            ? 'bg-[#e74c3c] text-white' 
-            : 'bg-[#e74c3c]/20 text-[#e74c3c] border border-[#e74c3c]' 
+        ${piece.color === 'red'
+          ? isGeneral
+            ? 'bg-[#e74c3c] text-white'
+            : 'bg-[#e74c3c]/20 text-[#e74c3c] border border-[#e74c3c]'
           : 'bg-[#34495e]/20 text-[#95a5a6] border border-[#34495e]'
         }
       `}
@@ -293,7 +293,7 @@ const TurnTimeline = ({ turns, players }) => {
       </h2>
       <div className="space-y-5">
         {turns.map((turn) => (
-          <TurnSection 
+          <TurnSection
             key={turn.turnNumber}
             turn={turn}
             turnNumber={turn.turnNumber}
@@ -308,7 +308,7 @@ const TurnTimeline = ({ turns, players }) => {
 // TurnSection component
 const TurnSection = ({ turn, turnNumber }) => {
   const isTriplePlay = turn.plays.every(p => p.pieces.length === 3);
-  
+
   return (
     <div className="bg-[#1a1a1a] p-[25px] rounded-xl mb-5">
       <div className="flex items-center justify-between mb-5 pb-[15px] border-b border-[#333]">
@@ -322,10 +322,10 @@ const TurnSection = ({ turn, turnNumber }) => {
           </span>
         </div>
       </div>
-      
+
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-[15px]">
         {turn.plays.map((play) => (
-          <PlayCard 
+          <PlayCard
             key={play.player}
             play={play}
             isWinner={play.player === turn.winner}
@@ -341,7 +341,7 @@ const TurnSection = ({ turn, turnNumber }) => {
 const PlayCard = ({ play, isWinner, isStarter }) => {
   const isTriplePlay = play.pieces.length === 3;
   const totalPoints = play.pieces.reduce((sum, p) => sum + p.point, 0);
-  
+
   return (
     <div className={`
       bg-[#2a2a2a] rounded-lg p-[15px] relative border-2 transition-all
@@ -352,11 +352,11 @@ const PlayCard = ({ play, isWinner, isStarter }) => {
           WINNER
         </span>
       )}
-      
+
       <div className="text-sm font-medium text-[#ccc] mb-[10px]">
         {play.player} {isStarter && '(Starter)'}
       </div>
-      
+
       <div className="bg-white/5 p-[10px] rounded-md mb-[15px]">
         <div className="text-[11px] text-[#999] uppercase mb-[5px]">Hand Before Play</div>
         <div className="flex flex-wrap gap-1">
@@ -365,19 +365,19 @@ const PlayCard = ({ play, isWinner, isStarter }) => {
           ))}
         </div>
       </div>
-      
+
       <div className="flex flex-wrap gap-1 mb-[10px]">
         {sortPieces(play.pieces).map((piece, index) => (
           <PieceDisplay key={index} piece={piece} />
         ))}
       </div>
-      
+
       {isTriplePlay && (
         <div className="text-[11px] text-[#666] uppercase mb-[10px]">
           Triple Play ({totalPoints} pts)
         </div>
       )}
-      
+
       <div className="flex justify-between mt-[10px] pt-[10px] border-t border-[#444] text-xs text-[#999]">
         <span>Captured: 0→{play.captured}</span>
         <span>Pieces Played: {play.pieces.length}</span>
@@ -389,16 +389,16 @@ const PlayCard = ({ play, isWinner, isStarter }) => {
 // RoundSummary component
 const RoundSummary = ({ scoring, winner, finalCaptures }) => {
   if (!scoring) return null;
-  
+
   // Convert players object to array for easier manipulation
   const playerScores = Object.entries(scoring.players || {}).map(([name, score]) => ({
     name,
     ...score
   }));
-  
+
   // Sort by score descending
   const sortedScores = [...playerScores].sort((a, b) => b.score - a.score);
-  
+
   return (
     <div>
       <h2 className="text-xl mb-5 text-[#f0f0f0] flex items-center gap-[10px]">
@@ -407,19 +407,19 @@ const RoundSummary = ({ scoring, winner, finalCaptures }) => {
         </div>
         Round Summary
       </h2>
-      
+
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5 mb-[30px]">
         {sortedScores.map((player, index) => {
           const diff = player.captured - player.declared;
           const isExactMatch = diff === 0;
           const isForced = player.declared === 0 && player.captured === 0;
-          
+
           return (
             <div key={player.name} className="bg-black/30 p-5 rounded-[10px] text-center">
               <div className="text-base font-semibold mb-[15px] text-[#f0f0f0]">
                 {player.name}
               </div>
-              
+
               <div className="grid gap-[10px]">
                 <div className="flex justify-between p-[5px] text-sm">
                   <span className="text-[#999]">Declared</span>
@@ -432,7 +432,7 @@ const RoundSummary = ({ scoring, winner, finalCaptures }) => {
                 <div className="flex justify-between p-[5px] text-sm">
                   <span className="text-[#999]">Difference</span>
                   <span className={`font-semibold ${
-                    diff === 0 ? 'text-[#3498db]' : 
+                    diff === 0 ? 'text-[#3498db]' :
                     diff > 0 ? 'text-[#27ae60]' : 'text-[#e74c3c]'
                   }`}>
                     {diff > 0 ? '+' : ''}{diff}
@@ -441,7 +441,7 @@ const RoundSummary = ({ scoring, winner, finalCaptures }) => {
                 <div className="flex justify-between p-[5px] text-sm">
                   <span className="text-[#999]">Score</span>
                   <span className={`font-semibold ${
-                    player.score > 0 ? 'text-[#27ae60]' : 
+                    player.score > 0 ? 'text-[#27ae60]' :
                     player.score < 0 ? 'text-[#e74c3c]' : 'text-[#3498db]'
                   }`}>
                     {player.score > 0 ? '+' : ''}{player.score} pts
@@ -450,8 +450,8 @@ const RoundSummary = ({ scoring, winner, finalCaptures }) => {
                 <div className="flex justify-between p-[5px] text-sm">
                   <span className="text-[#999]">Reason</span>
                   <span className="font-medium text-xs">
-                    {isForced ? 'Forced zero bonus' : 
-                     isExactMatch ? 'Exact match!' : 
+                    {isForced ? 'Forced zero bonus' :
+                     isExactMatch ? 'Exact match!' :
                      diff > 0 ? `Exceeded by ${diff}` : `Missed by ${Math.abs(diff)}`}
                   </span>
                 </div>
@@ -460,7 +460,7 @@ const RoundSummary = ({ scoring, winner, finalCaptures }) => {
           );
         })}
       </div>
-      
+
       {scoring.bonuses && scoring.bonuses.length > 0 && (
         <div className="mb-6">
           <h3 className="text-lg font-medium mb-3 text-[#f0f0f0]">Bonuses</h3>
@@ -479,7 +479,7 @@ const RoundSummary = ({ scoring, winner, finalCaptures }) => {
           </div>
         </div>
       )}
-      
+
       {finalCaptures && (
         <div>
           <h3 className="text-lg font-medium mb-3 text-[#f0f0f0]">Final Captures</h3>

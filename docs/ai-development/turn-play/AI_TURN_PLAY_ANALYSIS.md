@@ -69,7 +69,7 @@ This calculates:
 
 Example scenarios:
 - If bot has captured 1/3 piles → avoid playing 3+ piece combos
-- If bot has captured 4/5 piles → avoid playing 2+ piece combos  
+- If bot has captured 4/5 piles → avoid playing 2+ piece combos
 - If bot is at target (2/2) → play only singles with weak pieces
 
 #### 3.2 Strategic Plan Generation
@@ -134,12 +134,12 @@ This calls `form_execution_plan()` which categorizes pieces into roles:
 Example plan formation:
 ```
 Target: 3 piles needed
-Hand: [GENERAL_RED(14), ADVISOR_BLACK(12), HORSE_RED(5), HORSE_BLACK(5), 
+Hand: [GENERAL_RED(14), ADVISOR_BLACK(12), HORSE_RED(5), HORSE_BLACK(5),
        CANNON_RED(3), CANNON_BLACK(3), SOLDIER_RED(1), SOLDIER_BLACK(1)]
 
 Plan:
 - Openers: [GENERAL_RED, ADVISOR_BLACK] (2 pieces for 2 potential wins)
-- Combos: [PAIR of HORSEs] (1 combo for 1 potential win)  
+- Combos: [PAIR of HORSEs] (1 combo for 1 potential win)
 - Reserve: [SOLDIER_RED, SOLDIER_BLACK] (weak pieces)
 - Burden: [CANNON_RED, CANNON_BLACK] (not in winning plan)
 ```
@@ -262,7 +262,7 @@ Evaluates opponent declarations to gauge competition:
 
 Affects combo viability:
 - Weak field: HORSE pairs (10+ points) viable
-- Normal field: CHARIOT pairs (14+ points) viable  
+- Normal field: CHARIOT pairs (14+ points) viable
 - Strong field: ELEPHANT pairs (18+ points) viable
 
 ### 3. Random Timing System
@@ -288,7 +288,7 @@ Starters may prefer strong combos over individual openers:
 ```python
 STARTER_PREFERRED_COMBOS = [
     "THREE_OF_A_KIND",
-    "STRAIGHT", 
+    "STRAIGHT",
     "FOUR_OF_A_KIND",
     "EXTENDED_STRAIGHT",
     "FIVE_OF_A_KIND",
@@ -362,7 +362,7 @@ Total value: 4 pts
   🎯 Already at/above target - minimizing play
   📊 Evaluating 1 assigned combos
     Selected PAIR worth 11 pts
-  
+
 🎮 STARTER STRATEGY for Bot_2 (Turn 4)
   Current hand: [GENERAL_RED(14), ADVISOR_BLACK(11), HORSE_RED(6), HORSE_BLACK(5), CANNON_RED(4), SOLDIER_BLACK(1)]
   🎯 Playing pre-selected combo: [HORSE_RED(6), HORSE_BLACK(5)]

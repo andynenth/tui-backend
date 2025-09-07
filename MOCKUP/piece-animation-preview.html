@@ -496,7 +496,7 @@
 <body>
     <div class="container">
         <h1>Game Piece Animation Preview</h1>
-        
+
         <div class="info">
             This preview shows different animation options for when pieces become selectable at the start of your turn.
             Choose an animation style and click "Trigger Animation" to see it in action.
@@ -524,13 +524,13 @@
                     <option value="none">No Animation</option>
                 </select>
             </div>
-            
+
             <div class="control-group">
                 <label for="duration-input">Animation Duration:</label>
                 <input type="range" id="duration-input" min="100" max="1000" value="300" step="50">
                 <span id="duration-display">300ms</span>
             </div>
-            
+
             <div class="control-group">
                 <button onclick="triggerAnimation()">Trigger Animation</button>
                 <button onclick="resetPieces()">Reset</button>
@@ -912,13 +912,13 @@
         function initializePieces() {
             const grid = document.getElementById('piece-grid');
             grid.innerHTML = '';
-            
+
             pieces.forEach((piece, index) => {
                 const pieceEl = document.createElement('div');
                 pieceEl.className = `game-piece ${piece.color}`;
                 pieceEl.textContent = piece.char;
                 pieceEl.style.setProperty('--duration', getDuration());
-                
+
                 // Add stagger delay for staggered animations
                 const animationType = document.getElementById('animation-select').value;
                 if (animationType === 'wave') {
@@ -928,7 +928,7 @@
                 } else if (animationType === 'verticalDropStagger') {
                     pieceEl.style.animationDelay = `${index * 80}ms`;
                 }
-                
+
                 grid.appendChild(pieceEl);
             });
         }
@@ -949,10 +949,10 @@
             const animation = document.getElementById('animation-select').value;
             const code = animationCode[animation];
             const duration = getDuration();
-            
+
             // Replace 0.3s with actual duration
             const updatedCode = code.replace(/0\.\d+s/g, duration.replace('ms', 'ms').replace('000', 's').replace('ms', 'ms'));
-            
+
             document.getElementById('code-display').textContent = updatedCode;
         }
 
@@ -960,20 +960,20 @@
         function triggerAnimation() {
             const animation = document.getElementById('animation-select').value;
             const pieces = document.querySelectorAll('.game-piece');
-            
+
             // Remove all animation classes
             pieces.forEach(piece => {
                 piece.className = piece.className.replace(/animation-\w+/g, '').trim();
             });
-            
+
             // Force reflow
             void document.body.offsetHeight;
-            
+
             // Add new animation class
             pieces.forEach((piece, index) => {
                 piece.className += ` animation-${animation}`;
                 piece.style.setProperty('--duration', getDuration());
-                
+
                 // Add stagger delay for staggered animations
                 if (animation === 'wave') {
                     piece.style.animationDelay = `${index * 50}ms`;
@@ -1001,7 +1001,7 @@
         // Initialize on load
         initializePieces();
         updateCodeDisplay();
-        
+
         // Auto-trigger first animation
         setTimeout(() => {
             triggerAnimation();

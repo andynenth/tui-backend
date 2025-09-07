@@ -36,7 +36,7 @@ Records every player action in the game.
   "payload": {
     // For declare:
     "value": 2,                                // Number of piles declared
-    
+
     // For play_pieces:
     "pieces": [
       {"kind": "GENERAL_RED", "point": 14},
@@ -114,7 +114,7 @@ Marks the completion of a turn (all players have played).
 
 ## Piece Types
 - **Generals**: `GENERAL_RED` (14 points), `GENERAL_BLACK` (13 points)
-- **Advisors**: `ADVISOR_RED` (12 points), `ADVISOR_BLACK` (11 points)  
+- **Advisors**: `ADVISOR_RED` (12 points), `ADVISOR_BLACK` (11 points)
 - **Elephants**: `ELEPHANT_RED` (10 points), `ELEPHANT_BLACK` (9 points)
 - **Chariots**: `CHARIOT_RED` (8 points), `CHARIOT_BLACK` (7 points)
 - **Horses**: `HORSE_RED` (6 points), `HORSE_BLACK` (5 points)
@@ -125,23 +125,23 @@ Marks the completion of a turn (all players have played).
 
 ### Get all events for a room:
 ```sql
-SELECT * FROM game_events 
-WHERE room_id = 'C5E645' 
+SELECT * FROM game_events
+WHERE room_id = 'C5E645'
 ORDER BY sequence;
 ```
 
 ### Get initial hands for a round:
 ```sql
-SELECT payload FROM game_events 
-WHERE room_id = 'C5E645' 
+SELECT payload FROM game_events
+WHERE room_id = 'C5E645'
   AND event_type = 'hands_dealt'
   AND payload LIKE '%"round_number": 1%';
 ```
 
 ### Track game progression:
 ```sql
-SELECT event_type, payload FROM game_events 
-WHERE room_id = 'C5E645' 
+SELECT event_type, payload FROM game_events
+WHERE room_id = 'C5E645'
   AND event_type = 'phase_change'
 ORDER BY sequence;
 ```

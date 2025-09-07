@@ -29,14 +29,14 @@ if [[ $REPLY =~ ^[Yy]$ ]]; then
     ssh -i "$SOURCE_KEY" ubuntu@$SOURCE_IP << 'ENDSSH'
         # Stop container to ensure data consistency
         docker-compose down
-        
+
         # Create backup directory
         mkdir -p ~/backup
-        
+
         # Export Docker images
         echo "Exporting Docker images..."
         docker save liap-tui:latest nginx:latest | gzip > ~/backup/docker-images.tar.gz
-        
+
         # Backup data and configs
         echo "Backing up data..."
         sudo tar -czf ~/backup/app-data.tar.gz \
@@ -46,26 +46,26 @@ if [[ $REPLY =~ ^[Yy]$ ]]; then
             ~/docker-compose.yml \
             /etc/nginx/sites-available/castellan \
             /etc/letsencrypt 2>/dev/null || true
-        
+
         # Get docker-compose file
         cp ~/docker-compose.yml ~/backup/
-        
+
         # Restart container
         docker-compose up -d
-        
+
         echo "Backup complete!"
         ls -lh ~/backup/
 ENDSSH
-    
+
     # Download backups
     echo -e "${YELLOW}📥 Downloading backups...${NC}"
     mkdir -p ./tokyo-migration-backup
     scp -i "$SOURCE_KEY" ubuntu@$SOURCE_IP:~/backup/* ./tokyo-migration-backup/
-    
+
     # Upload to Tokyo server
     echo -e "${YELLOW}📤 Uploading to Tokyo server...${NC}"
     scp -i "$TARGET_KEY" -o StrictHostKeyChecking=no ./tokyo-migration-backup/* ubuntu@$TARGET_IP:~/
-    
+
     # Restore on Tokyo server
     echo -e "${YELLOW}🔄 Restoring on Tokyo server...${NC}"
     ssh -i "$TARGET_KEY" -o StrictHostKeyChecking=no ubuntu@$TARGET_IP << 'ENDSSH'
@@ -77,33 +77,33 @@ ENDSSH
             sudo usermod -aG docker ubuntu
             newgrp docker
         fi
-        
+
         # Load Docker images
         echo "Loading Docker images..."
         docker load < ~/docker-images.tar.gz
-        
+
         # Extract app data
         echo "Extracting app data..."
         sudo tar -xzf ~/app-data.tar.gz -C /
-        
+
         # Fix permissions
         sudo chown -R ubuntu:ubuntu ~/liap-tui-data ~/logs ~/nginx-config
-        
+
         # Install nginx if needed
         if ! command -v nginx &> /dev/null; then
             sudo apt-get update
             sudo apt-get install -y nginx
         fi
-        
+
         # Start containers
         echo "Starting containers..."
         docker-compose up -d
-        
+
         # Check status
         docker ps
         echo "Migration complete!"
 ENDSSH
-    
+
     echo -e "${GREEN}✅ Migration complete!${NC}"
     echo -e "${GREEN}🌐 Test your game at: http://$TARGET_IP${NC}"
     echo

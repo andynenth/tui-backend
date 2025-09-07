@@ -208,8 +208,12 @@ class OptimizedEventStore:
                 logger.info(
                     f"🔍 DEBUG: Processing ROUND_COMPLETED event for room {room_id}"
                 )
-                logger.info(f"🔥 OPTIMIZED_EVENT_STORE: Processing ROUND_COMPLETED for room {room_id}")
-                logger.info(f"🔥 OPTIMIZED_EVENT_STORE: Payload keys: {list(payload.keys())}")
+                logger.info(
+                    f"🔥 OPTIMIZED_EVENT_STORE: Processing ROUND_COMPLETED for room {room_id}"
+                )
+                logger.info(
+                    f"🔥 OPTIMIZED_EVENT_STORE: Payload keys: {list(payload.keys())}"
+                )
                 # Store complete round snapshot
                 round_data = {
                     "round_number": payload.get("round_number", 1),

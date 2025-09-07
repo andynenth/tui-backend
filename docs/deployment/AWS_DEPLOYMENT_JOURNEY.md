@@ -261,7 +261,7 @@ useEffect(() => {
 FROM node:18-alpine as frontend-builder
 # Build frontend with production optimizations
 
-# Backend stage  
+# Backend stage
 FROM python:3.11-slim
 # Copy built frontend from previous stage
 COPY --from=frontend-builder /app/bundle.* ./backend/static/

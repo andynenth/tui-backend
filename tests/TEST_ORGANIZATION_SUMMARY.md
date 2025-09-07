@@ -7,7 +7,7 @@ Reorganized 35 test files from the root directory into the tests/ folder structu
 
 ### tests/ai_declaration/ (18 files + 8 moved)
 - **Purpose**: AI declaration logic testing
-- **New files moved**: 
+- **New files moved**:
   - Declaration v2 implementation tests
   - Forbidden sum handling tests
   - Field strength tests
@@ -26,7 +26,7 @@ Reorganized 35 test files from the root directory into the tests/ folder structu
 
 ### tests/overcapture/ (2 files - new directory)
 - **Purpose**: Overcapture avoidance strategy testing
-- **Files**: 
+- **Files**:
   - `test_overcapture_avoidance.py`
   - `test_overcapture_with_new_strategy.py`
 

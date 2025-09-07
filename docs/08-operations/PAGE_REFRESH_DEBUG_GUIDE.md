@@ -181,7 +181,7 @@ console.log('🔍 [REFRESH_DEBUG] Sending client_ready:', {
 # backend/api/routes/ws.py
 async def handle_client_ready(websocket, room_id, data):
     logger.info(f"🔍 [REFRESH_DEBUG] client_ready: room={room_id}, reconnection={data.get('is_reconnection')}, player={data.get('player_name')}")
-    
+
     # Log current game state
     room = await room_manager.get_room(room_id)
     if room and room.game:

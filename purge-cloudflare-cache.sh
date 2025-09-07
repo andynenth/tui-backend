@@ -43,7 +43,7 @@ purge_all() {
         -H "Authorization: Bearer $API_TOKEN" \
         -H "Content-Type: application/json" \
         --data '{"purge_everything":true}')
-    
+
     if echo "$response" | grep -q '"success":[[:space:]]*true'; then
         echo -e "${GREEN}✅ Cache purged successfully!${NC}"
         # Show zone ID if available
@@ -62,12 +62,12 @@ purge_urls() {
     echo -e "${YELLOW}🔄 Purging specific URLs...${NC}"
     # Main pages and static assets
     urls='["https://castellan.andynenth.dev/","https://castellan.andynenth.dev/index.html","https://castellan.andynenth.dev/bundle.js","https://castellan.andynenth.dev/bundle.css","https://castellan.andynenth.dev/favicon.ico"]'
-    
+
     response=$(curl -s -X POST "https://api.cloudflare.com/client/v4/zones/$ZONE_ID/purge_cache" \
         -H "Authorization: Bearer $API_TOKEN" \
         -H "Content-Type: application/json" \
         --data "{\"files\":$urls}")
-    
+
     if echo "$response" | grep -q '"success":[[:space:]]*true'; then
         echo -e "${GREEN}✅ URLs purged successfully!${NC}"
         # Show number of files purged if available

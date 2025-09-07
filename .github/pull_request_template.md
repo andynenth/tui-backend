@@ -13,7 +13,7 @@ Brief description of changes and why they were made.
 
 ### Testing
 - [ ] I have added unit tests for new functionality
-- [ ] I have added integration tests if applicable  
+- [ ] I have added integration tests if applicable
 - [ ] I have run the test suite locally and all tests pass
 - [ ] I have tested the changes manually
 
@@ -60,7 +60,7 @@ source venv/bin/activate
 pytest tests/unit/ -v
 pytest tests/integration/ -v
 
-# Frontend tests  
+# Frontend tests
 cd frontend
 npm test
 npm run lint

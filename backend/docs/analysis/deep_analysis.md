@@ -22,32 +22,32 @@ graph TB
         Services[Service Layer]
         Network[Network Service]
     end
-    
+
     subgraph "Communication Layer"
         WebSocket[WebSocket Connection]
         REST[REST API]
     end
-    
+
     subgraph "Backend Layer"
         FastAPI[FastAPI Server]
         WSHandler[WebSocket Handler]
         APIRoutes[API Routes]
         Middleware[Middleware]
     end
-    
+
     subgraph "Business Logic"
         StateMachine[State Machine]
         GameEngine[Game Engine]
         Rules[Game Rules]
         Scoring[Scoring System]
     end
-    
+
     subgraph "Data Layer"
         GameState[(Game State)]
         Rooms[(Room Manager)]
         Players[(Player Data)]
     end
-    
+
     Browser --> React
     React --> Router
     Router --> Pages
@@ -56,16 +56,16 @@ graph TB
     Services --> Network
     Network -.WebSocket.-> WebSocket
     Network -.HTTP.-> REST
-    
+
     WebSocket --> WSHandler
     REST --> APIRoutes
     WSHandler --> StateMachine
     APIRoutes --> Middleware
-    
+
     StateMachine --> GameEngine
     GameEngine --> Rules
     GameEngine --> Scoring
-    
+
     StateMachine --> GameState
     WSHandler --> Rooms
     GameEngine --> Players
@@ -237,7 +237,7 @@ sequenceDiagram
     participant StateMachine
     participant GameEngine
     participant Database
-    
+
     Note over User,Database: Room Creation Flow
     User->>Browser: Click Create Room
     Browser->>React: Handle Click
@@ -253,7 +253,7 @@ sequenceDiagram
     NetworkService-->>React: Update State
     React-->>Browser: Render Room
     Browser-->>User: Show Room Code
-    
+
     Note over User,Database: Game Play Flow
     User->>Browser: Make Move
     Browser->>React: Handle Input
@@ -272,4 +272,3 @@ sequenceDiagram
     React-->>Browser: Render Changes
     Browser-->>User: Show Updated Board
 ```
-

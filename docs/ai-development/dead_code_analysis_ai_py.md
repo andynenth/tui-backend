@@ -83,7 +83,7 @@ After fixing the bug where `choose_declare()` was calling the old `choose_declar
 
 ## Total Dead Code Count
 - **Old Strategic System**: 283 lines
-- **Functions only used by old system**: 53 lines  
+- **Functions only used by old system**: 53 lines
 - **Completely orphaned functions**: 132 lines
 - **Unused constants**: 8 lines
 - **Total Dead Code**: ~476 lines out of 1399 total lines (34% of the file)

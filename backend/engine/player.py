@@ -30,7 +30,7 @@ class Player:
         self.is_connected = True  # Whether player is currently connected
         self.disconnect_time = None  # When player disconnected
         self.original_is_bot = is_bot  # Store original bot state for reconnection
-        
+
         # Grace period for bot takeover
         self.pending_bot_takeover = None  # Timestamp when bot should take over
         self.bot_takeover_scheduled = False  # Whether bot takeover is scheduled

@@ -101,12 +101,12 @@ class WebSocketRateLimiter:
 
     def __init__(self):
         self.rate_limiter = get_rate_limiter()
-        self.connection_stats: Dict[str, Dict[str, int]] = (
-            {}
-        )  # Track per-connection stats
-        self.room_message_counts: Dict[str, Dict[str, int]] = (
-            {}
-        )  # Track messages per room
+        self.connection_stats: Dict[
+            str, Dict[str, int]
+        ] = {}  # Track per-connection stats
+        self.room_message_counts: Dict[
+            str, Dict[str, int]
+        ] = {}  # Track messages per room
 
     def _get_client_id(self, websocket: WebSocket, room_id: str) -> str:
         """Generate a unique client identifier for a WebSocket connection"""

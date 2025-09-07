@@ -6,7 +6,7 @@
     <title>Preparation Phase - Dealing Cards</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=Crimson+Pro:wght@400;600;700&display=swap');
-        
+
         * {
             margin: 0;
             padding: 0;
@@ -15,7 +15,7 @@
 
         body {
             font-family: 'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
-            background: 
+            background:
                 linear-gradient(135deg, #F8F9FA 0%, #E9ECEF 25%, #DEE2E6 50%, #CED4DA 75%, #ADB5BD 100%),
                 radial-gradient(circle at 30% 20%, rgba(255, 193, 7, 0.1) 0%, transparent 50%),
                 radial-gradient(circle at 70% 80%, rgba(13, 110, 253, 0.05) 0%, transparent 50%);
@@ -36,7 +36,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: 
+            background:
                 radial-gradient(circle at 25% 25%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
                 radial-gradient(circle at 75% 75%, rgba(0, 0, 0, 0.02) 0%, transparent 50%);
             pointer-events: none;
@@ -48,13 +48,13 @@
             height: min(100vh, 177.78vw);
             max-width: 400px;
             max-height: 711px;
-            background: 
+            background:
                 linear-gradient(145deg, #FFFFFF 0%, #F8F9FA 100%),
                 radial-gradient(circle at 20% 30%, rgba(255, 193, 7, 0.03) 0%, transparent 70%),
                 radial-gradient(circle at 80% 70%, rgba(13, 110, 253, 0.02) 0%, transparent 70%);
             border-radius: 20px;
             border: 1px solid rgba(173, 181, 189, 0.3);
-            box-shadow: 
+            box-shadow:
                 0 20px 40px rgba(0, 0, 0, 0.08),
                 0 0 0 1px rgba(255, 255, 255, 0.9),
                 inset 0 1px 0 rgba(255, 255, 255, 1);
@@ -69,13 +69,13 @@
             position: absolute;
             top: 20px;
             right: 20px;
-            background: 
+            background:
                 linear-gradient(145deg, #FFFFFF 0%, #F8F9FA 100%),
                 radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.8) 0%, transparent 60%);
             padding: 8px 16px;
             border-radius: 16px;
             border: 1px solid rgba(173, 181, 189, 0.3);
-            box-shadow: 
+            box-shadow:
                 0 4px 12px rgba(0, 0, 0, 0.08),
                 inset 0 1px 0 rgba(255, 255, 255, 1);
             font-weight: 700;
@@ -89,7 +89,7 @@
         .phase-header {
             text-align: center;
             padding: 50px 24px 20px;
-            background: 
+            background:
                 linear-gradient(180deg, rgba(248, 249, 250, 0.8) 0%, transparent 100%),
                 linear-gradient(90deg, transparent 0%, rgba(173, 181, 189, 0.1) 50%, transparent 100%);
             border-bottom: 1px solid rgba(173, 181, 189, 0.2);
@@ -149,12 +149,12 @@
             position: absolute;
             width: 90px;
             height: 90px;
-            background: 
+            background:
                 linear-gradient(145deg, #FFFFFF 0%, #F8F9FA 100%),
                 radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.8) 0%, transparent 60%);
             border-radius: 50%;
             border: 4px solid rgba(173, 181, 189, 0.8);
-            box-shadow: 
+            box-shadow:
                 0 6px 16px rgba(0, 0, 0, 0.12),
                 inset 0 1px 0 rgba(255, 255, 255, 1);
             top: 50%;
@@ -234,7 +234,7 @@
 
         .progress-fill {
             height: 100%;
-            background: 
+            background:
                 linear-gradient(90deg, #28A745 0%, #20C997 100%);
             border-radius: 4px;
             width: 0;
@@ -249,7 +249,7 @@
 
         /* Weak Hand Alert */
         .weak-hand-alert {
-            background: 
+            background:
                 linear-gradient(145deg, #FFF8E1 0%, #FFFBF0 100%),
                 radial-gradient(circle at 30% 30%, rgba(255, 193, 7, 0.1) 0%, transparent 60%);
             border: 1px solid rgba(255, 193, 7, 0.3);
@@ -311,7 +311,7 @@
         }
 
         .alert-button.primary {
-            background: 
+            background:
                 linear-gradient(135deg, #FFC107 0%, #FF9800 100%);
             color: #212529;
             border: 1px solid rgba(255, 193, 7, 0.4);
@@ -324,7 +324,7 @@
         }
 
         .alert-button.secondary {
-            background: 
+            background:
                 linear-gradient(145deg, #FFFFFF 0%, #F8F9FA 100%);
             color: #495057;
             border: 1px solid rgba(173, 181, 189, 0.3);
@@ -332,13 +332,13 @@
         }
 
         .alert-button.secondary:hover {
-            background: 
+            background:
                 linear-gradient(145deg, #F8F9FA 0%, #E9ECEF 100%);
         }
 
         /* Player Hand Section */
         .hand-section {
-            background: 
+            background:
                 linear-gradient(180deg, #F8F9FA 0%, #E9ECEF 100%),
                 radial-gradient(ellipse 100% 60% at 50% 0%, rgba(173, 181, 189, 0.2) 0%, transparent 100%);
             padding: 20px;
@@ -370,7 +370,7 @@
         .piece {
             aspect-ratio: 1;
             border-radius: 50%;
-            background: 
+            background:
                 linear-gradient(145deg, #FFFFFF 0%, #F8F9FA 100%),
                 radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.8) 0%, transparent 60%);
             display: flex;
@@ -380,7 +380,7 @@
             font-size: 20px;
             font-weight: bold;
             text-align: center;
-            box-shadow: 
+            box-shadow:
                 0 4px 12px rgba(0, 0, 0, 0.08),
                 inset 0 1px 0 rgba(255, 255, 255, 1);
             position: relative;
@@ -439,13 +439,13 @@
             position: absolute;
             top: 20px;
             left: 20px;
-            background: 
+            background:
                 linear-gradient(135deg, #DC3545 0%, #C82333 100%),
                 radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.3) 0%, transparent 60%);
             padding: 8px 16px;
             border-radius: 16px;
             border: 1px solid rgba(220, 53, 69, 0.4);
-            box-shadow: 
+            box-shadow:
                 0 4px 12px rgba(220, 53, 69, 0.2),
                 inset 0 1px 0 rgba(255, 255, 255, 0.6);
             font-weight: 700;
@@ -505,7 +505,7 @@
                 </div>
                 <div class="dealing-message">Dealing Cards</div>
                 <div class="dealing-status">Please wait while cards are being dealt...</div>
-                
+
                 <div class="progress-container">
                     <div class="progress-bar">
                         <div class="progress-fill"></div>
@@ -553,7 +553,7 @@
                     <div class="piece-character">炮</div>
                     <div class="piece-points">3</div>
                 </div>
-                
+
                 <!-- Row 2 -->
                 <div class="piece red">
                     <div class="piece-character">炮</div>

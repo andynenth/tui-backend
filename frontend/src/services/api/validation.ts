@@ -19,7 +19,7 @@ import {
  */
 export const validatePlayHistory: ValidatePlayHistory = (data: unknown): data is PlayHistory => {
   if (!isObject(data)) return false;
-  
+
   return (
     isString(data.roomId) &&
     isArray(data.rounds) &&
@@ -38,7 +38,7 @@ export const validatePlayHistory: ValidatePlayHistory = (data: unknown): data is
  */
 export const validateRound: ValidateRound = (data: unknown): data is Round => {
   if (!isObject(data)) return false;
-  
+
   return (
     isNumber(data.roundNumber) &&
     isString(data.starter) &&
@@ -57,7 +57,7 @@ export const validateRound: ValidateRound = (data: unknown): data is Round => {
  */
 export const validatePiece: ValidatePiece = (data: unknown): data is Piece => {
   if (!isObject(data)) return false;
-  
+
   return (
     isString(data.type) &&
     isNumber(data.point) &&
@@ -68,7 +68,7 @@ export const validatePiece: ValidatePiece = (data: unknown): data is Piece => {
 // Helper validation functions
 function validatePlayer(data: unknown): data is Player {
   if (!isObject(data)) return false;
-  
+
   return (
     isString(data.name) &&
     (data.type === 'human' || data.type === 'bot') &&
@@ -78,7 +78,7 @@ function validatePlayer(data: unknown): data is Player {
 
 function validateGameStatus(data: unknown): data is GameStatus {
   if (!isObject(data)) return false;
-  
+
   return (
     typeof data.completed === 'boolean' &&
     (data.winner === null || isString(data.winner)) &&
@@ -89,7 +89,7 @@ function validateGameStatus(data: unknown): data is GameStatus {
 
 function validateDeclaration(data: unknown): data is Declaration {
   if (!isObject(data)) return false;
-  
+
   return (
     isString(data.player) &&
     isNumber(data.declared) &&
@@ -101,7 +101,7 @@ function validateDeclaration(data: unknown): data is Declaration {
 
 function validateTurn(data: unknown): data is Turn {
   if (!isObject(data)) return false;
-  
+
   return (
     isNumber(data.turnNumber) &&
     isArray(data.plays) &&
@@ -114,7 +114,7 @@ function validateTurn(data: unknown): data is Turn {
 
 function validatePlay(data: unknown): data is Play {
   if (!isObject(data)) return false;
-  
+
   return (
     isString(data.player) &&
     isArray(data.pieces) &&
@@ -130,7 +130,7 @@ function validatePlay(data: unknown): data is Play {
 
 function validateRoundScoring(data: unknown): data is RoundScoring {
   if (!isObject(data)) return false;
-  
+
   return (
     isObject(data.players) &&
     Object.values(data.players).every(validatePlayerRoundScore) &&
@@ -141,7 +141,7 @@ function validateRoundScoring(data: unknown): data is RoundScoring {
 
 function validatePlayerRoundScore(data: unknown): data is PlayerRoundScore {
   if (!isObject(data)) return false;
-  
+
   return (
     isNumber(data.declared) &&
     isNumber(data.captured) &&
@@ -153,7 +153,7 @@ function validatePlayerRoundScore(data: unknown): data is PlayerRoundScore {
 
 function validateBonus(data: unknown): boolean {
   if (!isObject(data)) return false;
-  
+
   return (
     isString(data.player) &&
     isString(data.type) &&

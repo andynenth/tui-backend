@@ -444,7 +444,7 @@
             .tutorial-wrapper {
                 flex-direction: column;
             }
-            
+
             .sidebar {
                 width: 100%;
                 height: auto;
@@ -468,7 +468,7 @@
         <!-- Sidebar Navigation -->
         <aside class="sidebar">
             <div class="logo">⚔️ CASTELLAN</div>
-            
+
             <div class="chapter expanded">
                 <div class="chapter-header active">
                     <span class="chapter-icon">🎮</span>
@@ -562,7 +562,7 @@
                 <div class="lesson-content">
                     <h1 class="lesson-title">Welcome to Castellan!</h1>
                     <p class="lesson-subtitle">
-                        Master the art of medieval warfare through strategic piece placement and clever predictions. 
+                        Master the art of medieval warfare through strategic piece placement and clever predictions.
                         Let's start with an interactive battle to understand the basics!
                     </p>
 
@@ -646,7 +646,7 @@
             feedback.className = `feedback ${type}`;
             feedback.textContent = message;
             feedback.style.display = 'block';
-            
+
             setTimeout(() => {
                 feedback.style.display = 'none';
             }, 3000);
@@ -656,12 +656,12 @@
             event.preventDefault();
             const dropZone = event.target;
             dropZone.classList.add('valid');
-            
+
             const feedback = document.getElementById('comboFeedback');
             feedback.className = 'feedback success';
             feedback.textContent = '✓ Valid pair! Two matching pieces make a strong combination.';
             feedback.style.display = 'block';
-            
+
             // Update XP
             const xpFill = document.querySelector('.xp-fill');
             xpFill.style.width = '45%';
@@ -672,12 +672,12 @@
             // Mark lesson as complete
             const currentChapter = document.querySelector('.chapter-header.active');
             currentChapter.classList.add('completed');
-            
+
             // Update progress
             const xpFill = document.querySelector('.xp-fill');
             xpFill.style.width = '50%';
             document.querySelector('.xp-text').textContent = '500 / 1000 XP';
-            
+
             // Show completion message
             alert('🎉 Lesson Complete! +100 XP earned!');
         }

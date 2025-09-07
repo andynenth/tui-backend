@@ -20,18 +20,18 @@ from backend.engine.ai import find_all_valid_combos
 
 class AIDecisionTester:
     """Reusable tester for AI decision-making scenarios"""
-    
+
     def __init__(self):
         self.scenarios = []
-    
+
     def create_hand_from_specs(self, piece_specs: List[Tuple[str, int]]) -> List[Piece]:
         """
         Create a hand from piece specifications.
-        
+
         Args:
             piece_specs: List of (piece_type, count) tuples
                         e.g., [("ADVISOR_RED", 2), ("SOLDIER_BLACK", 3)]
-        
+
         Returns:
             List of Piece objects
         """
@@ -40,8 +40,8 @@ class AIDecisionTester:
             for _ in range(count):
                 hand.append(Piece(piece_type))
         return hand
-    
-    def create_context(self, bot_name: str, hand: List[Piece], 
+
+    def create_context(self, bot_name: str, hand: List[Piece],
                       declared: int, captured: int, required_pieces: int,
                       turn_number: int = 1, is_starter: bool = False,
                       player_states: Dict = None) -> TurnPlayContext:
@@ -53,7 +53,7 @@ class AIDecisionTester:
                 "Player3": {"captured": 0, "declared": 0},
                 "Player4": {"captured": 0, "declared": 0}
             }
-        
+
         return TurnPlayContext(
             my_name=bot_name,
             my_hand=hand,
@@ -67,22 +67,22 @@ class AIDecisionTester:
             revealed_pieces=[],
             player_states=player_states
         )
-    
-    def analyze_decision(self, context: TurnPlayContext, 
+
+    def analyze_decision(self, context: TurnPlayContext,
                         show_plan_details: bool = True,
                         show_urgency: bool = True) -> Dict:
         """Analyze AI decision for given context"""
         # Get urgency and constraints
         urgency = calculate_urgency(context)
         constraints = get_overcapture_constraints(context)
-        
+
         # Get valid combos and form plan
         valid_combos = find_all_valid_combos(context.my_hand)
         plan = form_execution_plan(context.my_hand, context, valid_combos)
-        
+
         # Get AI's choice
         chosen_pieces = choose_strategic_play(context.my_hand, context)
-        
+
         # Compile results
         results = {
             "bot_name": context.my_name,
@@ -97,22 +97,22 @@ class AIDecisionTester:
             "chosen_play": chosen_pieces,
             "plan": plan
         }
-        
+
         # Display analysis
         print(f"\n{'='*60}")
         print(f"ANALYZING: {context.my_name}")
         print(f"{'='*60}")
-        
+
         print(f"\nGame State:")
         print(f"  - Hand size: {results['hand_size']} pieces")
         print(f"  - Declared: {results['declared']}, Captured: {results['captured']}")
         print(f"  - Target remaining: {results['target_remaining']} piles")
-        
+
         if show_urgency:
             print(f"\nStrategic Assessment:")
             print(f"  - Urgency: {results['urgency']}")
             print(f"  - Risk level: {results['risk_level']}")
-        
+
         if show_plan_details:
             print(f"\nPlan Formation:")
             print(f"  - Assigned combos: {results['assigned_combos']}")
@@ -120,12 +120,12 @@ class AIDecisionTester:
                 for combo_type, pieces in plan['assigned_combos']:
                     piece_str = "+".join([f"{p.kind}({p.point})" for p in pieces])
                     print(f"    - {combo_type}: {piece_str}")
-            
+
             print(f"  - Burden pieces: {results['burden_pieces']}")
             if results['burden_pieces'] <= 10:  # Don't spam if too many
                 for p in plan['burden_pieces']:
                     print(f"    - {p.kind}: {p.point}")
-        
+
         print(f"\nChosen Play:")
         if chosen_pieces:
             play_str = "+".join([f"{p.kind}({p.point})" for p in chosen_pieces])
@@ -133,9 +133,9 @@ class AIDecisionTester:
             print(f"  {play_str} = {total} points")
         else:
             print(f"  No play chosen!")
-        
+
         return results
-    
+
     def add_scenario(self, name: str, description: str, **kwargs):
         """Add a test scenario"""
         self.scenarios.append({
@@ -143,19 +143,19 @@ class AIDecisionTester:
             "description": description,
             **kwargs
         })
-    
+
     def run_all_scenarios(self):
         """Run all added scenarios"""
         print(f"\n{'#'*60}")
         print(f"# Running {len(self.scenarios)} Test Scenarios")
         print(f"{'#'*60}")
-        
+
         for scenario in self.scenarios:
             print(f"\n\n{'*'*60}")
             print(f"Scenario: {scenario['name']}")
             print(f"Description: {scenario['description']}")
             print(f"{'*'*60}")
-            
+
             # Create hand and context from scenario
             hand = self.create_hand_from_specs(scenario['hand_specs'])
             context = self.create_context(
@@ -168,7 +168,7 @@ class AIDecisionTester:
                 is_starter=scenario.get('is_starter', False),
                 player_states=scenario.get('player_states', None)
             )
-            
+
             # Analyze decision
             self.analyze_decision(
                 context,
@@ -180,7 +180,7 @@ class AIDecisionTester:
 def main():
     """Example usage with various scenarios"""
     tester = AIDecisionTester()
-    
+
     # Scenario 1: Bot declaring 0 with strong combo (original Bot 3 case)
     tester.add_scenario(
         name="Zero Declaration with Combo",
@@ -199,7 +199,7 @@ def main():
         required_pieces=4,
         turn_number=1
     )
-    
+
     # Scenario 2: Bot at target with singles only
     tester.add_scenario(
         name="At Target Playing Singles",
@@ -215,7 +215,7 @@ def main():
         required_pieces=1,
         turn_number=3
     )
-    
+
     # Scenario 3: Critical urgency needing wins
     tester.add_scenario(
         name="Critical Urgency",
@@ -231,7 +231,7 @@ def main():
         required_pieces=3,
         turn_number=3
     )
-    
+
     # Scenario 4: Bot with multiple combos
     tester.add_scenario(
         name="Multiple Combo Options",
@@ -250,7 +250,7 @@ def main():
         required_pieces=3,
         turn_number=1
     )
-    
+
     # Run all scenarios
     tester.run_all_scenarios()
 

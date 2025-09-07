@@ -19,7 +19,7 @@ def test_actual_turn3_scenario():
     print("\n" + "="*80)
     print("TESTING ACTUAL BOT 3 TURN 3 SCENARIO")
     print("="*80)
-    
+
     # Bot 3's actual remaining pieces after Turn 1 and 2
     # Turn 1: Played SOLDIER(1), HORSE(5), HORSE(5)
     # Turn 2: Played GENERAL(13)
@@ -30,12 +30,12 @@ def test_actual_turn3_scenario():
         Piece("ELEPHANT_BLACK"), # 9 points
         Piece("ELEPHANT_RED")    # 10 points
     ]
-    
+
     print("\nBot 3's actual hand at Turn 3:")
     print(f"  {[f'{p.name}({p.point})' for p in remaining_hand]}")
     print(f"\nWeakest piece: HORSE_RED(6)")
     print(f"Strongest piece: ELEPHANT_RED(10)")
-    
+
     # Create context for Turn 3
     context = TurnPlayContext(
         my_name="Bot 3",
@@ -55,21 +55,21 @@ def test_actual_turn3_scenario():
             "Bot 4": {"captured": 0, "declared": 1}
         }
     )
-    
+
     print("\nCalling strategic AI for Bot 3...")
     pieces_to_play = choose_strategic_play(remaining_hand, context)
-    
+
     print(f"\n" + "="*60)
     print("RESULT ANALYSIS")
     print("="*60)
     print(f"\nBot 3 chose to play: {[p.name for p in pieces_to_play]}")
     print(f"Piece value: {pieces_to_play[0].point if pieces_to_play else 0}")
-    
+
     print("\n🔍 Key Finding:")
     print("Even with overcapture avoidance working correctly,")
     print("Bot 3's weakest piece (HORSE_RED=6) is still strong enough")
     print("to potentially win against other players' pieces!")
-    
+
     print("\n📊 What other players might play:")
     print("- Alexanderium: CANNON(3) or SOLDIER(1)")
     print("- Bot 2: CANNON(4) or remaining SOLDIERs")
@@ -79,7 +79,7 @@ def test_actual_turn3_scenario():
 
 if __name__ == "__main__":
     test_actual_turn3_scenario()
-    
+
     print("\n" + "="*80)
     print("CONCLUSION")
     print("="*80)

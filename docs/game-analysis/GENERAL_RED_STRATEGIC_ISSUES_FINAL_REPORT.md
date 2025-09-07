@@ -29,7 +29,7 @@ if context.has_general_red and any(c[0] in ["FOUR_OF_A_KIND", "FIVE_OF_A_KIND"] 
 
 **Strategic Flaw:** GENERAL_RED's core value is enabling MULTIPLE combos through guaranteed control. The AI artificially caps this to single combo, fundamentally misunderstanding GENERAL_RED's game-changing nature.
 
-### 🔥 Issue 2: Combo Enablement Filtering Gap (HIGH PRIORITY)  
+### 🔥 Issue 2: Combo Enablement Filtering Gap (HIGH PRIORITY)
 **Affects: 1 scenario - general_red_combo_01**
 **Root Cause: `filter_viable_combos()` logic**
 
@@ -38,7 +38,7 @@ The `filter_viable_combos()` function correctly identifies when GENERAL_RED shou
 
 **Impact Example:**
 - `general_red_combo_01`: Has THREE_OF_A_KIND(3×SOLDIER_RED) + GENERAL_RED control
-- Context: Normal field, prev=[1,2] (one weak, one moderate opponent)  
+- Context: Normal field, prev=[1,2] (one weak, one moderate opponent)
 - **Should be**: 3 (combo) + 1 (opener) = 4 piles
 - **AI gives**: 1 pile (combo filtered out, only opener counted)
 
@@ -134,7 +134,7 @@ elif context.has_general_red and context.field_strength == "weak":
 ### 1. Fix Combo Accumulation (HIGH PRIORITY)
 Replace the special case GENERAL_RED logic with full combo accumulation when GENERAL_RED provides control.
 
-### 2. Enhance Combo Enablement (HIGH PRIORITY) 
+### 2. Enhance Combo Enablement (HIGH PRIORITY)
 Extend GENERAL_RED combo enablement from just "weak" fields to "normal" fields for guaranteed control scenarios.
 
 ### 3. Implement Multi-Opener Bonus (MEDIUM PRIORITY)

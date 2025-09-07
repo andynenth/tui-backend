@@ -165,14 +165,14 @@ class TestNewFeature:
     @pytest.fixture
     def game(self):
         return Game()
-    
+
     def test_feature_behavior(self, game):
         # Arrange
         initial_state = game.state
-        
+
         # Act
         result = game.new_feature()
-        
+
         # Assert
         assert result == expected_value
         assert game.state == expected_state
@@ -189,11 +189,11 @@ describe('NewComponent', () => {
   it('should handle user interaction', () => {
     // Arrange
     render(<NewComponent />);
-    
+
     // Act
     const button = screen.getByRole('button');
     fireEvent.click(button);
-    
+
     // Assert
     expect(screen.getByText('Expected Result')).toBeInTheDocument();
   });

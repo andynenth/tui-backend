@@ -11,7 +11,7 @@ Region: us-east-1
 
 Connection Command:
   ssh -i liap-tui-key-1755152170.pem ubuntu@34.233.7.20
-  
+
 Or use:
   ./connect-to-ec2.sh
 

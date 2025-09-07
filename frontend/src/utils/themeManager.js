@@ -68,7 +68,7 @@ export const themes = {
 export const getTheme = () => {
   // Check URL path first
   const path = window.location.pathname;
-  
+
   // Define URL-to-theme mappings
   const urlThemeMappings = {
     '/tui': 'classic',
@@ -76,7 +76,7 @@ export const getTheme = () => {
     '/modern': 'modern',
     '/medieval': 'medieval'
   };
-  
+
   // Check if current path matches a theme URL
   const urlTheme = urlThemeMappings[path];
   if (urlTheme && themes[urlTheme]) {
@@ -84,7 +84,7 @@ export const getTheme = () => {
     localStorage.setItem('liap-tui-theme', urlTheme);
     return themes[urlTheme];
   }
-  
+
   // Fall back to localStorage or default
   const saved = localStorage.getItem('liap-tui-theme');
   return saved && themes[saved] ? themes[saved] : themes.medieval;

@@ -107,30 +107,30 @@ class GameBotHandler:
         self._lock = asyncio.Lock()
 
         # 🔧 RACE_CONDITION_FIX: Bot action deduplication system
-        self._bot_action_cache: Dict[str, Dict[str, float]] = (
-            {}
-        )  # bot_name -> {action_hash: timestamp}
+        self._bot_action_cache: Dict[
+            str, Dict[str, float]
+        ] = {}  # bot_name -> {action_hash: timestamp}
         self._cache_timeout = 5.0  # Actions expire after 5 seconds
-        self._turn_sequence_tracking: Dict[str, int] = (
-            {}
-        )  # bot_name -> last_turn_number
-        self._phase_sequence_tracking: Dict[str, str] = (
-            {}
-        )  # bot_name -> last_phase_context
+        self._turn_sequence_tracking: Dict[
+            str, int
+        ] = {}  # bot_name -> last_turn_number
+        self._phase_sequence_tracking: Dict[
+            str, str
+        ] = {}  # bot_name -> last_phase_context
 
         # 🔧 PHASE_TRACKING_FIX: Prevent duplicate phase action triggers
         self._last_processed_phase: Optional[str] = None
         self._phase_action_triggered: Dict[str, bool] = {}  # phase -> triggered
 
         # 🔧 TURN_START_FIX: Prevent duplicate turn_started events
-        self._last_turn_start: Optional[Dict[str, Any]] = (
-            None  # {turn_number, starter, timestamp}
-        )
+        self._last_turn_start: Optional[
+            Dict[str, Any]
+        ] = None  # {turn_number, starter, timestamp}
 
         # 🔧 REDEAL_DECISION_FIX: Track which bots have been triggered in current redeal cycle
-        self._current_redeal_cycle_triggered: Set[str] = (
-            set()
-        )  # Bot names triggered this cycle
+        self._current_redeal_cycle_triggered: Set[
+            str
+        ] = set()  # Bot names triggered this cycle
 
     def _get_game_state(self):
         """Get current game state from state machine or fallback to direct game access"""
@@ -306,7 +306,6 @@ class GameBotHandler:
             )
             # logger.debug(f"🔍 BOT_HANDLER: Current declarer: {current_declarer}")
             if current_declarer:
-
                 # Check if current declarer is a bot
                 game_state = self._get_game_state()
                 if hasattr(game_state, "players"):
@@ -314,16 +313,21 @@ class GameBotHandler:
                         if getattr(player, "name", str(player)) == current_declarer:
                             # Check if bot should act (including grace period check)
                             is_bot = getattr(player, "is_bot", False)
-                            bot_takeover_scheduled = getattr(player, "bot_takeover_scheduled", False)
-                            pending_takeover = getattr(player, "pending_bot_takeover", None)
-                            
-                            from datetime import datetime
-                            should_bot_act = is_bot or (
-                                bot_takeover_scheduled and 
-                                pending_takeover and 
-                                datetime.now() >= pending_takeover
+                            bot_takeover_scheduled = getattr(
+                                player, "bot_takeover_scheduled", False
                             )
-                            
+                            pending_takeover = getattr(
+                                player, "pending_bot_takeover", None
+                            )
+
+                            from datetime import datetime
+
+                            should_bot_act = is_bot or (
+                                bot_takeover_scheduled
+                                and pending_takeover
+                                and datetime.now() >= pending_takeover
+                            )
+
                             if should_bot_act:
                                 # 🔧 PHASE_TRACKING_FIX: Mark this phase as having triggered actions
                                 self._phase_action_triggered[phase] = True
@@ -422,19 +426,22 @@ class GameBotHandler:
 
             # Check if player is a bot or has pending bot takeover after grace period
             is_bot = getattr(player_obj, "is_bot", False)
-            bot_takeover_scheduled = getattr(player_obj, "bot_takeover_scheduled", False)
+            bot_takeover_scheduled = getattr(
+                player_obj, "bot_takeover_scheduled", False
+            )
             pending_takeover = getattr(player_obj, "pending_bot_takeover", None)
-            
+
             # Bot should act if:
             # 1. Player is marked as bot (is_bot = True)
             # 2. OR bot takeover is scheduled AND grace period has expired
             from datetime import datetime
+
             should_bot_act = is_bot or (
-                bot_takeover_scheduled and 
-                pending_takeover and 
-                datetime.now() >= pending_takeover
+                bot_takeover_scheduled
+                and pending_takeover
+                and datetime.now() >= pending_takeover
             )
-            
+
             if not should_bot_act:
                 break  # Wait for human player or grace period to expire
 
@@ -476,9 +483,9 @@ class GameBotHandler:
             # Get CURRENT round declarations from phase data
             game_state = self._get_game_state()
             phase_data = self.state_machine.current_state.phase_data
-            declarations = phase_data.get('declarations', {})
-            declaration_order = phase_data.get('declaration_order', [])
-            
+            declarations = phase_data.get("declarations", {})
+            declaration_order = phase_data.get("declaration_order", [])
+
             # Build list in order, only including players who have already declared
             previous_declarations = []
             for player_name in declaration_order:
@@ -520,9 +527,9 @@ class GameBotHandler:
             if is_last:
                 # Get current declarations from state machine phase data
                 phase_data = self.state_machine.current_state.phase_data
-                declarations = phase_data.get('declarations', {})
+                declarations = phase_data.get("declarations", {})
                 total_so_far = sum(declarations.values())
-                
+
                 forbidden = 8 - total_so_far
                 if value == forbidden and 0 <= forbidden <= 8:
                     logger.warning(
@@ -614,14 +621,15 @@ class GameBotHandler:
             is_bot = getattr(starter, "is_bot", False)
             bot_takeover_scheduled = getattr(starter, "bot_takeover_scheduled", False)
             pending_takeover = getattr(starter, "pending_bot_takeover", None)
-            
+
             from datetime import datetime
+
             should_bot_act = is_bot or (
-                bot_takeover_scheduled and 
-                pending_takeover and 
-                datetime.now() >= pending_takeover
+                bot_takeover_scheduled
+                and pending_takeover
+                and datetime.now() >= pending_takeover
             )
-        
+
         if should_bot_act:
             logger.info(f"🤖 Round starter is bot: {starter.name}")
             await asyncio.sleep(1)
@@ -671,19 +679,22 @@ class GameBotHandler:
 
             # Check if player is a bot or has pending bot takeover after grace period
             is_bot = getattr(player_obj, "is_bot", False)
-            bot_takeover_scheduled = getattr(player_obj, "bot_takeover_scheduled", False)
+            bot_takeover_scheduled = getattr(
+                player_obj, "bot_takeover_scheduled", False
+            )
             pending_takeover = getattr(player_obj, "pending_bot_takeover", None)
-            
+
             # Bot should act if:
             # 1. Player is marked as bot (is_bot = True)
             # 2. OR bot takeover is scheduled AND grace period has expired
             from datetime import datetime
+
             should_bot_act = is_bot or (
-                bot_takeover_scheduled and 
-                pending_takeover and 
-                datetime.now() >= pending_takeover
+                bot_takeover_scheduled
+                and pending_takeover
+                and datetime.now() >= pending_takeover
             )
-            
+
             if not should_bot_act:
                 break  # Stop at human player or grace period not expired
 
@@ -775,7 +786,9 @@ class GameBotHandler:
                         starter_play = turn_plays.get(current_turn_starter, {})
                         required_play_type = starter_play.get("play_type")
                         if required_play_type:
-                            logger.info(f"Responder {bot.name} must match play type: {required_play_type}")
+                            logger.info(
+                                f"Responder {bot.name} must match play type: {required_play_type}"
+                            )
 
                 # DEBUG: Log detailed info for overcapture investigation
                 logger.debug(
@@ -970,14 +983,15 @@ class GameBotHandler:
             is_bot = getattr(player, "is_bot", False)
             bot_takeover_scheduled = getattr(player, "bot_takeover_scheduled", False)
             pending_takeover = getattr(player, "pending_bot_takeover", None)
-            
+
             from datetime import datetime
+
             should_bot_act = is_bot or (
-                bot_takeover_scheduled and 
-                pending_takeover and 
-                datetime.now() >= pending_takeover
+                bot_takeover_scheduled
+                and pending_takeover
+                and datetime.now() >= pending_takeover
             )
-            
+
             if not should_bot_act:
                 continue
 

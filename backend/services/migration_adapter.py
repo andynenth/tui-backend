@@ -14,7 +14,7 @@ logger = logging.getLogger(__name__)
 class MigrationAdapter:
     """
     Adapter for v2 event storage system.
-    
+
     This adapter provides a consistent interface to the OptimizedEventStore
     which uses compression, buffering, and an optimized database schema.
     """
@@ -22,11 +22,11 @@ class MigrationAdapter:
     def __init__(self):
         """Initialize adapter with v2 OptimizedEventStore."""
         logger.info("🔍 DEBUG: MigrationAdapter.__init__ called")
-        
+
         # Always use v2_only mode
         self.mode = "v2_only"
         self.v2_store = OptimizedEventStore()
-        
+
         logger.info("MigrationAdapter initialized in v2_only mode")
         logger.info("MigrationAdapter: Initialized v2 OptimizedEventStore")
 
@@ -47,7 +47,7 @@ class MigrationAdapter:
             f"🔍 DEBUG: MigrationAdapter payload keys: {list(payload.keys()) if payload else 'None'}"
         )
         logger.debug(f"🔍 DEBUG: MigrationAdapter player_id: {player_id}")
-        
+
         # Always use v2 store
         await self.v2_store.store_event(room_id, event_type, payload, player_id)
 
@@ -72,12 +72,12 @@ class MigrationAdapter:
     async def shutdown(self) -> None:
         """Graceful shutdown of v2 store."""
         logger.info("MigrationAdapter shutting down...")
-        
+
         try:
             await self.v2_store.shutdown()
         except Exception as e:
             logger.error(f"Error shutting down v2 store: {e}")
-            
+
         logger.info("MigrationAdapter shutdown complete")
 
     def get_metrics(self) -> Dict[str, Any]:
@@ -88,7 +88,7 @@ class MigrationAdapter:
                 "v1": False,
                 "v2": True,
             },
-            "v2_metrics": self.v2_store.get_metrics()
+            "v2_metrics": self.v2_store.get_metrics(),
         }
 
     # Properties for compatibility
@@ -96,19 +96,19 @@ class MigrationAdapter:
     def db_path(self):
         """Get database path for compatibility."""
         return self.v2_store.v2_store.db_path
-    
+
     async def count_events_for_date(self, date: datetime) -> int:
         """
         Count events for a specific date
-        
+
         Args:
             date: The date to count events for
-            
+
         Returns:
             int: Number of events on that date
         """
         date_str = date.strftime("%Y-%m-%d")
-        
+
         conn = sqlite3.connect(self.db_path)
         cursor = conn.execute(
             "SELECT COUNT(*) FROM game_events WHERE date(created_at) = date(?)",
@@ -116,5 +116,5 @@ class MigrationAdapter:
         )
         count = cursor.fetchone()[0]
         conn.close()
-        
+
         return count

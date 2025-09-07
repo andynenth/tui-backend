@@ -261,9 +261,7 @@ class TestPlayHistoryAlerts:
 
         return room_id
 
-    @patch(
-        "backend.services.play_history_db.play_history_db_service.get_play_history"
-    )
+    @patch("backend.services.play_history_db.play_history_db_service.get_play_history")
     def test_slow_query_alert(self, mock_get):
         """Test that slow play history queries trigger alerts."""
         loop = asyncio.new_event_loop()
@@ -277,7 +275,7 @@ class TestPlayHistoryAlerts:
             "room_id": room_id,
             "players": [],
             "rounds": [],
-            "game_status": "active"
+            "game_status": "active",
         }
 
         # Add artificial delay to trigger alert

@@ -39,21 +39,21 @@ graph TD
         Client2[Client State]
         Server1[Server State]
         DB[Database State]
-        
+
         Client1 -.->|Sync?| Server1
         Client2 -.->|Sync?| Server1
         Server1 -.->|Sync?| DB
     end
-    
+
     subgraph "✅ Single Source"
         Backend[Backend State Machine]
         C1[Client View]
         C2[Client View]
-        
+
         Backend -->|Broadcast| C1
         Backend -->|Broadcast| C2
     end
-    
+
     style Backend fill:#4CAF50
 ```
 
@@ -88,19 +88,19 @@ def play(self, pieces):
 # ✅ Explicit
 def play_pieces(self, piece_ids: List[str]) -> PlayResult:
     """Play specified pieces in the current turn.
-    
+
     Args:
         piece_ids: List of piece IDs to play
-        
+
     Returns:
         PlayResult with success status and details
-        
+
     Raises:
         InvalidPlayError: If play violates game rules
     """
     if not piece_ids:
         raise InvalidPlayError("Must play at least one piece")
-    
+
     return self.process_play(piece_ids)
 ```
 
@@ -115,7 +115,7 @@ async def handle_play_action(self, action: GameAction):
     # Fast validation
     if not action.player_name:
         raise ValueError("Player name required")
-    
+
     if not self.is_player_turn(action.player_name):
         raise GameError(
             code="NOT_YOUR_TURN",
@@ -153,7 +153,7 @@ Each major decision follows this template:
 
 **Status**: Accepted
 
-**Context**: 
+**Context**:
 - Real-time multiplayer games need bidirectional communication
 - Traditional REST + WebSocket splits create complexity
 - State synchronization is critical for gameplay
@@ -192,12 +192,12 @@ Each major decision follows this template:
 @router.websocket("/ws/{room_id}")
 async def websocket_endpoint(websocket: WebSocket, room_id: str):
     await websocket.accept()
-    
+
     try:
         # All game logic flows through WebSocket
         async for message in websocket.iter_json():
             await handle_game_message(websocket, room_id, message)
-            
+
     except WebSocketDisconnect:
         await handle_disconnect(room_id, websocket)
 ```
@@ -210,7 +210,7 @@ sequenceDiagram
     participant WS as WebSocket
     participant H as Handler
     participant SM as State Machine
-    
+
     C->>WS: {"event": "play", "data": {...}}
     WS->>H: Route message
     H->>SM: Process action
@@ -272,7 +272,7 @@ class GameStateMachine:
             GamePhase.SCORING: ScoringState(),
             GamePhase.GAME_OVER: GameOverState()
         }
-        
+
     async def process_action(self, action: GameAction) -> ActionResult:
         current_state = self.states[self.phase]
         return await current_state.handle_action(action, self.context)
@@ -331,13 +331,13 @@ async def update_phase_data(self, updates: dict, reason: str = ""):
     """Update phase data with automatic broadcasting."""
     # Update state
     self.phase_data.update(updates)
-    
+
     # Record change
     self._record_change(updates, reason)
-    
+
     # Auto-broadcast to all clients
     await self._broadcast_phase_change()
-    
+
     # Increment sequence for ordering
     self._sequence_number += 1
 ```
@@ -499,7 +499,7 @@ DATABASE_PATH = "/app/data/game_events.db"
 # Docker Compose volume mapping
 volumes:
   - ./game_events.db:/app/data/game_events.db
-  
+
 # Automated backups
 0 2 * * * cp /app/data/game_events.db /backups/game_events_$(date +%Y%m%d).db
 ```
@@ -580,13 +580,13 @@ graph LR
         B[WebSocket Only]
         C[State Machine]
     end
-    
+
     subgraph "Future"
         D[Microservices]
         E[REST + WebSocket]
         F[Event Sourcing]
     end
-    
+
     A -->|Growing team| D
     B -->|API needs| E
     C -->|Advanced features| F

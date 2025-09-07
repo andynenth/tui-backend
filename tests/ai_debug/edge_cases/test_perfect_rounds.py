@@ -17,7 +17,7 @@ def test_perfect_declaration_hands():
     """Test hands that are likely to achieve perfect declarations"""
     print("Testing Perfect Declaration Scenarios...")
     print("-" * 50)
-    
+
     perfect_hands = [
         {
             'name': 'Two strong openers (should declare 2)',
@@ -60,13 +60,13 @@ def test_perfect_declaration_hands():
             'confidence': 'Medium'
         }
     ]
-    
+
     all_passed = True
-    
+
     for test in perfect_hands:
         print(f"\n{test['name']}:")
         print(f"  Confidence for perfect round: {test['confidence']}")
-        
+
         result = run_declaration_test(
             hand_specs=test['hand'],
             position=0,  # As starter for best control
@@ -74,15 +74,15 @@ def test_perfect_declaration_hands():
             expected_min=test['expected_declaration'],
             expected_max=test['expected_declaration'] + 1  # Allow slight variation
         )
-        
+
         print(f"  AI declared: {result['declaration']} (expected {test['expected_declaration']})")
-        
+
         if abs(result['declaration'] - test['expected_declaration']) <= 1:
             print("  ✓ PASSED - Declaration reasonable for perfect round")
         else:
             print("  ✗ FAILED - Declaration too far from expected")
             all_passed = False
-            
+
     return all_passed
 
 
@@ -90,7 +90,7 @@ def test_turn_play_for_perfect_round():
     """Test turn play decisions when aiming for perfect round"""
     print("\n\nTesting Turn Play for Perfect Rounds...")
     print("-" * 50)
-    
+
     scenarios = [
         {
             'name': 'At target - should play weakest',
@@ -121,27 +121,27 @@ def test_turn_play_for_perfect_round():
             'expected_piece': 'medium',  # Can play HORSE or CHARIOT
         }
     ]
-    
+
     all_passed = True
-    
+
     for scenario in scenarios:
         print(f"\n{scenario['name']}:")
         print(f"  Declared: {scenario['my_declared']}, Captured: {scenario['my_captured']}")
-        
+
         result = run_turn_play_test(
             hand_specs=scenario['hand'],
             required_count=1,  # Single piece play
             my_declared=scenario['my_declared'],
             my_captured=scenario['my_captured']
         )
-        
+
         selected_piece = result['selected_play'][0] if result['selected_play'] else None
-        
+
         if selected_piece:
             # Determine if played piece matches expectation
-            piece_value = next(p.point for p in run_turn_play_test(scenario['hand'], 1)['selected_play'] 
+            piece_value = next(p.point for p in run_turn_play_test(scenario['hand'], 1)['selected_play']
                              if f"{p.name}_{p.color}" == selected_piece)
-            
+
             if scenario['expected_piece'] == 'weak' and piece_value <= 5:
                 assessment = "✓ Correctly played weak piece"
             elif scenario['expected_piece'] == 'strong' and piece_value >= 11:
@@ -154,10 +154,10 @@ def test_turn_play_for_perfect_round():
         else:
             assessment = "✗ No piece selected"
             all_passed = False
-            
+
         print(f"  Selected: {selected_piece}")
         print(f"  {assessment}")
-        
+
     return all_passed
 
 
@@ -165,16 +165,16 @@ if __name__ == "__main__":
     print("="*60)
     print("EDGE CASE TEST: Perfect Declaration Rounds")
     print("="*60)
-    
+
     # Run tests
     test1_passed = test_perfect_declaration_hands()
     test2_passed = test_turn_play_for_perfect_round()
-    
+
     # Summary
     print("\n" + "="*60)
     print("TEST SUMMARY")
     print("="*60)
-    
+
     if test1_passed and test2_passed:
         print("✓ ALL TESTS PASSED")
         exit(0)

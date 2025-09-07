@@ -133,8 +133,8 @@ A player wins by reaching **50 points**.
 | `FIVE_OF_A_KIND` | 5 `SOLDIER`s of the same color |
 | `DOUBLE_STRAIGHT` | 2 each of `CHARIOT`, `HORSE`, `CANNON` (6 pieces), same color |
 
-> Play strength is ranked using `PLAY_TYPE_PRIORITY`  
-> If tied by type → higher total points wins  
+> Play strength is ranked using `PLAY_TYPE_PRIORITY`
+> If tied by type → higher total points wins
 > For `EXTENDED_STRAIGHT(_5)` → only **top 3 unique piece types** are summed
 
 ---

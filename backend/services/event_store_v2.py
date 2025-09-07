@@ -16,6 +16,7 @@ logger = logging.getLogger(__name__)
 
 class DateTimeEncoder(json.JSONEncoder):
     """JSON encoder that handles datetime objects"""
+
     def default(self, obj):
         if isinstance(obj, datetime):
             return obj.isoformat()
@@ -37,7 +38,7 @@ class EventStoreV2:
         """Initialize EventStore v2 with optimized schema."""
         if db_path is None:
             # Check environment variable first
-            env_db_path = os.getenv('DATABASE_PATH')
+            env_db_path = os.getenv("DATABASE_PATH")
             if env_db_path:
                 self.db_path = env_db_path
                 # Ensure directory exists
@@ -78,12 +79,12 @@ class EventStoreV2:
             # Create game summary entry with design-correct column names
             conn.execute(
                 """
-                INSERT OR REPLACE INTO game_summaries 
-                (room_id, player_names, player_types, started_at, total_rounds, 
+                INSERT OR REPLACE INTO game_summaries
+                (room_id, player_names, player_types, started_at, total_rounds,
                  current_round, game_status, last_activity)
                 VALUES (?, ?, ?, ?, 0, 0, 'active', ?)
             """,
-                (room_id, json.dumps(players), '{}', time.time(), time.time()),
+                (room_id, json.dumps(players), "{}", time.time(), time.time()),
             )
 
             # Also store minimal event with event_sequence
@@ -114,8 +115,12 @@ class EventStoreV2:
             f"🔍 DEBUG: EventStoreV2.store_round_snapshot called - room: {room_id}, round: {round_number}"
         )
         logger.info(f"🔍 DEBUG: Round data keys: {list(round_data.keys())}")
-        logger.info(f"🔥 EVENT_STORE_V2: store_round_snapshot called for room {room_id}, round {round_number}")
-        logger.info(f"🔥 EVENT_STORE_V2: turn_sequence length: {len(round_data.get('turn_sequence', []))}")
+        logger.info(
+            f"🔥 EVENT_STORE_V2: store_round_snapshot called for room {room_id}, round {round_number}"
+        )
+        logger.info(
+            f"🔥 EVENT_STORE_V2: turn_sequence length: {len(round_data.get('turn_sequence', []))}"
+        )
         conn = sqlite3.connect(self.db_path)
         try:
             # Extract data
@@ -132,10 +137,12 @@ class EventStoreV2:
             pile_counts = {}
             for player_name, score_data in scores.items():
                 if isinstance(score_data, dict):
-                    pile_counts[player_name] = score_data.get('actual', score_data.get('captured', 0))
+                    pile_counts[player_name] = score_data.get(
+                        "actual", score_data.get("captured", 0)
+                    )
                 else:
                     pile_counts[player_name] = 0
-            
+
             # Determine if there's a winner (anyone reached 50 points)
             has_winner = False
             winning_player = None
@@ -144,12 +151,12 @@ class EventStoreV2:
                     has_winner = True
                     if not winning_player or score > cumulative.get(winning_player, 0):
                         winning_player = player_name
-                        
+
             conn.execute(
                 """
                 INSERT OR REPLACE INTO round_snapshots
                 (room_id, round_number, starter_player, starter_reason,
-                 initial_hands, declarations, turn_count, turn_sequence, 
+                 initial_hands, declarations, turn_count, turn_sequence,
                  round_scores, pile_counts, cumulative_scores,
                  has_winner, winning_player, created_at)
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
@@ -255,10 +262,10 @@ class EventStoreV2:
             # Get next sequence number
             cursor = conn.execute(
                 "SELECT COALESCE(MAX(event_sequence), 0) + 1 FROM game_events_v2 WHERE room_id = ?",
-                (room_id,)
+                (room_id,),
             )
             next_seq = cursor.fetchone()[0]
-            
+
             conn.execute(
                 """
                 INSERT INTO game_events_v2
@@ -286,7 +293,7 @@ class EventStoreV2:
             cursor = conn.execute(
                 """
                 SELECT room_id, player_names, total_rounds, final_scores,
-                       winner, started_at, completed_at, game_status, 
+                       winner, started_at, completed_at, game_status,
                        current_round, last_activity
                 FROM game_summaries
                 WHERE room_id = ?
@@ -309,7 +316,7 @@ class EventStoreV2:
                 "game_status": row[7],
                 "current_round": row[8],
                 "last_activity": row[9],
-                "is_active": row[7] == 'active',
+                "is_active": row[7] == "active",
             }
         finally:
             conn.close()
@@ -362,8 +369,11 @@ class EventStoreV2:
             conn.close()
 
     async def store_event(
-        self, room_id: str, event_type: str, payload: Dict[str, Any],
-        player_id: Optional[str] = None
+        self,
+        room_id: str,
+        event_type: str,
+        payload: Dict[str, Any],
+        player_id: Optional[str] = None,
     ) -> None:
         """
         Store a generic event in the v2 events table.
@@ -380,9 +390,7 @@ class EventStoreV2:
         logger.debug(
             f"🔍 DEBUG: EventStoreV2 payload keys: {list(payload.keys()) if payload else 'None'}"
         )
-        logger.debug(
-            f"🔍 DEBUG: EventStoreV2 player_id: {player_id}"
-        )
+        logger.debug(f"🔍 DEBUG: EventStoreV2 player_id: {player_id}")
 
         conn = sqlite3.connect(self.db_path)
         try:
@@ -394,7 +402,7 @@ class EventStoreV2:
 
             conn.execute(
                 """
-                INSERT INTO game_events_v2 (room_id, event_type, round_number, 
+                INSERT INTO game_events_v2 (room_id, event_type, round_number,
                                            timestamp, created_at, payload, player_id)
                 VALUES (?, ?, ?, ?, ?, ?, ?)
             """,
@@ -457,13 +465,13 @@ class EventStoreV2:
             # Query game_summaries directly instead of using the removed player_stats view
             cursor = conn.execute(
                 """
-                SELECT 
+                SELECT
                     COUNT(*) as games_played,
                     SUM(CASE WHEN winner = ? THEN 1 ELSE 0 END) as games_won,
-                    AVG(CASE 
-                        WHEN json_extract(final_scores, '$.' || ?) IS NOT NULL 
+                    AVG(CASE
+                        WHEN json_extract(final_scores, '$.' || ?) IS NOT NULL
                         THEN json_extract(final_scores, '$.' || ?)
-                        ELSE 0 
+                        ELSE 0
                     END) as avg_score
                 FROM game_summaries
                 WHERE completed_at IS NOT NULL

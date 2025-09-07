@@ -121,9 +121,9 @@ class RoundStartState(GameState):
             elif action.action_type == ActionType.PLAYER_RECONNECT:
                 result = await self._handle_player_reconnect(action)
             else:
-                result["message"] = (
-                    f"Action {action.action_type} not supported in Round Start Phase"
-                )
+                result[
+                    "message"
+                ] = f"Action {action.action_type} not supported in Round Start Phase"
 
         except Exception as e:
             self.logger.error(f"Error processing action {action.action_type}: {e}")

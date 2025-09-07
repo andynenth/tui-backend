@@ -80,7 +80,7 @@ Prefer props for data flow, local state only when necessary:
 ```jsx
 // ✅ Good: Stateless component receives props
 const PieceDisplay = ({ piece, isSelected, onSelect }) => (
-  <div 
+  <div
     className={`piece ${isSelected ? 'selected' : ''}`}
     onClick={() => onSelect(piece.id)}
   >
@@ -107,28 +107,28 @@ graph TB
         TP[ThemeProvider]
         AP[AppProvider]
     end
-    
+
     subgraph "Page Components"
         SP[StartPage]
         LP[LobbyPage]
         RP[RoomPage]
         GP[GamePage]
     end
-    
+
     subgraph "Game Components"
         GM[GameManager]
         PH[PhaseHandler]
         GC[GameControls]
         GS[GameStatus]
     end
-    
+
     subgraph "Shared Components"
         BTN[Button]
         CRD[Card]
         MDL[Modal]
         TT[Tooltip]
     end
-    
+
     App --> EB
     EB --> TP
     TP --> AP
@@ -136,12 +136,12 @@ graph TB
     AP --> LP
     AP --> RP
     AP --> GP
-    
+
     GP --> GM
     GM --> PH
     GM --> GC
     GM --> GS
-    
+
     style App fill:#4CAF50
     style GP fill:#2196F3
     style GM fill:#FF9800
@@ -197,34 +197,34 @@ frontend/src/
 // src/AppRouter.jsx
 const AppRouter = () => {
   const { playerName } = useApp();
-  
+
   return (
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<StartPage />} />
-        <Route 
-          path="/lobby" 
+        <Route
+          path="/lobby"
           element={
             <ProtectedRoute requiresName>
               <LobbyPage />
             </ProtectedRoute>
-          } 
+          }
         />
-        <Route 
-          path="/room/:roomId" 
+        <Route
+          path="/room/:roomId"
           element={
             <ProtectedRoute requiresName>
               <RoomPage />
             </ProtectedRoute>
-          } 
+          }
         />
-        <Route 
-          path="/game/:roomId" 
+        <Route
+          path="/game/:roomId"
           element={
             <ProtectedRoute requiresName requiresGame>
               <GamePage />
             </ProtectedRoute>
-          } 
+          }
         />
         <Route path="*" element={<Navigate to="/" />} />
       </Routes>
@@ -239,16 +239,16 @@ const AppRouter = () => {
 const ProtectedRoute = ({ children, requiresName, requiresGame }) => {
   const { playerName } = useApp();
   const { gameState } = useGame();
-  
+
   // Check requirements
   if (requiresName && !playerName) {
     return <Navigate to="/" />;
   }
-  
+
   if (requiresGame && !gameState) {
     return <Navigate to="/lobby" />;
   }
-  
+
   return children;
 };
 ```
@@ -283,15 +283,15 @@ Separate logic from presentation:
 const PlayerHandContainer = () => {
   const { gameState } = useGame();
   const [selectedPieces, setSelectedPieces] = useState([]);
-  
+
   const handlePieceSelect = (pieceId) => {
     // Selection logic
   };
-  
+
   const handlePlay = () => {
     // Play logic
   };
-  
+
   return (
     <PlayerHandPresenter
       pieces={gameState.myHand}
@@ -304,12 +304,12 @@ const PlayerHandContainer = () => {
 };
 
 // Presenter: Pure presentation
-const PlayerHandPresenter = ({ 
-  pieces, 
-  selectedPieces, 
-  onPieceSelect, 
+const PlayerHandPresenter = ({
+  pieces,
+  selectedPieces,
+  onPieceSelect,
   onPlay,
-  canPlay 
+  canPlay
 }) => (
   <div className="player-hand">
     <div className="pieces">
@@ -322,8 +322,8 @@ const PlayerHandPresenter = ({
         />
       ))}
     </div>
-    <Button 
-      onClick={onPlay} 
+    <Button
+      onClick={onPlay}
       disabled={!canPlay}
     >
       Play Selected
@@ -373,11 +373,11 @@ For flexible rendering:
 ```jsx
 const MouseTracker = ({ render }) => {
   const [position, setPosition] = useState({ x: 0, y: 0 });
-  
+
   const handleMouseMove = (e) => {
     setPosition({ x: e.clientX, y: e.clientY });
   };
-  
+
   return (
     <div onMouseMove={handleMouseMove}>
       {render(position)}
@@ -404,7 +404,7 @@ Encapsulate complex logic:
 const useGamePhase = () => {
   const { gameState } = useGame();
   const [phaseComponent, setPhaseComponent] = useState(null);
-  
+
   useEffect(() => {
     switch (gameState?.phase) {
       case 'PREPARATION':
@@ -423,7 +423,7 @@ const useGamePhase = () => {
         setPhaseComponent(<WaitingPhase />);
     }
   }, [gameState?.phase]);
-  
+
   return {
     currentPhase: gameState?.phase,
     phaseComponent,
@@ -434,7 +434,7 @@ const useGamePhase = () => {
 // Usage in component
 const GameScreen = () => {
   const { phaseComponent, currentPhase } = useGamePhase();
-  
+
   return (
     <div className="game-screen">
       <h2>Current Phase: {currentPhase}</h2>
@@ -461,7 +461,7 @@ const AppContext = createContext();
 const AppProvider = ({ children }) => {
   const [playerName, setPlayerName] = useState('');
   const [currentRoomId, setCurrentRoomId] = useState(null);
-  
+
   // Shared across app
   return (
     <AppContext.Provider value={{
@@ -488,15 +488,15 @@ const PieceCard = () => {
 // After: State lifted to parent
 const PlayerHand = () => {
   const [selectedPieces, setSelectedPieces] = useState([]);
-  
+
   return pieces.map(piece => (
     <PieceCard
       key={piece.id}
       piece={piece}
       isSelected={selectedPieces.includes(piece.id)}
       onSelect={(id) => {
-        setSelectedPieces(prev => 
-          prev.includes(id) 
+        setSelectedPieces(prev =>
+          prev.includes(id)
             ? prev.filter(p => p !== id)
             : [...prev, id]
         );
@@ -523,10 +523,10 @@ interface PlayerCardProps {
   className?: string;
 }
 
-const PlayerCard: React.FC<PlayerCardProps> = ({ 
-  player, 
-  onSelect, 
-  className = '' 
+const PlayerCard: React.FC<PlayerCardProps> = ({
+  player,
+  onSelect,
+  className = ''
 }) => {
   // Component implementation
 };
@@ -603,7 +603,7 @@ Prevent unnecessary re-renders:
 // Expensive component
 const ExpensivePieceList = React.memo(({ pieces }) => {
   console.log('Rendering piece list');
-  
+
   return (
     <div className="piece-list">
       {pieces.map(piece => (
@@ -614,7 +614,7 @@ const ExpensivePieceList = React.memo(({ pieces }) => {
 }, (prevProps, nextProps) => {
   // Custom comparison
   return prevProps.pieces.length === nextProps.pieces.length &&
-    prevProps.pieces.every((piece, index) => 
+    prevProps.pieces.every((piece, index) =>
       piece.id === nextProps.pieces[index].id
     );
 });
@@ -628,12 +628,12 @@ const GameStats = ({ gameData }) => {
   const statistics = useMemo(() => {
     return calculateComplexStats(gameData);
   }, [gameData]);
-  
+
   // Stable callback reference
   const handleRefresh = useCallback(() => {
     refreshGameData();
   }, []);
-  
+
   return (
     <div>
       <StatsDisplay stats={statistics} />
@@ -652,7 +652,7 @@ const DebugPanel = lazy(() => import('./DebugPanel'));
 
 const GamePage = () => {
   const [showAnalytics, setShowAnalytics] = useState(false);
-  
+
   return (
     <div>
       <Game />
@@ -719,7 +719,7 @@ const PlayerCard = memo<PlayerCardProps>(({
 }) => {
   return (
     <div className={`
-      player-card 
+      player-card
       ${isCurrentTurn ? 'current-turn' : ''}
       ${player.isActive ? 'active' : 'inactive'}
     `}>
@@ -727,7 +727,7 @@ const PlayerCard = memo<PlayerCardProps>(({
         <TruncatedName name={player.name} maxLength={12} />
         {player.isHost && <HostBadge />}
       </div>
-      
+
       <div className="player-stats">
         <div className="stat">
           <span className="label">Score</span>
@@ -738,14 +738,14 @@ const PlayerCard = memo<PlayerCardProps>(({
           <span className="value">{player.pieces}</span>
         </div>
       </div>
-      
+
       {isCurrentTurn && (
         <div className="turn-indicator">
           <span>Current Turn</span>
           <TurnTimer />
         </div>
       )}
-      
+
       {showKickButton && onKick && (
         <Button
           variant="danger"
@@ -775,24 +775,24 @@ export const useWebSocket = (roomId: string) => {
   const networkService = useRef(NetworkService.getInstance());
   const [connectionState, setConnectionState] = useState('disconnected');
   const [lastMessage, setLastMessage] = useState(null);
-  
+
   useEffect(() => {
     if (!roomId) return;
-    
+
     const service = networkService.current;
-    
+
     // Connect
     service.connectToRoom(roomId);
-    
+
     // Set up event listeners
     const handleConnect = () => setConnectionState('connected');
     const handleDisconnect = () => setConnectionState('disconnected');
     const handleMessage = (event) => setLastMessage(event.detail);
-    
+
     service.addEventListener('connected', handleConnect);
     service.addEventListener('disconnected', handleDisconnect);
     service.addEventListener('message', handleMessage);
-    
+
     // Cleanup
     return () => {
       service.removeEventListener('connected', handleConnect);
@@ -801,11 +801,11 @@ export const useWebSocket = (roomId: string) => {
       service.disconnect(roomId);
     };
   }, [roomId]);
-  
+
   const sendMessage = useCallback((event: string, data: any) => {
     networkService.current.send(roomId, event, data);
   }, [roomId]);
-  
+
   return {
     connectionState,
     lastMessage,
@@ -833,33 +833,33 @@ describe('PlayerCard', () => {
     isHost: true,
     pieces: 5
   };
-  
+
   it('renders player information', () => {
     render(<PlayerCard player={mockPlayer} isCurrentTurn={false} />);
-    
+
     expect(screen.getByText('Alice')).toBeInTheDocument();
     expect(screen.getByText('42')).toBeInTheDocument();
     expect(screen.getByText('5')).toBeInTheDocument();
   });
-  
+
   it('shows current turn indicator', () => {
     render(<PlayerCard player={mockPlayer} isCurrentTurn={true} />);
-    
+
     expect(screen.getByText('Current Turn')).toBeInTheDocument();
   });
-  
+
   it('calls onKick when kick button clicked', () => {
     const onKick = jest.fn();
-    
+
     render(
-      <PlayerCard 
-        player={mockPlayer} 
+      <PlayerCard
+        player={mockPlayer}
         isCurrentTurn={false}
         showKickButton={true}
         onKick={onKick}
       />
     );
-    
+
     fireEvent.click(screen.getByText('Kick Player'));
     expect(onKick).toHaveBeenCalledWith('1');
   });
@@ -878,21 +878,21 @@ jest.mock('../services/NetworkService');
 describe('useWebSocket', () => {
   it('connects to room on mount', () => {
     const { result } = renderHook(() => useWebSocket('room123'));
-    
+
     expect(NetworkService.getInstance().connectToRoom)
       .toHaveBeenCalledWith('room123');
   });
-  
+
   it('updates connection state', () => {
     const { result } = renderHook(() => useWebSocket('room123'));
-    
+
     expect(result.current.connectionState).toBe('disconnected');
-    
+
     act(() => {
       // Simulate connection
       NetworkService.getInstance().emit('connected');
     });
-    
+
     expect(result.current.connectionState).toBe('connected');
   });
 });

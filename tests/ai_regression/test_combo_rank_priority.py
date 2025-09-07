@@ -22,7 +22,7 @@ from backend.engine.ai_turn_strategy import COMBO_TYPE_RANK
 def test_combo_rank_regression():
     """Ensure combo rank is prioritized over points in critical urgency"""
     tester = AIDecisionTester()
-    
+
     # Original Bug: Bot 2 from room B5AE3B Round 1
     tester.add_scenario(
         name="Bot 2 Original Bug - THREE_OF_A_KIND vs GENERAL_RED",
@@ -41,7 +41,7 @@ def test_combo_rank_regression():
         turn_number=1,
         is_starter=True
     )
-    
+
     # Test PAIR beats high SINGLE
     tester.add_scenario(
         name="PAIR vs High SINGLE",
@@ -59,7 +59,7 @@ def test_combo_rank_regression():
         turn_number=1,
         is_starter=True
     )
-    
+
     # Test STRAIGHT beats THREE_OF_A_KIND
     tester.add_scenario(
         name="STRAIGHT vs THREE_OF_A_KIND",
@@ -67,7 +67,7 @@ def test_combo_rank_regression():
         bot_name="Straight Bot",
         hand_specs=[
             ("GENERAL_RED", 1),      # 14
-            ("ADVISOR_RED", 1),      # 12  
+            ("ADVISOR_RED", 1),      # 12
             ("ELEPHANT_RED", 1),     # 10 - Forms STRAIGHT (rank 4)!
             ("SOLDIER_BLACK", 3),    # THREE_OF_A_KIND (rank 3)
             ("CANNON_RED", 1),
@@ -78,10 +78,10 @@ def test_combo_rank_regression():
         turn_number=1,
         is_starter=True
     )
-    
+
     # Capture results
     test_results = []
-    
+
     # Run scenarios and capture results
     for scenario in tester.scenarios:
         hand = tester.create_hand_from_specs(scenario['hand_specs'])
@@ -97,41 +97,41 @@ def test_combo_rank_regression():
         )
         result = tester.analyze_decision(context, show_plan_details=False, show_urgency=False)
         test_results.append(result)
-    
+
     results = test_results
-    
+
     # Verify expectations
     print("\n" + "="*60)
     print("REGRESSION TEST RESULTS")
     print("="*60)
-    
+
     # Check Bot 2 original bug is fixed
     bot2_scenario = results[0] if results else None
     if bot2_scenario:
         chosen = bot2_scenario.get('chosen_play', [])
-        
+
         if len(chosen) == 3 and all(p.kind == "SOLDIER_BLACK" for p in chosen):
             print("✅ Bot 2 correctly played THREE_OF_A_KIND over high singles")
         else:
             piece_str = ", ".join([f"{p.kind}({p.point})" for p in chosen])
             print(f"❌ REGRESSION: Bot 2 played {piece_str} instead of THREE_OF_A_KIND!")
             return False
-    
+
     # Verify COMBO_TYPE_RANK includes all types
     print("\n✅ Verifying COMBO_TYPE_RANK completeness:")
     expected_types = [
-        "SINGLE", "PAIR", "THREE_OF_A_KIND", "STRAIGHT", 
+        "SINGLE", "PAIR", "THREE_OF_A_KIND", "STRAIGHT",
         "FOUR_OF_A_KIND", "EXTENDED_STRAIGHT", "EXTENDED_STRAIGHT_5",
         "FIVE_OF_A_KIND", "DOUBLE_STRAIGHT"
     ]
-    
+
     for combo_type in expected_types:
         if combo_type in COMBO_TYPE_RANK:
             print(f"  ✓ {combo_type}: rank {COMBO_TYPE_RANK[combo_type]}")
         else:
             print(f"  ❌ {combo_type}: MISSING!")
             return False
-    
+
     return True
 
 if __name__ == "__main__":

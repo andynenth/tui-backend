@@ -839,10 +839,10 @@
             document.querySelectorAll('.turn-nav-item').forEach(item => {
                 item.classList.remove('active');
             });
-            
+
             // Add active class to selected nav item
             document.querySelectorAll('.turn-nav-item')[turnNumber - 1].classList.add('active');
-            
+
             // In a real implementation, this would load the corresponding turn data
             console.log(`Showing turn ${turnNumber}`);
         }

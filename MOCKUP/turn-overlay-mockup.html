@@ -36,7 +36,7 @@
         .mock-table {
             width: 270px;
             height: 270px;
-            background: 
+            background:
                 radial-gradient(ellipse at center, #d4a574 0%, #bc9a6a 100%),
                 linear-gradient(135deg, #deb887 0%, #cdaa7d 100%);
             border: 3px solid #8b6f47;
@@ -113,14 +113,14 @@
             font-family: 'Bebas Neue', sans-serif;
             letter-spacing: 3px;
         }
-        
+
         /* Font Option 2: Oswald - Strong and geometric */
         .overlay-option1.font-option2 h2 {
             font-family: 'Oswald', sans-serif;
             font-weight: 700;
             letter-spacing: 1px;
         }
-        
+
         /* Font Option 3: Russo One - Tech/gaming style */
         .overlay-option1.font-option3 h2 {
             font-family: 'Russo One', sans-serif;
@@ -288,7 +288,7 @@
             font-size: 24px;
             font-weight: 600;
             color: #8b4513;
-            box-shadow: 
+            box-shadow:
                 0 10px 30px rgba(0, 0, 0, 0.2),
                 0 0 0 4px rgba(255, 215, 0, 0.2);
             position: relative;
@@ -319,15 +319,15 @@
 <body>
     <div class="game-container">
         <h1 style="text-align: center; margin-bottom: 30px;">Turn Overlay Animation Options</h1>
-        
+
         <div class="controls">
             <button class="trigger-btn" onclick="showOverlay(1)">Font 1: Bebas Neue (Bold)</button>
             <button class="trigger-btn" onclick="showOverlay(1, 'font-option2')">Font 2: Oswald (Strong)</button>
             <button class="trigger-btn" onclick="showOverlay(1, 'font-option3')">Font 3: Russo One (Tech)</button>
         </div>
-        
+
         <p style="text-align: center; margin: 20px 0; color: #666;">Other animation styles:</p>
-        
+
         <div class="controls">
             <button class="trigger-btn" onclick="showOverlay(2)">Option 2: Slide Banner</button>
             <button class="trigger-btn" onclick="showOverlay(3)">Option 3: Circular Reveal</button>
@@ -337,7 +337,7 @@
 
         <!-- Mock game table -->
         <div class="mock-table"></div>
-        
+
         <p class="description">Click any button above to preview the turn notification animation</p>
     </div>
 
@@ -375,18 +375,18 @@
     <script>
         function showOverlay(option, fontClass) {
             const overlay = document.getElementById(`overlay${option}`);
-            
+
             // Remove any existing font classes
             overlay.classList.remove('font-option2', 'font-option3');
-            
+
             // Add font class if specified
             if (fontClass) {
                 overlay.classList.add(fontClass);
             }
-            
+
             // Show overlay
             overlay.classList.add('show');
-            
+
             // Auto-hide after 2.5 seconds
             setTimeout(() => {
                 overlay.classList.remove('show');

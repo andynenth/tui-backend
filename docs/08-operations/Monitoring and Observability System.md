@@ -2,7 +2,7 @@
 
 This document has been consolidated into a comprehensive reference.
 
-## New Location  
+## New Location
 
 Please see: [Comprehensive Monitoring & Observability Guide](./MONITORING_COMPREHENSIVE.md)
 

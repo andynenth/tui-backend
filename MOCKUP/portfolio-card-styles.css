@@ -12,7 +12,7 @@
   --card-warning-dark: #ff9800;
   --card-danger: #dc3545;
   --card-danger-dark: #c82333;
-  
+
   /* Grays */
   --card-gray-50: #f8f9fa;
   --card-gray-100: #f3f4f6;
@@ -24,19 +24,19 @@
   --card-gray-700: #495057;
   --card-gray-800: #343a40;
   --card-gray-900: #212529;
-  
+
   /* Typography */
   --card-font-sans: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
   --card-font-serif: 'Merriweather', Georgia, serif;
   --card-font-mono: 'Courier New', monospace;
-  
+
   /* Spacing */
   --card-radius-sm: 6px;
   --card-radius-md: 10px;
   --card-radius-lg: 12px;
   --card-radius-xl: 16px;
   --card-radius-2xl: 20px;
-  
+
   /* Shadows */
   --card-shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
   --card-shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
@@ -46,13 +46,13 @@
   --card-shadow-inner: inset 0 2px 4px 0 rgba(0, 0, 0, 0.06);
   --card-shadow-border: 0 0 0 3px rgba(66, 153, 225, 0.5);
   --card-shadow-inset-white: inset 0 1px 0 0 rgba(255, 255, 255, 0.1);
-  
+
   /* Gradients */
   --card-gradient-container: linear-gradient(145deg, #ffffff 0%, #f8f9fa 100%);
   --card-gradient-white: linear-gradient(145deg, #ffffff 0%, #f3f4f6 100%);
   --card-gradient-primary: linear-gradient(135deg, var(--card-primary) 0%, var(--card-primary-dark) 100%);
   --card-gradient-success: linear-gradient(135deg, var(--card-success) 0%, var(--card-success-dark) 100%);
-  
+
   /* Transitions */
   --card-transition-base: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   --card-transition-fast: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
@@ -65,26 +65,26 @@
   width: 100%;
   max-width: 480px;
   min-height: 320px;
-  
+
   /* Background */
   background: var(--card-gradient-container);
-  
+
   /* Border & Radius */
   border-radius: var(--card-radius-xl);
   border: 1px solid rgba(173, 181, 189, 0.3);
-  
+
   /* Shadow */
-  box-shadow: 
+  box-shadow:
     var(--card-shadow-xl),
     0 0 0 1px rgba(255, 255, 255, 0.1) inset,
     var(--card-shadow-inset-white);
-  
+
   /* Layout */
   display: flex;
   flex-direction: column;
   position: relative;
   overflow: hidden;
-  
+
   /* Animation */
   transition: var(--card-transition-base);
   animation: portfolioCardSlideIn 0.5s ease-out;
@@ -185,7 +185,7 @@
   border: 1px solid rgba(173, 181, 189, 0.2);
   border-radius: var(--card-radius-lg);
   padding: 20px;
-  box-shadow: 
+  box-shadow:
     var(--card-shadow-sm),
     inset 0 1px 0 0 rgba(255, 255, 255, 0.8);
 }
@@ -306,7 +306,7 @@
 /* Hover Effects */
 .portfolio-card:hover {
   transform: translateY(-4px);
-  box-shadow: 
+  box-shadow:
     var(--card-shadow-2xl),
     0 0 0 1px rgba(255, 255, 255, 0.2) inset;
 }
@@ -314,7 +314,7 @@
 /* Featured Card Variant */
 .portfolio-card.featured {
   border-color: rgba(255, 193, 7, 0.3);
-  background: 
+  background:
     var(--card-gradient-container),
     radial-gradient(
       circle at 30% 30%,
@@ -352,19 +352,19 @@
     max-width: 100%;
     margin: 0 16px;
   }
-  
+
   .portfolio-card-title {
     font-size: 28px;
   }
-  
+
   .portfolio-card-header {
     padding: 24px 20px 20px;
   }
-  
+
   .portfolio-card-body {
     padding: 20px;
   }
-  
+
   .portfolio-card-footer {
     flex-direction: column;
   }

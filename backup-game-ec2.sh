@@ -45,11 +45,11 @@ echo -e "\n${YELLOW}Creating backup on server...${NC}"
 ssh -i ${KEY_PATH} ${EC2_USER}@${EC2_HOST} << ENDSSH
   # Create backup directory
   mkdir -p /home/ubuntu/backups
-  
+
   # Create backup
   cd /home/ubuntu/liap-tui-data
   tar czf /home/ubuntu/backups/${BACKUP_NAME} game_events.db
-  
+
   # Get backup size
   ls -lh /home/ubuntu/backups/${BACKUP_NAME}
 ENDSSH
@@ -63,11 +63,11 @@ if [ -f "./backups/${BACKUP_NAME}" ]; then
     LOCAL_SIZE=$(ls -lh "./backups/${BACKUP_NAME}" | awk '{print $5}')
     echo -e "${GREEN}✅ Backup downloaded successfully\!${NC}"
     echo -e "Local backup: ./backups/${BACKUP_NAME} (${LOCAL_SIZE})"
-    
+
     # Extract and check
     echo -e "\n${YELLOW}Verifying backup contents...${NC}"
     tar -tzf "./backups/${BACKUP_NAME}" | head -5
-    
+
     # Create restore script
     cat > restore-backup.sh << 'RESTORE_EOF'
 #\!/bin/bash
@@ -120,10 +120,10 @@ ssh -i ${KEY_PATH} ${EC2_USER}@${EC2_HOST} "docker start liap-tui-game"
 
 echo "✅ Restore completed\!"
 RESTORE_EOF
-    
+
     chmod +x restore-backup.sh
     echo -e "\n${GREEN}✅ Created restore script: ./restore-backup.sh${NC}"
-    
+
 else
     echo -e "${RED}❌ Backup download failed${NC}"
     exit 1

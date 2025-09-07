@@ -39,17 +39,17 @@ if [ ! -z "$INSTANCE_ID" ]; then
     INSTANCE_INFO=$(aws ec2 describe-instances --instance-ids $INSTANCE_ID --region $REGION 2>/dev/null || echo "{}")
     INSTANCE_TYPE=$(echo $INSTANCE_INFO | jq -r '.Reservations[0].Instances[0].InstanceType' 2>/dev/null || echo "unknown")
     INSTANCE_STATE=$(echo $INSTANCE_INFO | jq -r '.Reservations[0].Instances[0].State.Name' 2>/dev/null || echo "unknown")
-    
+
     echo -e "  Instance Type: ${INSTANCE_TYPE}"
     echo -e "  State: ${INSTANCE_STATE}"
-    
+
     # Check if eligible for savings plans
     if [[ "$INSTANCE_TYPE" == "t2."* ]]; then
         echo -e "${YELLOW}  ⚠️  Consider t3 instances (up to 30% cheaper)${NC}"
         SAVINGS_OPPORTUNITIES+=("Switch from $INSTANCE_TYPE to t3 equivalent - Save ~30%")
         TOTAL_SAVINGS=$((TOTAL_SAVINGS + 5))  # Estimated $5/month savings
     fi
-    
+
     # Check utilization
     echo -e "\n  Checking CPU utilization..."
     AVG_CPU=$(aws cloudwatch get-metric-statistics \
@@ -62,9 +62,9 @@ if [ ! -z "$INSTANCE_ID" ]; then
         --period 3600 \
         --region $REGION \
         | jq -r '.Datapoints | map(.Average) | add/length' 2>/dev/null || echo "0")
-    
+
     echo -e "  Average CPU (7 days): ${AVG_CPU}%"
-    
+
     if (( $(echo "$AVG_CPU < 20" | bc -l) )); then
         echo -e "${YELLOW}  ⚠️  Low CPU usage - consider smaller instance${NC}"
         SAVINGS_OPPORTUNITIES+=("Downsize instance due to low CPU usage - Save ~50%")
@@ -82,31 +82,31 @@ if [ ! -z "$INSTANCE_ID" ]; then
     VOLUMES=$(aws ec2 describe-volumes \
         --filters "Name=attachment.instance-id,Values=$INSTANCE_ID" \
         --region $REGION 2>/dev/null || echo "[]")
-    
+
     TOTAL_SIZE=0
     UNATTACHED=0
-    
+
     echo "$VOLUMES" | jq -c '.Volumes[]' 2>/dev/null | while read volume; do
         SIZE=$(echo $volume | jq -r '.Size')
         STATE=$(echo $volume | jq -r '.State')
         TYPE=$(echo $volume | jq -r '.VolumeType')
-        
+
         TOTAL_SIZE=$((TOTAL_SIZE + SIZE))
-        
+
         if [ "$STATE" = "available" ]; then
             UNATTACHED=$((UNATTACHED + 1))
             echo -e "${YELLOW}  ⚠️  Unattached volume found (${SIZE}GB)${NC}"
             SAVINGS_OPPORTUNITIES+=("Delete unattached EBS volume - Save ~$${SIZE}/month")
             TOTAL_SAVINGS=$((TOTAL_SAVINGS + SIZE))
         fi
-        
+
         if [ "$TYPE" = "gp2" ] && [ $SIZE -gt 100 ]; then
             echo -e "${YELLOW}  ⚠️  Consider gp3 for volume >100GB${NC}"
             SAVINGS_OPPORTUNITIES+=("Convert gp2 to gp3 - Save ~20%")
             TOTAL_SAVINGS=$((TOTAL_SAVINGS + 2))
         fi
     done
-    
+
     echo -e "  Total EBS Storage: ${TOTAL_SIZE}GB"
 fi
 
@@ -119,9 +119,9 @@ if [ ! -z "$S3_BUCKETS" ]; then
         # Get bucket size
         BUCKET_SIZE=$(aws s3 ls s3://$bucket --recursive --summarize 2>/dev/null | grep "Total Size" | awk '{print $3}')
         BUCKET_SIZE_GB=$((BUCKET_SIZE / 1073741824))
-        
+
         echo -e "  Bucket: $bucket (${BUCKET_SIZE_GB}GB)"
-        
+
         # Check for lifecycle policies
         LIFECYCLE=$(aws s3api get-bucket-lifecycle-configuration --bucket $bucket 2>/dev/null || echo "none")
         if [ "$LIFECYCLE" = "none" ]; then

@@ -90,7 +90,7 @@ from engine.game import Game
 ### 4. **Areas of Concern**
 
 #### Mixed Responsibilities
-1. **socket_manager.py**: 
+1. **socket_manager.py**:
    - WebSocket connection management
    - Message queuing and broadcasting
    - Rate limiting
@@ -125,7 +125,7 @@ from engine.game import Game
 ## Key Architectural Issues
 
 1. **Layering Violations**: Domain layer depends on infrastructure (shared_instances)
-2. **Global State**: Singleton pattern makes testing and modularity difficult  
+2. **Global State**: Singleton pattern makes testing and modularity difficult
 3. **Missing Abstractions**: No interfaces between layers
 4. **Mixed Concerns**: Business logic intertwined with infrastructure
 5. **Tight Coupling**: Direct imports create rigid dependencies

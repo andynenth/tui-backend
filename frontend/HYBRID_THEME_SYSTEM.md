@@ -58,7 +58,7 @@ To add a new color variation:
 // In themeManager.js
 const colorFilters = {
   // ... existing filters
-  
+
   // New sunset theme
   sunset: {
     red: 'brightness(1.1) sepia(1) hue-rotate(15deg) saturate(2)',
@@ -69,7 +69,7 @@ const colorFilters = {
 // Add theme definition
 export const themes = {
   // ... existing themes
-  
+
   sunset: {
     id: 'sunset',
     name: 'Sunset',

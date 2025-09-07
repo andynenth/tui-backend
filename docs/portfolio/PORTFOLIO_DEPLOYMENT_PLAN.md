@@ -210,8 +210,8 @@ const { project } = Astro.props;
 ---
 
 {project.status === 'mockup' ? (
-  <ComingSoon 
-    title={project.title} 
+  <ComingSoon
+    title={project.title}
     timeline={project.data.timeline}
     features={project.data.features}
   />
@@ -584,7 +584,7 @@ aws cloudwatch get-metric-statistics \
 6. **Day 5**: Deploy MVP and verify performance
 7. **Week 2+**: Progressive content updates (convert mockups → real projects)
 
-**Final Result**: 
+**Final Result**:
 - Professional portfolio demonstrating full-stack expertise through Liap Tui
 - Living document that grows from 30% → 100% real content
 - Easy updates via JSON files and markdown

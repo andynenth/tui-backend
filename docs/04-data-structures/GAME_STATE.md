@@ -27,29 +27,29 @@ graph TB
         Phase[Phase-Specific State]
         UI[UI State]
     end
-    
+
     subgraph "Core State"
         Players[Players]
         Scores[Scores]
         Round[Round Info]
         Settings[Game Settings]
     end
-    
+
     subgraph "Phase State"
         PData[Phase Data]
         PType[Phase Type]
         Seq[Sequence Number]
     end
-    
+
     Core --> Players
     Core --> Scores
     Core --> Round
     Core --> Settings
-    
+
     Phase --> PData
     Phase --> PType
     Phase --> Seq
-    
+
     style Core fill:#4CAF50
     style Phase fill:#2196F3
 ```
@@ -63,20 +63,20 @@ interface GameState {
   // Phase information
   phase: GamePhase;
   phase_data: PhaseData; // Phase-specific data
-  
+
   // Game information
   game_id: string;
   room_id: string;
   round_number: number;
   turn_number: number;
-  
+
   // Player information
   players: Player[];
   scores: Record<string, number>;
-  
+
   // Settings
   settings: GameSettings;
-  
+
   // Metadata
   sequence_number: number;
   last_update: number;
@@ -102,21 +102,21 @@ interface Player {
   // Identity
   name: string;
   id: string;
-  
+
   // Game position
   position: number; // 0-3
-  
+
   // Status
   is_host: boolean;
   is_bot: boolean;
   connection_status: 'connected' | 'disconnected';
-  
+
   // Game data
   score: number;
   pieces_remaining: number;
   declared_piles?: number;
   captured_piles?: number;
-  
+
   // Round data
   has_declared: boolean;
   has_played_this_turn: boolean;
@@ -143,7 +143,7 @@ interface GameSettings {
 Each phase has its own specific state structure stored in `phase_data`:
 
 ```typescript
-type PhaseData = 
+type PhaseData =
   | WaitingPhaseData
   | PreparationPhaseData
   | DeclarationPhaseData
@@ -162,18 +162,18 @@ interface WaitingPhaseData {
   // Room info
   room_code: string;
   host: string;
-  
+
   // Player management
   players: string[];
   ready_players: string[];
-  
+
   // Settings
   room_settings: {
     max_players: number;
     is_public: boolean;
     allow_spectators: boolean;
   };
-  
+
   // Metadata
   created_at: number;
   last_activity: number;
@@ -228,7 +228,7 @@ interface PreparationPhaseData {
   // Deal status
   dealing_cards: boolean;
   cards_dealt: boolean;
-  
+
   // Weak hand handling
   weak_players: string[];
   redeal_requests: {
@@ -238,7 +238,7 @@ interface PreparationPhaseData {
   };
   redeal_count: number;
   redeal_multiplier: number;
-  
+
   // Timer
   phase_start_time: number;
   timeout?: number;
@@ -277,15 +277,15 @@ The phase where players declare how many piles they'll capture.
 interface DeclarationPhaseData {
   // Declarations
   declarations: Record<string, number | null>;
-  
+
   // Status
   waiting_for: string[];
   all_declared: boolean;
-  
+
   // Validation
   total_declared: number;
   valid_total: boolean; // Total should not equal 8
-  
+
   // Timer
   declaration_timeout: number;
   time_remaining: number;
@@ -324,19 +324,19 @@ interface TurnPhaseData {
   current_player: string;
   turn_number: number;
   turn_order: string[];
-  
+
   // Play requirements
   required_piece_count: number;
   leading_play_type?: 'SINGLE' | 'PAIR' | 'TRIPLE' | 'QUAD' | 'MIXED';
-  
+
   // Current turn state
   current_plays: Record<string, PlayInfo>;
   passed_players: string[];
-  
+
   // Pile tracking
   pile_counts: Record<string, number>;
   current_pile_size: number;
-  
+
   // History
   last_winner?: string;
   consecutive_passes: number;
@@ -395,11 +395,11 @@ interface TurnResultsPhaseData {
   winner: string;
   winning_play: Piece[];
   play_type: string;
-  
+
   // Pile info
   pile_size: number;
   pile_winner: string;
-  
+
   // Display timer
   display_duration: number;
   display_start_time: number;
@@ -467,18 +467,18 @@ Phase where round scores are calculated and displayed.
 interface ScoringPhaseData {
   // Round info
   round_number: number;
-  
+
   // Scoring details
   scores: Record<string, ScoreDetail>;
-  
+
   // Multiplier
   base_multiplier: number;
   redeal_multiplier: number;
   total_multiplier: number;
-  
+
   // Special scoring
   special_bonuses: SpecialBonus[];
-  
+
   // Next round
   is_final_round: boolean;
   next_round_dealer?: string;
@@ -548,11 +548,11 @@ interface GameOverPhaseData {
   // Winners
   winners: string[];
   win_condition: 'SCORE_REACHED' | 'MAX_ROUNDS' | 'FORFEIT';
-  
+
   // Final scores
   final_scores: Record<string, number>;
   score_history: RoundScore[];
-  
+
   // Statistics
   game_statistics: {
     total_rounds: number;
@@ -566,10 +566,10 @@ interface GameOverPhaseData {
       count: number;
     };
   };
-  
+
   // Achievements
   achievements: Achievement[];
-  
+
   // Replay
   can_play_again: boolean;
   rematch_votes: string[];
@@ -658,7 +658,7 @@ async function transitionState(
   if (!isValidTransition(currentState.phase, newPhase)) {
     throw new Error(`Invalid transition: ${currentState.phase} -> ${newPhase}`);
   }
-  
+
   // Create new state
   const newState: GameState = {
     ...currentState,
@@ -667,18 +667,18 @@ async function transitionState(
     sequence_number: currentState.sequence_number + 1,
     last_update: Date.now()
   };
-  
+
   // Phase-specific updates
   switch (newPhase) {
     case GamePhase.TURN:
       newState.turn_number += 1;
       break;
-      
+
     case GamePhase.SCORING:
       // Update scores in core state
       newState.scores = calculateScores(phaseData);
       break;
-      
+
     case GamePhase.PREPARATION:
       if (currentState.phase === GamePhase.SCORING) {
         newState.round_number += 1;
@@ -686,7 +686,7 @@ async function transitionState(
       }
       break;
   }
-  
+
   return newState;
 }
 ```
@@ -755,7 +755,7 @@ interface StateSnapshot {
 // Create snapshot for recovery
 function createSnapshot(state: GameState): StateSnapshot {
   const serialized = serializeGameState(state);
-  
+
   return {
     game_id: state.game_id,
     room_id: state.room_id,

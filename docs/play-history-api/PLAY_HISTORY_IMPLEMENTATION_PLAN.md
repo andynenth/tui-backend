@@ -101,7 +101,7 @@ export const usePlayHistory = (roomId: string) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
   const [selectedRound, setSelectedRound] = useState(1);
-  
+
   // Fetch logic, caching, error handling
   return { history, loading, error, selectedRound, setSelectedRound };
 };

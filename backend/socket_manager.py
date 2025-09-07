@@ -59,14 +59,14 @@ class SocketManager:
         self.rate_limiters = {}  # Rate limiting per room
 
         # Reliable message delivery features
-        self.pending_messages: Dict[str, Dict[int, PendingMessage]] = (
-            {}
-        )  # room_id -> {seq -> message}
+        self.pending_messages: Dict[
+            str, Dict[int, PendingMessage]
+        ] = {}  # room_id -> {seq -> message}
         self.message_sequences: Dict[str, int] = {}  # room_id -> current sequence
         self.message_stats: Dict[str, MessageStats] = {}  # room_id -> stats
-        self.client_last_seen_sequence: Dict[str, Dict[str, int]] = (
-            {}
-        )  # room_id -> {client_id -> sequence}
+        self.client_last_seen_sequence: Dict[
+            str, Dict[str, int]
+        ] = {}  # room_id -> {client_id -> sequence}
 
         # Background retry task (will be created when needed)
         self._retry_task = None
@@ -148,7 +148,9 @@ class SocketManager:
                         message_to_send = {"event": event, "data": data}
                         # Enhanced debug logging for message sending
                         if event in ["phase_change", "client_ready"]:
-                            logger.info(f"📤 [DEBUG] Sending {event} to websocket in room {room_id}, data_keys: {list(data.keys()) if isinstance(data, dict) else 'not-dict'}")
+                            logger.info(
+                                f"📤 [DEBUG] Sending {event} to websocket in room {room_id}, data_keys: {list(data.keys()) if isinstance(data, dict) else 'not-dict'}"
+                            )
                         await ws.send_json(message_to_send)
                         success_count += 1
                     except Exception as e:
@@ -303,8 +305,11 @@ class SocketManager:
         """
         # Enhanced debug logging for all broadcasts
         import logging
+
         logger = logging.getLogger(__name__)
-        logger.info(f"📡 [DEBUG] Broadcasting to room {room_id}: event={event}, data_keys={list(data.keys()) if data else []}")
+        logger.info(
+            f"📡 [DEBUG] Broadcasting to room {room_id}: event={event}, data_keys={list(data.keys()) if data else []}"
+        )
 
         async with self.lock:
             # Check if we have connections for this room
@@ -454,7 +459,6 @@ class SocketManager:
                 room_id in self.pending_messages
                 and sequence in self.pending_messages[room_id]
             ):
-
                 pending_msg = self.pending_messages[room_id][sequence]
                 response_time = time.time() - pending_msg.timestamp
 
@@ -509,7 +513,6 @@ class SocketManager:
                 # Check all pending messages across all rooms
                 for room_id, room_messages in list(self.pending_messages.items()):
                     for sequence, pending_msg in list(room_messages.items()):
-
                         # Check if message should be retried
                         if pending_msg.should_retry():
                             # Check if it's time to retry (exponential backoff)
@@ -591,9 +594,7 @@ class SocketManager:
             # Could trigger client disconnect/recovery here if needed
 
         except Exception as e:
-            print(
-                f"❌ RELIABLE_MSG: Error handling expired message seq {sequence}: {e}"
-            )
+            print(f"❌ RELIABLE_MSG: Error handling expired message seq {sequence}: {e}")
 
     async def request_client_sync(
         self, room_id: str, websocket: WebSocket, client_id: str

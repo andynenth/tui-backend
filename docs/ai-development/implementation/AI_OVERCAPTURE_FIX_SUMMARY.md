@@ -37,7 +37,7 @@ From room A9B136, round 3, Bot 3's turn:
 - Bot 3's complete hand was:
   - CHARIOT_BLACK(7) - 1 piece
   - SOLDIER_BLACK(1) - 3 pieces
-  - CHARIOT_RED(8) - 2 pieces  
+  - CHARIOT_RED(8) - 2 pieces
   - HORSE_BLACK(5) - 1 piece
   - Total: 7 pieces
 - Required to play: 2 pieces

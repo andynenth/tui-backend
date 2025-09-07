@@ -167,8 +167,8 @@ const StartPage = () => {
                   )}
 
                   {/* Separator */}
-                  <div style={{ 
-                    height: '1px', 
+                  <div style={{
+                    height: '1px',
                     background: 'rgba(173, 181, 189, 0.2)',
                     margin: '4px 0'
                   }}></div>

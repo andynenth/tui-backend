@@ -6,7 +6,7 @@ This document provides a comprehensive overview of all shell scripts (.sh files)
 
 The project contains 38 shell scripts organized by function:
 - **Development & Building**: Local development and Docker builds
-- **AWS Deployment**: EC2 and ECS deployment scripts  
+- **AWS Deployment**: EC2 and ECS deployment scripts
 - **Server Management**: Monitoring, backup, and maintenance
 - **Tokyo Migration**: Scripts for migrating to Tokyo region
 - **AWS Billing & Setup**: Cost monitoring and initial setup

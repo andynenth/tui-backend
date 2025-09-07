@@ -477,7 +477,7 @@
             <div class="slide active">
                 <h1 class="slide-title">Welcome to Castellan</h1>
                 <p class="subtitle">A strategic trick-taking game where prediction is key to victory</p>
-                
+
                 <div class="card">
                     <div class="card-header">
                         <div class="card-icon">🎯</div>
@@ -522,7 +522,7 @@
             <div class="slide">
                 <h1 class="slide-title">Understanding Your Pieces</h1>
                 <p class="subtitle">32 pieces total, each with unique values</p>
-                
+
                 <div class="pieces-container">
                     <div class="piece-group">
                         <div class="piece-display">
@@ -532,7 +532,7 @@
                         <div class="piece-label">Generals</div>
                         <div class="piece-value">Value: 11</div>
                     </div>
-                    
+
                     <div class="piece-group">
                         <div class="piece-display">
                             <div class="piece">仕</div>
@@ -541,7 +541,7 @@
                         <div class="piece-label">Advisors</div>
                         <div class="piece-value">Value: 10</div>
                     </div>
-                    
+
                     <div class="piece-group">
                         <div class="piece-display">
                             <div class="piece">相</div>
@@ -550,7 +550,7 @@
                         <div class="piece-label">Elephants</div>
                         <div class="piece-value">Value: 9</div>
                     </div>
-                    
+
                     <div class="piece-group">
                         <div class="piece-display">
                             <div class="piece">傌</div>
@@ -559,7 +559,7 @@
                         <div class="piece-label">Horses</div>
                         <div class="piece-value">Value: 8</div>
                     </div>
-                    
+
                     <div class="piece-group">
                         <div class="piece-display">
                             <div class="piece">俥</div>
@@ -568,7 +568,7 @@
                         <div class="piece-label">Chariots</div>
                         <div class="piece-value">Value: 7</div>
                     </div>
-                    
+
                     <div class="piece-group">
                         <div class="piece-display">
                             <div class="piece">炮</div>
@@ -594,18 +594,18 @@
             <div class="slide">
                 <h1 class="slide-title">Preparation Phase</h1>
                 <p class="subtitle">Setting up for the round</p>
-                
+
                 <div class="steps">
                     <div class="step">
                         <div class="step-title">Deal Cards</div>
                         <div class="step-desc">Each player receives 8 random pieces from the shuffled deck.</div>
                     </div>
-                    
+
                     <div class="step">
                         <div class="step-title">Check for Weak Hand</div>
                         <div class="step-desc">If your strongest piece is 象 (9) or lower, you may request a redeal for all players. Warning: This reduces your score multiplier!</div>
                     </div>
-                    
+
                     <div class="step">
                         <div class="step-title">Determine First Player</div>
                         <div class="step-desc">The player holding 帥 (Red General) leads the first trick.</div>
@@ -626,7 +626,7 @@
             <div class="slide">
                 <h1 class="slide-title">Declaration Phase</h1>
                 <p class="subtitle">Predict your performance</p>
-                
+
                 <div class="card">
                     <div class="card-header">
                         <div class="card-icon">🎯</div>
@@ -661,18 +661,18 @@
             <div class="slide">
                 <h1 class="slide-title">Playing Phase</h1>
                 <p class="subtitle">Execute your strategy</p>
-                
+
                 <div class="steps">
                     <div class="step">
                         <div class="step-title">Leader Plays</div>
                         <div class="step-desc">The trick leader plays 1-6 pieces in a valid combination (single, pair, triple, or straight).</div>
                     </div>
-                    
+
                     <div class="step">
                         <div class="step-title">Others Follow</div>
                         <div class="step-desc">Each player must play the same number of pieces. They can play invalid combinations to intentionally forfeit.</div>
                     </div>
-                    
+
                     <div class="step">
                         <div class="step-title">Determine Winner</div>
                         <div class="step-desc">Highest valid play wins all pieces in the trick. Winner leads the next trick.</div>
@@ -693,7 +693,7 @@
             <div class="slide">
                 <h1 class="slide-title">Valid Combinations</h1>
                 <p class="subtitle">What you can play as the trick leader</p>
-                
+
                 <div class="card">
                     <div class="card-header">
                         <div class="card-icon">1️⃣</div>
@@ -739,7 +739,7 @@
             <div class="slide">
                 <h1 class="slide-title">Scoring System</h1>
                 <p class="subtitle">How points are calculated</p>
-                
+
                 <div class="score-examples">
                     <div class="score-example">
                         <div class="score-icon success">✓</div>
@@ -788,7 +788,7 @@
             <button class="nav-btn" onclick="prevSlide()" disabled>
                 ← Previous
             </button>
-            
+
             <div class="dots">
                 <div class="dot active"></div>
                 <div class="dot"></div>
@@ -798,7 +798,7 @@
                 <div class="dot"></div>
                 <div class="dot"></div>
             </div>
-            
+
             <button class="nav-btn primary" onclick="nextSlide()">
                 Next →
             </button>
@@ -828,9 +828,9 @@
             // Update nav buttons
             const prevBtn = document.querySelectorAll('.nav-btn')[0];
             const nextBtn = document.querySelectorAll('.nav-btn')[1];
-            
+
             prevBtn.disabled = currentSlide === 0;
-            
+
             if (currentSlide === totalSlides - 1) {
                 nextBtn.textContent = 'Start Playing';
                 nextBtn.onclick = () => alert('Start game!');

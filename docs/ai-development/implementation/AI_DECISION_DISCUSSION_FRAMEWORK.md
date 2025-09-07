@@ -134,7 +134,7 @@ Question: Declare conservatively (2) or normal (3)?
 ### Option 2: Component-Based Discussion
 Discuss each decision component separately:
 1. Declaration strategy session
-2. Play selection session  
+2. Play selection session
 3. Redeal logic session
 
 ### Option 3: Mathematical Modeling
@@ -168,17 +168,17 @@ Create formal models for decisions:
 def improved_declaration(base_score, game_state):
     # 1. Calculate base score (current logic)
     score = base_score
-    
+
     # 2. Simple game state adjustment
     if game_state.bot_score >= 48:  # Near victory
         score = min(score, 2)
     elif game_state.bot_score < 25 and game_state.leader_score > 40:  # Far behind
         score += 1
-    
+
     # 3. Small random variation
     if random.random() < 0.15:  # 15% chance
         score += random.choice([-1, 1])
-    
+
     # 4. Clamp and return
     return max(1, min(score, 7))
 ```

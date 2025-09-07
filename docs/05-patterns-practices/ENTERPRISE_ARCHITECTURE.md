@@ -129,7 +129,7 @@ setInterval(updateHealthStatus, 3000);     // Creates unnecessary load
 
 1. **Developer calls** `update_phase_data()` with new state
 2. **System automatically** validates and applies changes
-3. **System automatically** generates sequence number and timestamp  
+3. **System automatically** generates sequence number and timestamp
 4. **System automatically** serializes data to JSON-safe format
 5. **System automatically** broadcasts `phase_change` event to all clients
 6. **System automatically** stores change in audit trail
@@ -140,14 +140,14 @@ setInterval(updateHealthStatus, 3000);     // Creates unnecessary load
 async def update_phase_data(self, updates: Dict, reason: str):
     # 1. Validate updates
     validated_data = self._validate_updates(updates)
-    
+
     # 2. Apply to phase_data
     self.phase_data.update(validated_data)
-    
+
     # 3. Generate metadata
     sequence = self._get_next_sequence()
     timestamp = datetime.now().isoformat()
-    
+
     # 4. JSON-safe serialization
     broadcast_data = self._serialize_for_broadcast({
         'phase': self.current_phase.value,
@@ -157,10 +157,10 @@ async def update_phase_data(self, updates: Dict, reason: str):
         'timestamp': timestamp,
         'reason': reason
     })
-    
+
     # 5. Automatic broadcast (NEVER manual)
     await self._broadcast_phase_change(broadcast_data)
-    
+
     # 6. Store in audit trail
     self._store_change_event(sequence, reason, updates)
 ```
@@ -169,7 +169,7 @@ async def update_phase_data(self, updates: Dict, reason: str):
 
 - **🔒 Sync Bug Prevention**: Impossible to forget broadcasting
 - **🔍 Complete Debugging**: Every change logged with reason and sequence
-- **⚡ Performance**: Optimized JSON serialization 
+- **⚡ Performance**: Optimized JSON serialization
 - **🏗️ Maintainability**: Single source of truth
 - **🧪 Testability**: Predictable state changes
 
@@ -188,7 +188,7 @@ class ConnectionManager {
         networkService.addEventListener('disconnected', this.onDisconnect);
         networkService.addEventListener('error', this.onError);
     }
-    
+
     onConnect(event) {
         // React immediately to connection change
         this.updateConnectionState(true);
@@ -201,13 +201,13 @@ class ConnectionManager {
 class HealthMonitor {
     async def monitor_resources(self):
         check_interval = 30  # Start with 30 seconds
-        
+
         while self.monitoring_active:
             await asyncio.sleep(check_interval)
-            
+
             # Check health
             health_issues = await self.check_system_health()
-            
+
             # Adaptive monitoring - react to conditions
             if health_issues:
                 check_interval = max(10, check_interval / 2)  # Check more frequently
@@ -225,7 +225,7 @@ setInterval(() => {
     refreshGameState();          // Can cause race conditions
 }, 5000);
 
-// BAD: Continuous status checking  
+// BAD: Continuous status checking
 while (true) {
     if (isConnected()) {
         updateUI();              // Inefficient busy-waiting
@@ -359,12 +359,12 @@ class GameService {
         networkService.addEventListener('connected', this.onNetworkConnected);
         networkService.addEventListener('disconnected', this.onNetworkDisconnected);
         networkService.addEventListener('messageReceived', this.onGameMessage);
-        
+
         // React to service events
         serviceIntegration.addEventListener('healthStatusChanged', this.onHealthChange);
         serviceIntegration.addEventListener('metricsUpdated', this.onMetricsUpdate);
     }
-    
+
     onGameMessage(event) {
         // Process immediately when data arrives
         this.processGameEvent(event.data);
@@ -379,13 +379,13 @@ class HealthMonitor:
     async def monitor_websocket_health(self):
         check_interval = 60  # Start with 1 minute
         consecutive_healthy = 0
-        
+
         while self.monitoring_active:
             await asyncio.sleep(check_interval)
-            
+
             # Check actual health
             health_metrics = await self.check_websocket_metrics()
-            
+
             # Adapt based on conditions
             if health_metrics.has_issues:
                 check_interval = max(15, check_interval / 2)  # More frequent
@@ -408,10 +408,10 @@ class TurnState(GameState):
     async def handle_player_move(self, action: GameAction):
         player_name = action.player_name
         pieces = action.payload['pieces']
-        
+
         # Process the move
         result = self.game.play_turn(player_name, pieces)
-        
+
         if result.get('valid'):
             # ✅ ENTERPRISE: Single source of truth
             await self.update_phase_data({
@@ -426,14 +426,14 @@ class TurnState(GameState):
             # ↑ Automatically broadcasts to all clients
             # ↑ Includes sequence numbers and timestamps
             # ↑ JSON-safe serialization
-            
+
             # Check for turn completion
             if result.get('turn_complete'):
                 await self.broadcast_custom_event("turn_resolved", {
                     'winner': result['winner'],
                     'pile_count': result['pile_count']
                 }, f"Turn won by {result['winner']}")
-        
+
         return {'status': 'success', 'valid': result.get('valid')}
 ```
 
@@ -443,10 +443,10 @@ class TurnState(GameState):
     async def handle_player_move(self, action: GameAction):
         player_name = action.player_name
         pieces = action.payload['pieces']
-        
+
         # Process the move
         result = self.game.play_turn(player_name, pieces)
-        
+
         if result.get('valid'):
             # ❌ VIOLATION: Direct state manipulation
             self.phase_data['current_player'] = result['next_player']
@@ -454,14 +454,14 @@ class TurnState(GameState):
                 'player': player_name,
                 'pieces': pieces
             }
-            
+
             # ❌ VIOLATION: Manual broadcasting
             await broadcast(self.room_id, "player_moved", {
                 'player': player_name,
                 'next_player': result['next_player'],
                 'pieces': pieces  # ❌ May not be JSON-safe
             })
-            
+
             # ❌ VIOLATION: Separate manual broadcast
             if result.get('turn_complete'):
                 await broadcast(self.room_id, "turn_complete", {
@@ -476,16 +476,16 @@ class TurnState(GameState):
 class GameService {
     constructor() {
         this.state = this.getInitialState();
-        
+
         // ✅ Event-driven updates
         networkService.addEventListener('messageReceived', this.handleGameMessage);
         networkService.addEventListener('connected', this.handleConnection);
         networkService.addEventListener('disconnected', this.handleDisconnection);
     }
-    
+
     handleGameMessage = (event) => {
         const { type, data } = event.detail;
-        
+
         switch (type) {
             case 'phase_change':
                 // ✅ React immediately to enterprise broadcasts
@@ -497,7 +497,7 @@ class GameService {
                 break;
         }
     }
-    
+
     processPhaseChange(data) {
         // ✅ Immutable state updates
         const newState = {
@@ -507,7 +507,7 @@ class GameService {
             lastEventSequence: data.sequence,  // ✅ Track enterprise metadata
             lastUpdateTime: data.timestamp
         };
-        
+
         this.setState(newState);
         this.notifyObservers('PHASE_CHANGE', newState);
     }
@@ -519,23 +519,23 @@ class GameService {
 class GameService {
     constructor() {
         this.state = this.getInitialState();
-        
+
         // ❌ VIOLATION: Polling pattern
         setInterval(() => {
             this.checkForUpdates();
         }, 2000);
     }
-    
+
     async checkForUpdates() {
         // ❌ VIOLATION: Manual status checking
         try {
             const response = await fetch('/api/game-status');
             const data = await response.json();
-            
+
             // ❌ VIOLATION: Direct state mutation
             this.state.phase = data.phase;
             this.state.currentPlayer = data.currentPlayer;
-            
+
             // ❌ VIOLATION: Manual notification
             this.notifyObservers('UPDATE', this.state);
         } catch (error) {
@@ -557,22 +557,22 @@ The codebase includes comprehensive testing to validate enterprise architecture 
 # test_all_phases_enterprise.py
 async def test_all_phases_enterprise():
     """Validates all enterprise architecture patterns"""
-    
+
     # 1. Test automatic broadcasting
     broadcast_calls = []
-    
+
     # 2. Test phase transitions
     await state_machine.start(GamePhase.PREPARATION)
     await simulate_declarations()
     await simulate_turns()
-    
+
     # 3. Validate enterprise features
     enterprise_compliant = 0
     for call in broadcast_calls:
-        if (call['has_sequence'] and call['has_reason'] and 
+        if (call['has_sequence'] and call['has_reason'] and
             call['has_timestamp'] and call['event_type'] == 'phase_change'):
             enterprise_compliant += 1
-    
+
     # 4. Check compliance
     assert enterprise_compliant == len(phase_change_calls)
     assert all_broadcasts_automatic()
@@ -587,7 +587,7 @@ The system tracks enterprise architecture compliance:
 ```
 📋 ENTERPRISE COMPLIANCE SUMMARY
    Automatic Broadcasting: ✅ 100%
-   Enterprise Metadata: ✅ 100% 
+   Enterprise Metadata: ✅ 100%
    Phase Change Events: ✅ 100%
    Sequence Ordering: ✅ 100%
    JSON Serialization: ✅ 100%
@@ -598,7 +598,7 @@ The system tracks enterprise architecture compliance:
 
 The testing framework automatically detects:
 - Manual `broadcast()` calls
-- Direct `phase_data` manipulation  
+- Direct `phase_data` manipulation
 - Missing sequence numbers or timestamps
 - Non-JSON-safe objects in broadcasts
 - Out-of-order sequence numbers
@@ -675,7 +675,7 @@ await self.broadcast_custom_event("game_event", data, "Descriptive reason for ev
 - **Complete Audit Trail**: Every change tracked and traceable
 - **Predictable Behavior**: Single source of truth eliminates race conditions
 
-### ⚡ **Performance**  
+### ⚡ **Performance**
 - **Event-Driven**: Only updates when changes occur
 - **Optimized Serialization**: JSON-safe conversion built-in
 - **Adaptive Monitoring**: System scales monitoring based on load
@@ -687,7 +687,7 @@ await self.broadcast_custom_event("game_event", data, "Descriptive reason for ev
 
 ### 🧪 **Quality Assurance**
 - **Automatic Validation**: System prevents violations
-- **Comprehensive Testing**: Enterprise compliance continuously verified  
+- **Comprehensive Testing**: Enterprise compliance continuously verified
 - **Real-time Monitoring**: Architecture health tracked in production
 
 ---

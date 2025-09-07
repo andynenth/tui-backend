@@ -2,7 +2,7 @@
 
 from typing import Any, Dict, List, Optional
 
-from ...scoring import calculate_score
+from ...scoring import calculate_final_score
 from ..base_state import GameState
 from ..core import ActionType, GameAction, GamePhase
 
@@ -47,7 +47,6 @@ class ScoringState(GameState):
         try:
             # Reset delay flag for new scoring phase
             self.display_delay_complete = False
-            print(f"🔄 SCORING_SETUP_DEBUG: Reset display_delay_complete = False")
 
             self.logger.info("Setting up Scoring Phase")
 
@@ -60,10 +59,6 @@ class ScoringState(GameState):
             self.scores_calculated = True
 
             # 🚀 ENTERPRISE: Use automatic broadcasting system to update scoring UI
-            print(f"🚀 SCORING_BROADCAST_DEBUG: Broadcasting scoring data:")
-            print(f"   📊 Round scores: {self.round_scores}")
-            print(f"   🏁 Game complete: {self.game_complete}")
-            print(f"   🏆 Winners: {self.winners}")
 
             # Prepare total scores and scoring-specific data for frontend
             # (base_state.py automatically handles standard player data)
@@ -92,10 +87,6 @@ class ScoringState(GameState):
                         "turns_won": getattr(player, "turns_won", 0),
                         "perfect_rounds": getattr(player, "perfect_rounds", 0),
                     }
-
-            print(f"🚀 SCORING_BROADCAST_DEBUG: Also sending:")
-            print(f"   💯 Total scores: {total_scores}")
-            print(f"   👥 Scoring players data: {scoring_players_data}")
 
             await self.update_phase_data(
                 {
@@ -172,9 +163,9 @@ class ScoringState(GameState):
             elif action.action_type == ActionType.TIMEOUT:
                 result = {"success": True, "message": "Timeout handled", "data": {}}
             else:
-                result["message"] = (
-                    f"Action {action.action_type} not supported in Scoring Phase"
-                )
+                result[
+                    "message"
+                ] = f"Action {action.action_type} not supported in Scoring Phase"
 
         except Exception as e:
             self.logger.error(f"Error processing action {action.action_type}: {e}")
@@ -195,17 +186,13 @@ class ScoringState(GameState):
         if self.game_complete:
             # Game is over, transition to GAME_OVER phase (only log once)
             if not hasattr(self, "_game_complete_logged"):
-                self.logger.info(
-                    "🔍 SCORING_TRANSITION_DEBUG: Game complete - transitioning to GAME_OVER"
-                )
+                self.logger.info("🔍 Game complete - transitioning to GAME_OVER")
                 self._game_complete_logged = True
             return GamePhase.GAME_OVER
 
         # Can transition to next round (only log once)
         if not hasattr(self, "_ready_to_transition_logged"):
-            self.logger.info(
-                "🔍 SCORING_TRANSITION_DEBUG: Ready to transition to PREPARATION"
-            )
+            self.logger.info("🔍 Ready to transition to PREPARATION")
             self._ready_to_transition_logged = True
         return GamePhase.PREPARATION
 
@@ -291,10 +278,6 @@ class ScoringState(GameState):
             self.logger.warning("Game has no players attribute")
             return
 
-        print(
-            f"🗳️ DECLARATION_DEBUG: game.player_declarations = {getattr(game, 'player_declarations', {})}"
-        )
-
         for player in game.players:
             # Get declaration from game.player_declarations or player.declared
             declared = game.player_declarations.get(
@@ -303,54 +286,38 @@ class ScoringState(GameState):
             # Get actual piles from player's captured_piles (much simpler!)
             actual = getattr(player, "captured_piles", 0)
 
-            print(
-                f"📋 SCORING_FIX_DEBUG: {player.name} - declared: {declared}, actual: {actual}"
-            )
-
-            # Apply new scoring logic: multiplier only applies to base points (X), not bonuses
+            # Use the new centralized scoring function
             multiplier = getattr(game, "redeal_multiplier", 1)
-            
-            if declared == 0 and actual == 0:
-                # Perfect zero prediction - no multiplier on bonus
-                bonus = 3
-                hit_value = 0
-                final_score = 3  # No multiplier applied
-            elif declared == 0 and actual > 0:
-                # Failed zero declaration - penalty gets multiplied
-                bonus = 0
-                hit_value = -actual
-                final_score = -actual * multiplier
-            elif declared > 0 and declared == actual:
-                # Perfect non-zero prediction - multiply base, add bonus after
-                bonus = 5
-                hit_value = declared
-                final_score = (declared * multiplier) + 5
-            else:
-                # Miss - penalty gets multiplied
-                bonus = 0
-                hit_value = -abs(declared - actual)
-                final_score = -abs(declared - actual) * multiplier
+            score_result = calculate_final_score(declared, actual, multiplier)
+
+            # Extract values from result
+            final_score = score_result["final_score"]
+            bonus = score_result["bonus"]
+            hit_value = score_result["hit_value"]
+            base_points = score_result["base_points"]
+            is_perfect = score_result["is_perfect"]
 
             # Update player's total score
             current_score = getattr(player, "score", 0)
             player.score = current_score + final_score
 
             # Increment perfect rounds counter for non-zero perfect predictions
-            if declared > 0 and declared == actual:
+            if declared > 0 and is_perfect:
                 old_perfect_rounds = player.perfect_rounds
                 player.perfect_rounds += 1
                 self.logger.info(
-                    f"🎯 PERFECT_ROUNDS_DEBUG: {player.name} had perfect round! perfect_rounds: {old_perfect_rounds} -> {player.perfect_rounds}"
+                    f"🎯 {player.name} had perfect round! perfect_rounds: {old_perfect_rounds} -> {player.perfect_rounds}"
                 )
 
             # Calculate base_score for display (what it would be without multiplier)
+            # This maintains backward compatibility with frontend expectations
             if declared == 0 and actual == 0:
                 base_score = 3
             elif declared > 0 and declared == actual:
                 base_score = declared + 5
             else:
-                base_score = hit_value  # Already negative for penalties
-            
+                base_score = base_points  # Already negative for penalties
+
             # Store round score data
             self.round_scores[player.name] = {
                 "declared": declared,
@@ -362,13 +329,6 @@ class ScoringState(GameState):
                 "final_score": final_score,
                 "total_score": player.score,
             }
-
-            print(f"🏆 SCORING_DEBUG: {player.name} scoring data:")
-            print(f"   📋 Declared: {declared}, Actual: {actual}")
-            print(
-                f"   📊 Base Score: {base_score}, Multiplier: {multiplier}x, Final: {final_score}"
-            )
-            print(f"   💯 Total Score: {player.score}")
 
             self.logger.info(
                 f"Player {player.name}: declared {declared}, actual {actual}, "
@@ -450,12 +410,8 @@ class ScoringState(GameState):
         """Give users 7 seconds to view scoring results before transitioning"""
         import asyncio
 
-        print(f"⏰ SCORING_DELAY_DEBUG: Starting 7-second display delay...")
         await asyncio.sleep(7.0)  # 7 second delay for users to see scores
         self.display_delay_complete = True
-        print(
-            f"⏰ SCORING_DELAY_DEBUG: 7-second delay complete - setting display_delay_complete = True"
-        )
         self.logger.info("Scoring display delay complete - ready to transition")
 
     async def _fire_round_completed_event(self) -> None:
@@ -491,13 +447,15 @@ class ScoringState(GameState):
 
         # Add turn sequence if available (from turn_results)
         if hasattr(game, "turn_results") and game.turn_results:
-            self.logger.info(f"📝 Building turn_sequence from {len(game.turn_results)} turns")
+            self.logger.info(
+                f"📝 Building turn_sequence from {len(game.turn_results)} turns"
+            )
             turn_sequence = []
-            
+
             for i, turn in enumerate(game.turn_results):
                 # Debug log
                 self.logger.info(f"Turn {i}: {turn}")
-                
+
                 # Build plays dict from turn data
                 plays_dict = {}
                 for play in turn.get("plays", []):
@@ -508,40 +466,47 @@ class ScoringState(GameState):
                         for piece in play.get("pieces", []):
                             if hasattr(piece, "kind") and hasattr(piece, "point"):
                                 # It's a Piece object
-                                pieces_data.append({
-                                    "kind": piece.kind,
-                                    "point": piece.point
-                                })
+                                pieces_data.append(
+                                    {"kind": piece.kind, "point": piece.point}
+                                )
                             elif isinstance(piece, dict):
                                 # Already a dict
                                 pieces_data.append(piece)
                             else:
                                 # Unknown format, try to convert to string
                                 pieces_data.append(str(piece))
-                        
+
                         plays_dict[player_name] = {
                             "pieces": pieces_data,
-                            "is_starter": i == 0 and play == turn.get("plays", [])[0],  # First player of first turn
+                            "is_starter": i == 0
+                            and play
+                            == turn.get("plays", [])[0],  # First player of first turn
                             "play_type": play.get("play_type", "unknown"),
-                            "play_value": play.get("play_value", 0)
+                            "play_value": play.get("play_value", 0),
                         }
-                
+
                 turn_entry = {
                     "turn_number": turn.get("turn_number", i + 1),
-                    "starter": turn.get("plays", [{}])[0].get("player", "") if turn.get("plays") else "",
+                    "starter": turn.get("plays", [{}])[0].get("player", "")
+                    if turn.get("plays")
+                    else "",
                     "plays": plays_dict,
                     "winner": turn.get("winner", ""),
                     "piles_won": turn.get("piles_won", 0),
                 }
                 turn_sequence.append(turn_entry)
-                
+
             round_data["turn_sequence"] = turn_sequence
             self.logger.info(f"✅ Built turn_sequence with {len(turn_sequence)} turns")
 
         # Add debug logging
-        self.logger.info(f"🔥 SCORING_STATE: About to store round_completed event for room {self.state_machine.room_id}")
-        self.logger.info(f"🔥 SCORING_STATE: Round data has {len(round_data.get('turn_sequence', []))} turns")
-        
+        self.logger.info(
+            f"🔥 SCORING_STATE: About to store round_completed event for room {self.state_machine.room_id}"
+        )
+        self.logger.info(
+            f"🔥 SCORING_STATE: Round data has {len(round_data.get('turn_sequence', []))} turns"
+        )
+
         await self.state_machine.store_game_event(
             "round_completed",
             round_data,

@@ -327,17 +327,17 @@ class ReconnectingWebSocket {
         this.shouldReconnect = true;
         this.connect();
     }
-    
+
     connect() {
         this.ws = new WebSocket(this.url);
-        
+
         this.ws.onclose = () => {
             if (this.shouldReconnect) {
                 setTimeout(() => this.connect(), this.reconnectDelay);
                 this.reconnectDelay = Math.min(this.reconnectDelay * 2, 30000);
             }
         };
-        
+
         this.ws.onopen = () => {
             this.reconnectDelay = 1000;
             console.log('WebSocket reconnected');
@@ -357,7 +357,7 @@ location /ws {
     proxy_set_header Connection "upgrade";
     proxy_set_header Host $host;
     proxy_set_header X-Real-IP $remote_addr;
-    
+
     # Prevent timeout
     proxy_read_timeout 3600;
     proxy_send_timeout 3600;
@@ -396,7 +396,7 @@ gameService.on('phase_change', (data) => {
     console.log('Phase changed to:', data.phase);
     console.log('Phase data:', data.phase_data);
     console.log('Sequence:', data.sequence);
-    
+
     // Check if frontend phase matches
     if (gameService.currentPhase !== data.phase) {
         console.error('Phase mismatch!', {
@@ -416,7 +416,7 @@ async def broadcast_to_room(room_id, event, data):
     if not room:
         logger.error(f"Room {room_id} not found for broadcast")
         return
-        
+
     failed_clients = []
     for client_id, websocket in room.clients.items():
         try:
@@ -428,7 +428,7 @@ async def broadcast_to_room(room_id, event, data):
         except Exception as e:
             logger.error(f"Failed to send to client {client_id}: {e}")
             failed_clients.append(client_id)
-    
+
     # Clean up failed clients
     for client_id in failed_clients:
         room.remove_client(client_id)
@@ -471,7 +471,7 @@ gameService.on('message', (message) => {
    // Must use exact same name (case-sensitive)
    const playerName = localStorage.getItem('playerName');
    console.log('Stored name:', playerName);
-   
+
    // Remove any extra whitespace
    const cleanName = playerName.trim();
    ```
@@ -492,18 +492,18 @@ gameService.on('message', (message) => {
        room = rooms.get(room_id)
        if not room:
            return False, "Room not found"
-           
+
        player = room.get_player_by_name(player_name)
        if not player:
            return False, "Player not in room"
-           
+
        if player.is_connected:
            return False, "Player already connected"
-           
+
        if player.is_bot_active:
            # Bot took over - need to deactivate
            player.deactivate_bot()
-           
+
        return True, "Can rejoin"
    ```
 
@@ -512,7 +512,7 @@ gameService.on('message', (message) => {
    // Clear local state and rejoin
    localStorage.removeItem('gameState');
    sessionStorage.clear();
-   
+
    // Attempt fresh connection
    const ws = new WebSocket(`ws://localhost:8000/ws/${roomId}`);
    ws.onopen = () => {
@@ -540,7 +540,7 @@ gameService.on('message', (message) => {
    # Backend should log:
    logger.info(f"Player {player_name} disconnected from room {room_id}")
    logger.info(f"Bot activated for player {player_name}")
-   
+
    # Verify in game state
    player = game.get_player(player_name)
    print(f"Is bot active: {player.is_bot_active}")
@@ -554,10 +554,10 @@ gameService.on('message', (message) => {
        room = rooms.get(room_id)
        game = room.game
        player = game.get_player(player_name)
-       
+
        player.is_bot_active = True
        player.is_connected = False
-       
+
        # If it's their turn, make bot play
        if game.current_phase == Phase.TURN:
            if game.current_player == player_name:
@@ -571,10 +571,10 @@ gameService.on('message', (message) => {
        logger.debug(f"Bot deciding for {player.name}")
        logger.debug(f"Hand: {player.hand}")
        logger.debug(f"Current requirement: {game_state.required_pieces}")
-       
+
        decision = calculate_best_play(player.hand, game_state)
        logger.info(f"Bot {player.name} decided: {decision}")
-       
+
        return decision
    ```
 
@@ -591,15 +591,15 @@ class Player:
     def __init__(self):
         self.disconnect_time = None
         self.is_bot_active = False
-        
+
     def handle_disconnect(self):
         self.disconnect_time = time.time()
         # Don't activate bot immediately
         asyncio.create_task(self._delayed_bot_activation())
-        
+
     async def _delayed_bot_activation(self):
         await asyncio.sleep(RECONNECT_GRACE_PERIOD)
-        
+
         # Check if still disconnected
         if not self.is_connected and self.disconnect_time:
             elapsed = time.time() - self.disconnect_time
@@ -615,20 +615,20 @@ class Player:
 # Add state validation
 def validate_game_state(game):
     errors = []
-    
+
     # Check player count
     if len(game.players) != 4:
         errors.append(f"Invalid player count: {len(game.players)}")
-        
+
     # Check hand sizes
     for player in game.players:
         if len(player.hand) > 8:
             errors.append(f"{player.name} has {len(player.hand)} cards")
-            
+
     # Check phase validity
     if game.phase not in [Phase.WAITING, Phase.PREPARATION, ...]:
         errors.append(f"Invalid phase: {game.phase}")
-        
+
     return errors
 
 # Run validation after each action
@@ -647,11 +647,11 @@ import weakref
 class ConnectionManager:
     def __init__(self):
         self.connections = weakref.WeakValueDictionary()
-        
+
     def add_connection(self, client_id, websocket):
         self.connections[client_id] = websocket
         logger.info(f"Active connections: {len(self.connections)}")
-        
+
     def remove_connection(self, client_id):
         self.connections.pop(client_id, None)
         gc.collect()  # Force garbage collection
@@ -667,22 +667,22 @@ import sqlite3
 def debug_database():
     conn = sqlite3.connect('game_events.db')
     cursor = conn.cursor()
-    
+
     # Check table structure
     cursor.execute("SELECT name FROM sqlite_master WHERE type='table'")
     tables = cursor.fetchall()
     print(f"Tables: {tables}")
-    
+
     # Check event count
     cursor.execute("SELECT COUNT(*) FROM events")
     count = cursor.fetchone()[0]
     print(f"Total events: {count}")
-    
+
     # Recent events
     cursor.execute("""
-        SELECT timestamp, event_type, room_id 
-        FROM events 
-        ORDER BY timestamp DESC 
+        SELECT timestamp, event_type, room_id
+        FROM events
+        ORDER BY timestamp DESC
         LIMIT 10
     """)
     for row in cursor.fetchall():
@@ -705,7 +705,7 @@ function GameComponent() {
             console.trace();
         }
     });
-    
+
     // Use React.memo for expensive components
     return <ExpensiveChild />;
 }
@@ -744,9 +744,9 @@ useEffect(() => {
     const handleGameEvent = (event) => {
         console.log('Game event:', event);
     };
-    
+
     gameService.on('update', handleGameEvent);
-    
+
     // Cleanup function
     return () => {
         gameService.off('update', handleGameEvent);
@@ -769,10 +769,10 @@ def profile_endpoint(func):
         start = time.time()
         result = await func(*args, **kwargs)
         duration = time.time() - start
-        
+
         if duration > 1.0:  # Log slow requests
             logger.warning(f"{func.__name__} took {duration:.2f}s")
-            
+
         return result
     return wrapper
 
@@ -809,10 +809,10 @@ if (measure.duration > 16) {  // Longer than one frame
 async def send_message(websocket, message):
     data = json.dumps(message)
     size = len(data.encode('utf-8'))
-    
+
     if size > 10000:  # 10KB warning
         logger.warning(f"Large message: {size} bytes for {message['event']}")
-        
+
     await websocket.send(data)
 ```
 
@@ -826,7 +826,7 @@ import structlog
 
 logger = structlog.get_logger()
 
-logger.info("game_action", 
+logger.info("game_action",
     room_id=room_id,
     player=player_name,
     action="play",
@@ -843,7 +843,7 @@ logger.info("game_action",
 class ErrorBoundary extends React.Component {
     componentDidCatch(error, errorInfo) {
         console.error('React error:', error, errorInfo);
-        
+
         // Send to error tracking service
         if (window.Sentry) {
             window.Sentry.captureException(error, {
@@ -853,7 +853,7 @@ class ErrorBoundary extends React.Component {
             });
         }
     }
-    
+
     render() {
         if (this.state.hasError) {
             return <h2>Something went wrong. Please refresh.</h2>;
@@ -877,12 +877,12 @@ async def health_detailed():
         "memory_usage": get_memory_usage(),
         "uptime": get_uptime()
     }
-    
+
     status = "healthy" if all(
-        v == "healthy" for k, v in checks.items() 
+        v == "healthy" for k, v in checks.items()
         if k.endswith("_health")
     ) else "degraded"
-    
+
     return {
         "status": status,
         "checks": checks,
@@ -907,7 +907,7 @@ class ErrorClassifier:
             return "network", "infrastructure"
         else:
             return "unknown", "server_error"
-    
+
     @staticmethod
     def get_user_message(error_type):
         messages = {
@@ -929,18 +929,18 @@ from datetime import datetime, timedelta
 class ErrorTracker:
     def __init__(self):
         self.errors = defaultdict(list)
-        
+
     def track(self, error_type, details):
         self.errors[error_type].append({
             "timestamp": datetime.now(),
             "details": details
         })
-        
+
         # Check for patterns
         recent_errors = self._get_recent_errors(error_type, minutes=5)
         if len(recent_errors) > 10:
             logger.critical(f"High error rate for {error_type}: {len(recent_errors)} in 5 minutes")
-            
+
     def _get_recent_errors(self, error_type, minutes):
         cutoff = datetime.now() - timedelta(minutes=minutes)
         return [e for e in self.errors[error_type] if e["timestamp"] > cutoff]
@@ -963,7 +963,7 @@ class GameStateInspector:
             "players": {},
             "history": []
         }
-        
+
         for player in game.players:
             report["players"][player.name] = {
                 "connected": player.is_connected,
@@ -973,7 +973,7 @@ class GameStateInspector:
                 "declared": player.declared_piles,
                 "captured": player.captured_piles
             }
-            
+
         return report
 ```
 
@@ -983,7 +983,7 @@ class GameStateInspector:
 // Debug panel component
 function DebugPanel({ gameState }) {
     const [visible, setVisible] = useState(false);
-    
+
     // Toggle with keyboard shortcut
     useEffect(() => {
         const handleKeyPress = (e) => {
@@ -991,13 +991,13 @@ function DebugPanel({ gameState }) {
                 setVisible(v => !v);
             }
         };
-        
+
         window.addEventListener('keydown', handleKeyPress);
         return () => window.removeEventListener('keydown', handleKeyPress);
     }, []);
-    
+
     if (!visible) return null;
-    
+
     return (
         <div className="debug-panel">
             <h3>Debug Info</h3>
@@ -1022,14 +1022,14 @@ class WebSocketMonitor {
         this.messages = [];
         this.startMonitoring();
     }
-    
+
     startMonitoring() {
         // Override WebSocket constructor
         const OriginalWebSocket = window.WebSocket;
-        
+
         window.WebSocket = function(url, protocols) {
             const ws = new OriginalWebSocket(url, protocols);
-            
+
             // Monitor sends
             const originalSend = ws.send;
             ws.send = (data) => {
@@ -1040,7 +1040,7 @@ class WebSocketMonitor {
                 });
                 originalSend.call(ws, data);
             };
-            
+
             // Monitor receives
             ws.addEventListener('message', (event) => {
                 this.messages.push({
@@ -1049,17 +1049,17 @@ class WebSocketMonitor {
                     timestamp: Date.now()
                 });
             });
-            
+
             return ws;
         }.bind(this);
     }
-    
+
     getMessages(eventType) {
-        return this.messages.filter(m => 
+        return this.messages.filter(m =>
             m.data.event === eventType
         );
     }
-    
+
     exportLog() {
         const blob = new Blob([JSON.stringify(this.messages, null, 2)], {
             type: 'application/json'

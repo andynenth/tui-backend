@@ -105,7 +105,7 @@ if [ "$UFW_STATUS" -eq 0 ]; then
     echo -e "${RED}  ❌ Firewall inactive${NC}"
 else
     echo -e "${GREEN}  ✅ Firewall active${NC}"
-    
+
     # Check open ports
     echo -e "${YELLOW}  Open ports:${NC}"
     run_remote "sudo ufw status | grep ALLOW" | sed 's/^/    /'
@@ -210,12 +210,12 @@ fi
 # 8. AWS Security (if instance ID provided)
 if [ ! -z "$INSTANCE_ID" ]; then
     echo -e "\n${BLUE}8. AWS Security${NC}"
-    
+
     # Check security groups
     SECURITY_GROUPS=$(aws ec2 describe-instances --instance-ids $INSTANCE_ID --query 'Reservations[0].Instances[0].SecurityGroups[*].GroupId' --output text 2>/dev/null || echo "")
     if [ ! -z "$SECURITY_GROUPS" ]; then
         echo -e "  Security Groups: ${SECURITY_GROUPS}"
-        
+
         # Check for overly permissive rules
         for sg in $SECURITY_GROUPS; do
             OPEN_RULES=$(aws ec2 describe-security-groups --group-ids $sg --query 'SecurityGroups[0].IpPermissions[?FromPort==`22` && IpRanges[?CidrIp==`0.0.0.0/0`]]' --output text 2>/dev/null || echo "")
@@ -339,20 +339,20 @@ if [ ${#ISSUES[@]} -gt 0 ] || [ ${#RECOMMENDATIONS[@]} -gt 0 ]; then
         echo ""
         echo "# WARNING: Review each command before running!"
         echo ""
-        
+
         if [[ " ${RECOMMENDATIONS[@]} " =~ "Disable password authentication" ]]; then
             echo "# Disable SSH password authentication"
             echo "# sudo sed -i 's/PasswordAuthentication yes/PasswordAuthentication no/' /etc/ssh/sshd_config"
             echo "# sudo systemctl restart sshd"
             echo ""
         fi
-        
+
         if [[ " ${RECOMMENDATIONS[@]} " =~ "Install security updates" ]]; then
             echo "# Install security updates"
             echo "# sudo apt update && sudo apt upgrade -y"
             echo ""
         fi
-        
+
         if [[ " ${RECOMMENDATIONS[@]} " =~ "Enable firewall" ]]; then
             echo "# Enable firewall"
             echo "# sudo ufw allow 22/tcp"
@@ -361,13 +361,13 @@ if [ ${#ISSUES[@]} -gt 0 ] || [ ${#RECOMMENDATIONS[@]} -gt 0 ]; then
             echo "# sudo ufw --force enable"
             echo ""
         fi
-        
+
         echo "# Remember to:"
         echo "# - Test changes in staging first"
         echo "# - Have a backup connection ready"
         echo "# - Document all changes made"
     } > "$REMEDIATION_FILE"
-    
+
     chmod +x "$REMEDIATION_FILE"
     echo -e "${YELLOW}🔧 Remediation script created: ${REMEDIATION_FILE}${NC}"
     echo -e "${YELLOW}   Review and uncomment commands before running!${NC}"

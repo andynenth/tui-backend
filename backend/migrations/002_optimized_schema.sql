@@ -73,7 +73,7 @@ CREATE INDEX IF NOT EXISTS idx_turns_room_round ON turn_details(room_id, round_n
 
 -- Views for common queries
 CREATE VIEW IF NOT EXISTS active_games AS
-SELECT 
+SELECT
     room_id,
     players,
     total_rounds,
@@ -84,7 +84,7 @@ WHERE completed_at IS NULL
 ORDER BY started_at DESC;
 
 CREATE VIEW IF NOT EXISTS completed_games AS
-SELECT 
+SELECT
     room_id,
     players,
     total_rounds,
@@ -99,7 +99,7 @@ ORDER BY completed_at DESC;
 
 -- Helper view for player statistics
 CREATE VIEW IF NOT EXISTS player_stats AS
-SELECT 
+SELECT
     json_extract(value, '$.player_name') as player_name,
     COUNT(DISTINCT g.room_id) as games_played,
     SUM(CASE WHEN g.winner = json_extract(value, '$.player_name') THEN 1 ELSE 0 END) as games_won,

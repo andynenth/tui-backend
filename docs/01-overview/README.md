@@ -36,10 +36,10 @@ graph TB
         React[React 19.1.0 App]
         WS_Client[WebSocket Client]
     end
-    
+
     subgraph "AWS Infrastructure"
         EC2[EC2 Instance]
-        
+
         subgraph "Docker Container"
             FastAPI[FastAPI Server]
             Static[Static File Server]
@@ -49,13 +49,13 @@ graph TB
             DB[(SQLite DB)]
         end
     end
-    
+
     subgraph "State Management"
         FrontendState[React Context]
         BackendState[Game State Machine]
         SharedState[Synchronized State]
     end
-    
+
     Browser --> React
     React --> WS_Client
     WS_Client <--> EC2
@@ -65,12 +65,12 @@ graph TB
     WS_Server <--> SM
     SM <--> Game
     Game <--> DB
-    
+
     React <--> FrontendState
     SM <--> BackendState
     FrontendState <-.-> SharedState
     BackendState <-.-> SharedState
-    
+
     style Browser fill:#e1f5fe
     style React fill:#81c784
     style FastAPI fill:#ffd54f

@@ -61,7 +61,7 @@ ws.onmessage = (message) => {
 interface ClientMessage {
     event: string;           // Event name
     data: Record<string, any>; // Event payload
-    
+
     // Optional metadata
     sequence?: number;       // Client sequence number
     timestamp?: number;      // Client timestamp
@@ -73,7 +73,7 @@ interface ClientMessage {
 interface ServerMessage {
     event: string;           // Event type
     data: Record<string, any>; // Event data
-    
+
     // Optional fields
     error?: ErrorInfo;       // Error details
     room_id?: string;        // Room context
@@ -476,13 +476,13 @@ Primary game state update.
         "sequence": 5,
         "timestamp": 1234567890.123,
         "reason": "All players ready",
-        
+
         "allowed_actions": ["declare"],
-        
+
         "phase_data": {
             // Phase-specific data
         },
-        
+
         "players": {
             // Player states
         }
@@ -593,20 +593,20 @@ interface Room {
 class GameClient {
     private ws: WebSocket;
     private roomId: string;
-    
+
     connect(roomId: string): Promise<void> {
         return new Promise((resolve, reject) => {
             this.ws = new WebSocket(`ws://localhost:8000/ws/${roomId}`);
-            
+
             this.ws.onopen = () => {
                 this.send('client_ready', {});
                 resolve();
             };
-            
+
             this.ws.onerror = reject;
         });
     }
-    
+
     send(event: string, data: any): void {
         this.ws.send(JSON.stringify({ event, data }));
     }
@@ -624,7 +624,7 @@ class GameClient:
         uri = f"ws://localhost:8000/ws/{room_id}"
         self.ws = await websockets.connect(uri)
         await self.send("client_ready", {})
-    
+
     async def send(self, event: str, data: dict):
         message = json.dumps({"event": event, "data": data})
         await self.ws.send(message)
@@ -636,14 +636,14 @@ import { useWebSocket } from './hooks/useWebSocket';
 
 function GameRoom({ roomId }) {
     const { connected, send, lastMessage } = useWebSocket(roomId);
-    
+
     const handlePlay = (indices) => {
         send('play', {
             player_name: currentPlayer,
             indices
         });
     };
-    
+
     return (
         <div>
             {connected ? 'Connected' : 'Connecting...'}
@@ -666,7 +666,7 @@ class MockWebSocket {
             this.onopen?.();
         }, 0);
     }
-    
+
     send(data) {
         const message = JSON.parse(data);
         // Simulate server response
@@ -690,7 +690,7 @@ from test_utils import GameTestClient
 async def test_full_game_flow():
     client = GameTestClient()
     await client.connect("test_room")
-    
+
     # Create room
     response = await client.send_and_wait("create_room", {
         "player_name": "TestPlayer"

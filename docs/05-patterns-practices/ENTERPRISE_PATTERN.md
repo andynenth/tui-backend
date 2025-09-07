@@ -37,7 +37,7 @@ class GameState:
         # Update state
         self.current_player = next_player
         self.turn_number += 1
-        
+
         # Developer must remember to broadcast
         # What if they forget? Clients are out of sync!
         await broadcast_to_all_players({
@@ -60,7 +60,7 @@ class GameState:
    # Update part of state
    self.current_player = next_player
    await broadcast({"player": next_player})
-   
+
    # Update another part
    self.turn_number += 1
    # Forget second broadcast - turn number out of sync!
@@ -71,10 +71,10 @@ class GameState:
    # Different developers, different patterns
    # Developer A:
    await self.broadcast("phase_change", data)
-   
+
    # Developer B:
    await room_manager.send_to_all(room_id, data)
-   
+
    # Developer C:
    for player in players:
        await send_message(player, data)
@@ -85,7 +85,7 @@ class GameState:
    # Two updates happen close together
    self.state = "PLAYING"
    asyncio.create_task(broadcast_state())
-   
+
    self.state = "PAUSED"  # Changes before broadcast!
    asyncio.create_task(broadcast_state())
    ```
@@ -112,13 +112,13 @@ class EnterpriseGameState:
         """The ONLY way to update phase data."""
         # 1. Update state
         self.phase_data.update(updates)
-        
+
         # 2. Record change
         self._record_change(updates, reason)
-        
+
         # 3. Broadcast automatically
         await self._broadcast_phase_change()
-        
+
         # 4. Increment sequence
         self._sequence_number += 1
 ```
@@ -134,42 +134,42 @@ class EnterpriseGameState:
 ```python
 class GameState(ABC):
     """Base class with enterprise features."""
-    
+
     def __init__(self, context: GameStateMachine):
         self.context = context
         self.phase_data = {}
         self._sequence_number = 0
         self._change_history = []
-    
+
     async def update_phase_data(self, updates: dict, reason: str = ""):
         """Update phase data with automatic broadcasting.
-        
+
         This is THE ONLY WAY to update phase data.
-        
+
         Args:
             updates: Dictionary of updates to apply
             reason: Human-readable reason for debugging
         """
         # Apply updates
         self.phase_data.update(updates)
-        
+
         # Add metadata
         self.phase_data['sequence_number'] = self._sequence_number
         self.phase_data['timestamp'] = time.time()
-        
+
         # Record for history
         self._record_change(updates, reason)
-        
+
         # Prepare broadcast data
         broadcast_data = self._prepare_broadcast_data()
-        
+
         # AUTOMATIC BROADCAST
         await self.context.room_manager.broadcast(
             self.context.room_id,
             "phase_change",
             broadcast_data
         )
-        
+
         # Increment for next update
         self._sequence_number += 1
 ```
@@ -188,13 +188,13 @@ def _record_change(self, updates: dict, reason: str):
         'stack_trace': self._get_stack_summary(),
         'snapshot': copy.deepcopy(self.phase_data)
     }
-    
+
     self._change_history.append(change_record)
-    
+
     # Limit memory usage
     if len(self._change_history) > 100:
         self._change_history.pop(0)
-        
+
 def get_change_history(self, last_n: int = 10) -> List[dict]:
     """Get recent changes for debugging."""
     return self._change_history[-last_n:]
@@ -244,7 +244,7 @@ async def broadcast_custom_event(self, event: str, data: dict):
     """Broadcast custom events with same guarantees."""
     # Ensure JSON safety
     safe_data = self._deep_serialize(data)
-    
+
     # Add metadata
     safe_data.update({
         'room_id': self.context.room_id,
@@ -252,13 +252,13 @@ async def broadcast_custom_event(self, event: str, data: dict):
         'timestamp': time.time(),
         'phase': self.phase.value
     })
-    
+
     # Record in history
     self._record_change(
         {'custom_event': event, 'data': safe_data},
         f"Custom event: {event}"
     )
-    
+
     # Broadcast
     await self.context.room_manager.broadcast(
         self.context.room_id,
@@ -340,8 +340,8 @@ def get_state_at_sequence(self, sequence: int) -> dict:
 ```python
 # Type hints ensure correct usage
 async def update_phase_data(
-    self, 
-    updates: dict[str, Any], 
+    self,
+    updates: dict[str, Any],
     reason: str = ""
 ) -> None:
     """Type-safe updates with clear documentation."""
@@ -355,18 +355,18 @@ async def update_phase_data(
 ```python
 class TurnState(GameState):
     """Turn phase with enterprise features."""
-    
+
     async def handle_play_action(self, action: GameAction) -> ActionResult:
         player_name = action.player_name
         piece_ids = action.data['piece_ids']
-        
+
         # Validate play
         if player_name != self.phase_data['current_player']:
             raise GameError("NOT_YOUR_TURN", "It's not your turn")
-        
+
         # Process play
         play_result = self.context.game.play_pieces(player_name, piece_ids)
-        
+
         # Update state (with automatic broadcast!)
         current_plays = self.phase_data.get('current_plays', {}).copy()
         current_plays[player_name] = {
@@ -374,7 +374,7 @@ class TurnState(GameState):
             'play_type': play_result.play_type,
             'timestamp': time.time()
         }
-        
+
         await self.update_phase_data({
             'current_plays': current_plays,
             'last_play': {
@@ -383,11 +383,11 @@ class TurnState(GameState):
                 'play_type': play_result.play_type
             }
         }, f"{player_name} played {len(piece_ids)} pieces")
-        
+
         # Check if turn complete
         if self._is_turn_complete():
             await self.context.transition_to_phase(GamePhase.TURN_RESULTS)
-        
+
         return ActionResult(success=True)
 ```
 
@@ -396,7 +396,7 @@ class TurnState(GameState):
 ```python
 class DeclarationState(GameState):
     """Declaration phase with enterprise features."""
-    
+
     async def enter_phase(self):
         """Initialize declaration phase."""
         # Set up initial state
@@ -407,25 +407,25 @@ class DeclarationState(GameState):
             'timeout': 30,
             'phase_start': time.time()
         }, "Declaration phase started")
-    
+
     async def handle_declaration(self, player_name: str, declaration: int):
         """Handle player declaration."""
         # Get current declarations
         declarations = self.phase_data['declarations'].copy()
-        
+
         # Validate
         if declarations[player_name] is not None:
             raise GameError("ALREADY_DECLARED", "You already declared")
-        
+
         # Update declaration
         declarations[player_name] = declaration
-        
+
         # Update waiting list
         waiting_for = [p for p in declarations if declarations[p] is None]
-        
+
         # Check if all declared
         all_declared = len(waiting_for) == 0
-        
+
         # Update state (automatic broadcast!)
         await self.update_phase_data({
             'declarations': declarations,
@@ -437,7 +437,7 @@ class DeclarationState(GameState):
                 'timestamp': time.time()
             }
         }, f"{player_name} declared {declaration} piles")
-        
+
         # Transition if all declared
         if all_declared:
             await self.context.transition_to_phase(GamePhase.TURN)
@@ -448,16 +448,16 @@ class DeclarationState(GameState):
 ```python
 class ScoringState(GameState):
     """Scoring with special events."""
-    
+
     async def calculate_scores(self):
         """Calculate and broadcast scores."""
         scores = {}
         special_bonuses = []
-        
+
         for player in self.context.game.players:
             declared = player.declared
             captured = player.captured_piles
-            
+
             # Perfect declaration bonus
             if declared == captured:
                 special_bonuses.append({
@@ -465,7 +465,7 @@ class ScoringState(GameState):
                     'type': 'PERFECT_DECLARATION',
                     'points': 5
                 })
-                
+
                 # Broadcast custom event
                 await self.broadcast_custom_event('special_bonus', {
                     'player': player.name,
@@ -473,12 +473,12 @@ class ScoringState(GameState):
                     'bonus_points': 5,
                     'message': f"{player.name} achieved perfect declaration!"
                 })
-            
+
             # Calculate score
             base_points = self._calculate_base_points(declared, captured)
-            total = base_points + sum(b['points'] for b in special_bonuses 
+            total = base_points + sum(b['points'] for b in special_bonuses
                                     if b['player'] == player.name)
-            
+
             scores[player.name] = {
                 'declared': declared,
                 'captured': captured,
@@ -486,7 +486,7 @@ class ScoringState(GameState):
                 'bonuses': [b for b in special_bonuses if b['player'] == player.name],
                 'total': total
             }
-        
+
         # Update state with scores
         await self.update_phase_data({
             'scores': scores,
@@ -554,7 +554,7 @@ await self.update_phase_data({
    # ❌ Bad - Mixing patterns
    self.phase_data['key'] = value  # Manual update
    await self.update_phase_data({...})  # Enterprise update
-   
+
    # ✅ Good - Consistent pattern
    await self.update_phase_data({
        'key': value,
@@ -566,7 +566,7 @@ await self.update_phase_data({
    ```python
    # ❌ Bad - Updating from outside
    game.state_machine.phase_data['key'] = value
-   
+
    # ✅ Good - Use proper methods
    await game.state_machine.process_action(action)
    ```
@@ -581,18 +581,18 @@ async def test_automatic_broadcasting():
     """Test that updates trigger broadcasts."""
     # Mock room manager
     mock_room_manager = AsyncMock()
-    
+
     # Create state
     state = TurnState(mock_context)
-    
+
     # Update phase data
     await state.update_phase_data({
         'current_player': 'Alice'
     }, "Test update")
-    
+
     # Verify broadcast was called
     mock_room_manager.broadcast.assert_called_once()
-    
+
     # Verify broadcast data
     call_args = mock_room_manager.broadcast.call_args
     assert call_args[0][1] == "phase_change"
@@ -606,21 +606,21 @@ async def test_automatic_broadcasting():
 async def test_change_history():
     """Test that changes are recorded."""
     state = TurnState(create_test_context())
-    
+
     # Make several updates
     await state.update_phase_data({'player': 'Alice'}, "First update")
     await state.update_phase_data({'player': 'Bob'}, "Second update")
     await state.update_phase_data({'player': 'Carol'}, "Third update")
-    
+
     # Check history
     history = state.get_change_history()
     assert len(history) >= 3
-    
+
     # Verify reasons recorded
     assert history[-3]['reason'] == "First update"
     assert history[-2]['reason'] == "Second update"
     assert history[-1]['reason'] == "Third update"
-    
+
     # Verify sequence numbers
     assert history[-2]['sequence'] == history[-3]['sequence'] + 1
     assert history[-1]['sequence'] == history[-2]['sequence'] + 1
@@ -632,12 +632,12 @@ async def test_change_history():
 def test_find_state_change():
     """Test finding when state changed."""
     state = GameState(mock_context)
-    
+
     # Make changes
     await state.update_phase_data({'score': 0}, "Initial")
     await state.update_phase_data({'score': 10}, "First score")
     await state.update_phase_data({'score': 20}, "Second score")
-    
+
     # Find when score became 10
     change = state.find_change('score', 10)
     assert change is not None
@@ -654,7 +654,7 @@ def test_find_state_change():
    # ❌ Multiple small updates
    await self.update_phase_data({'key1': value1}, "Update 1")
    await self.update_phase_data({'key2': value2}, "Update 2")
-   
+
    # ✅ Single batched update
    await self.update_phase_data({
        'key1': value1,
@@ -669,7 +669,7 @@ def test_find_state_change():
        cache_key = id(obj)
        if cache_key in self._serialization_cache:
            return self._serialization_cache[cache_key]
-       
+
        result = self._deep_serialize(obj)
        self._serialization_cache[cache_key] = result
        return result
@@ -701,25 +701,25 @@ Typical performance with enterprise pattern:
 ```python
 class EventSourcedState(EnterpriseState):
     """Full event sourcing capabilities."""
-    
+
     def __init__(self):
         super().__init__()
         self._events = []
-    
+
     async def apply_event(self, event: GameEvent):
         """Apply event and update state."""
         # Store event
         self._events.append(event)
-        
+
         # Apply to state
         new_state = self._reducer(self.phase_data, event)
-        
+
         # Update with automatic broadcast
         await self.update_phase_data(
             new_state,
             f"Event: {event.type}"
         )
-    
+
     def replay_events(self) -> dict:
         """Rebuild state from events."""
         state = {}
@@ -733,11 +733,11 @@ class EventSourcedState(EnterpriseState):
 ```python
 class TimeTravel:
     """Navigate through state history."""
-    
+
     def __init__(self, state_machine):
         self.state_machine = state_machine
         self.current_index = -1
-    
+
     def go_to_sequence(self, sequence: int):
         """Jump to specific sequence number."""
         for i, change in enumerate(self.state_machine._change_history):
@@ -745,7 +745,7 @@ class TimeTravel:
                 self.current_index = i
                 return change['snapshot']
         return None
-    
+
     def step_forward(self):
         """Move forward one change."""
         if self.current_index < len(self.state_machine._change_history) - 1:
@@ -759,10 +759,10 @@ class TimeTravel:
 ```python
 class ConsensusState(EnterpriseState):
     """Multi-server consensus."""
-    
+
     async def update_phase_data_consensus(
-        self, 
-        updates: dict, 
+        self,
+        updates: dict,
         reason: str,
         require_consensus: bool = True
     ):
@@ -770,10 +770,10 @@ class ConsensusState(EnterpriseState):
         if require_consensus:
             # Get consensus from other servers
             consensus = await self._get_consensus(updates)
-            
+
             if not consensus:
                 raise ConsensusError("Failed to achieve consensus")
-        
+
         # Apply update with consensus
         await self.update_phase_data(updates, reason)
 ```

@@ -15,7 +15,7 @@ This document provides a comprehensive implementation plan for addressing **7 cr
 **Phase 1: Critical Rule Compliance** ✅ COMPLETED
 - SI-025: Must-Declare-Nonzero Constraint - Fixed test framework bug, achieved 100% compliance
 
-**Phase 2: Critical Game Balance** ✅ COMPLETED  
+**Phase 2: Critical Game Balance** ✅ COMPLETED
 - SI-021: GENERAL_RED Combo Accumulation - Removed limiting break statement
 - SI-022: GENERAL_RED Combo Enablement - Extended to normal fields
 
@@ -51,7 +51,7 @@ This document provides a comprehensive implementation plan for addressing **7 cr
 ### Phase 1: Critical Rule Compliance (SI-025)
 **Must complete first** - Prevents game rule violations
 
-### Phase 2: Critical Game Balance (SI-021, SI-022) 
+### Phase 2: Critical Game Balance (SI-021, SI-022)
 **Core GENERAL_RED functionality** - Most powerful piece fixes
 
 ### Phase 3: Strategic Enhancements (SI-023, SI-024, SI-026, SI-027)
@@ -81,7 +81,7 @@ if must_declare_nonzero:
 
 #### Task 1.1: Verify Constraint Parameter Flow ✅ COMPLETED
 - [x] **Trace parameter flow**: Verify `must_declare_nonzero` parameter reaches `choose_declare_strategic()`
-- [x] **Check call sites**: Examine all calls to `choose_declare()` in codebase  
+- [x] **Check call sites**: Examine all calls to `choose_declare()` in codebase
 - [x] **Validate parameter usage**: Confirm parameter is being passed correctly from game engine
 - [x] **Test parameter reception**: Add temporary logging to verify parameter values
 
@@ -142,7 +142,7 @@ if context.has_general_red and any(c[0] in ["FOUR_OF_A_KIND", "FIVE_OF_A_KIND"] 
 
 #### Task 2.1: Analyze Current GENERAL_RED Logic ✅ COMPLETED
 - [x] **Document current behavior**: Map exactly how GENERAL_RED special case works
-- [x] **Identify affected scenarios**: List all test cases that fail due to this bug  
+- [x] **Identify affected scenarios**: List all test cases that fail due to this bug
 - [x] **Calculate expected improvements**: Predict score changes for each affected scenario
 - [x] **Assess piece efficiency**: Ensure 8-piece hand constraint still respected
 
@@ -184,10 +184,10 @@ if context.has_general_red and any(c[0] in ["FOUR_OF_A_KIND", "FIVE_OF_A_KIND"] 
 
 ---
 
-## SI-022: GENERAL_RED Combo Enablement Filter Enhancement  
+## SI-022: GENERAL_RED Combo Enablement Filter Enhancement
 
 **Issue**: `filter_viable_combos()` too conservative for GENERAL_RED in normal fields
-**File**: `backend/engine/ai.py`  
+**File**: `backend/engine/ai.py`
 **Lines**: 135-137 (GENERAL_RED field strength logic)
 
 ### Current Code Analysis
@@ -202,7 +202,7 @@ elif context.has_general_red and context.field_strength == "weak":
 
 #### Task 2.5: Analyze GENERAL_RED Control Mechanics ✅ COMPLETED
 - [x] **Document current filtering**: Map when GENERAL_RED enables combos currently
-- [x] **Identify missed opportunities**: Find scenarios where GENERAL_RED should enable combos but doesn't  
+- [x] **Identify missed opportunities**: Find scenarios where GENERAL_RED should enable combos but doesn't
 - [x] **Assess field strength impact**: Determine appropriate GENERAL_RED effectiveness by field strength
 - [x] **Study opponent interaction**: Analyze how GENERAL_RED changes opponent dynamics
 
@@ -210,7 +210,7 @@ elif context.has_general_red and context.field_strength == "weak":
 
 #### Task 2.6: Enhance GENERAL_RED Enablement Logic ✅ COMPLETED
 - [x] **Extend to normal fields**: Allow GENERAL_RED combo enablement in normal fields
-- [x] **Maintain strong field caution**: Preserve filtering for truly strong opponent scenarios  
+- [x] **Maintain strong field caution**: Preserve filtering for truly strong opponent scenarios
 - [x] **Add control strength assessment**: Weight GENERAL_RED (14pts) vs opponent strength
 - [x] **Implement graduated enablement**: Scale enablement by field strength degree
 
@@ -219,7 +219,7 @@ elif context.has_general_red and context.field_strength == "weak":
 #### Task 2.7: Implement Enhanced Control Logic ✅ COMPLETED
 - [x] **Add normal field case**: `elif context.has_general_red and context.field_strength in ["weak", "normal"]:`
 - [x] **Preserve strong field filtering**: Keep restrictive logic for strong opponents
-- [x] **Add combo quality thresholds**: Higher requirements for normal vs weak fields  
+- [x] **Add combo quality thresholds**: Higher requirements for normal vs weak fields
 - [x] **Balance guaranteed control**: Ensure GENERAL_RED advantage without being overpowered
 
 **Code Change**: Modified line 135 to include normal field in condition.
@@ -232,7 +232,7 @@ elif context.has_general_red and context.field_strength == "weak":
 
 **Resolution**: All scenarios pass with expected behavior.
 
-### Expected Impact  
+### Expected Impact
 - `general_red_combo_01`: Score improvement 1 → 4 (+3)
 
 ### Validation Requirements ✅ ALL PASSED
@@ -292,7 +292,7 @@ elif context.has_general_red and context.field_strength == "weak":
 
 ## SI-024: Weak Field Domination Enhancement
 
-**Issue**: AI doesn't model GENERAL_RED strength advantage in very weak fields  
+**Issue**: AI doesn't model GENERAL_RED strength advantage in very weak fields
 **File**: `backend/engine/ai.py`
 **Lines**: 305-318 (singles scoring in weak fields)
 
@@ -338,7 +338,7 @@ elif context.has_general_red and context.field_strength == "weak":
 # Lines 348-357 - Basic resolution logic
 if score in forbidden_declares:
     valid_options = [d for d in range(0, 9) if d not in forbidden_declares]
-    
+
     # Strategy: Pick closest valid option  ← Too simplistic
     if valid_options:
         score = min(valid_options, key=lambda x: abs(x - score))
@@ -365,13 +365,13 @@ if score in forbidden_declares:
 #### Task 3.10: Enhance Alternative Selection Strategy ✅ COMPLETED
 - [x] **Replace simple distance calculation**: Add strategic context to selection
 - [x] **Implement preference logic**: `strong_hand and alt > score → prefer_higher`
-- [x] **Add capability matching**: Choose alternatives that match hand realistic potential  
+- [x] **Add capability matching**: Choose alternatives that match hand realistic potential
 - [x] **Test edge cases**: Verify resolution works with multiple constraint types
 
 **Code Change**: Replaced simple distance with strategic preference logic.
 
 ### Expected Impact
-- `edge_forbidden_02`: Score improvement 2 → 4 (+2)  
+- `edge_forbidden_02`: Score improvement 2 → 4 (+2)
 - `edge_forbidden_03`: Score improvement 0 → 1 (+1)
 - `edge_forbidden_04`: Score improvement 0 → 1 (+1)
 
@@ -380,7 +380,7 @@ if score in forbidden_declares:
 ## SI-027: Boundary Condition Strategic Logic
 
 **Issue**: AI declares maximum (8) for extreme hands regardless of strategic merit
-**File**: `backend/engine/ai.py`  
+**File**: `backend/engine/ai.py`
 **Lines**: 327-332 (final score constraints)
 
 ### Implementation Tasks
@@ -395,7 +395,7 @@ if score in forbidden_declares:
 
 #### Task 3.12: Implement Boundary Condition Detection ✅ COMPLETED
 - [x] **Add extreme hand detection**: Identify perfect opener hands (all pieces ≥8pts)
-- [x] **Add weak hand detection**: Identify weakest hands (all pieces ≤2pts)  
+- [x] **Add weak hand detection**: Identify weakest hands (all pieces ≤2pts)
 - [x] **Define strategic caps**: Perfect opener max=4-5, weak hand max=1-2
 - [x] **Preserve starter advantages**: Account for position benefits in caps
 
@@ -409,7 +409,7 @@ if score in forbidden_declares:
 
 **Code Change**: Added Phase 8c for strategic reasonableness caps.
 
-### Expected Impact  
+### Expected Impact
 - `edge_boundary_01`: Score improvement 8 → 4 (-4, corrected overconfidence)
 - `edge_boundary_02`: Score improvement 8 → 1 (-7, corrected overconfidence)
 
@@ -459,7 +459,7 @@ if score in forbidden_declares:
 
 ### Backup and Recovery
 - [ ] **Create implementation branch**: Work on dedicated branch for all changes
-- [ ] **Backup original ai.py**: Store complete backup of current working version  
+- [ ] **Backup original ai.py**: Store complete backup of current working version
 - [ ] **Implement incremental commits**: Commit each task completion individually
 - [ ] **Test at each milestone**: Verify functionality after each major change
 
@@ -479,7 +479,7 @@ if score in forbidden_declares:
 
 ### Code Review Checklist
 - [ ] **Review strategic logic**: Ensure all changes align with strategic intent
-- [ ] **Check constraint handling**: Verify rule compliance maintained  
+- [ ] **Check constraint handling**: Verify rule compliance maintained
 - [ ] **Validate edge cases**: Ensure boundary conditions handled correctly
 - [ ] **Test parameter flow**: Verify all parameters passed and used correctly
 
@@ -524,10 +524,10 @@ if score in forbidden_declares:
 
 ### Week 1: Critical Rule Compliance (Phase 1)
 - Days 1-2: SI-025 analysis and implementation
-- Days 3-4: Constraint logic testing and validation  
+- Days 3-4: Constraint logic testing and validation
 - Day 5: Phase 1 completion and verification
 
-### Week 2: Critical Game Balance (Phase 2)  
+### Week 2: Critical Game Balance (Phase 2)
 - Days 1-3: SI-021 GENERAL_RED combo accumulation fix
 - Days 4-5: SI-022 GENERAL_RED combo enablement enhancement
 - Weekend: Phase 2 testing and integration
@@ -551,7 +551,7 @@ if score in forbidden_declares:
 ### Risk 1: Constraint Logic Breaking Game Rules
 **Mitigation**: Implement comprehensive constraint validation with extensive testing
 
-### Risk 2: GENERAL_RED Changes Breaking Game Balance  
+### Risk 2: GENERAL_RED Changes Breaking Game Balance
 **Mitigation**: Incremental implementation with balance testing at each step
 
 ### Risk 3: Performance Degradation
@@ -566,6 +566,6 @@ if score in forbidden_declares:
 ---
 
 **Implementation Lead**: AI Development Team
-**Timeline**: 4 weeks  
+**Timeline**: 4 weeks
 **Success Criteria**: All 7 strategic improvements implemented with zero regressions
 **Risk Level**: Medium (managed through incremental approach and comprehensive testing)

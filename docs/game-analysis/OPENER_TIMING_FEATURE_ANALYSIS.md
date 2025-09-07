@@ -21,7 +21,7 @@ The single opener random timing feature is designed to add unpredictability to b
 1. **When**: Bot is the starter and must decide how many pieces to play
 2. **Condition**: Bot has an "opener-only plan" (no viable combos, just strong single pieces)
 3. **Decision**: Randomly decide to play 1 piece specifically to use an opener
-4. **Probability**: 
+4. **Probability**:
    - Early game (6+ pieces): 35% chance
    - Mid game (4-5 pieces): 40% chance
    - Late game (<4 pieces): 50% chance
@@ -39,9 +39,9 @@ def execute_starter_strategy(...):
         required = 1  # or 2, 3, etc based on strategy
     else:
         required = context.required_piece_count
-    
+
     # ... other logic ...
-    
+
     # Step 2: Check for opener timing (BROKEN!)
     if context.required_piece_count == 1 and plan.assigned_openers:
         # This is NEVER true for starters because
@@ -53,7 +53,7 @@ def execute_starter_strategy(...):
 ## The Critical Bug
 
 The feature checks `context.required_piece_count == 1` but:
-- For starters, `context.required_piece_count` is always `None` 
+- For starters, `context.required_piece_count` is always `None`
 - The starter just decided to play `required` pieces (local variable)
 - The check should be `if required == 1` not `if context.required_piece_count == 1`
 

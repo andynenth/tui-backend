@@ -19,7 +19,7 @@ from conftest import AIDecisionTester
 def test_combo_preservation_regression():
     """Ensure combos are not preserved when declaring 0"""
     tester = AIDecisionTester()
-    
+
     # Original Bug: Bot 3 from room 66042B Round 3
     tester.add_scenario(
         name="Bot 3 Original Bug - Declare 0 with ADVISOR_RED pair",
@@ -38,7 +38,7 @@ def test_combo_preservation_regression():
         required_pieces=4,
         turn_number=1
     )
-    
+
     # Contrast case: Same hand but declaring positive
     tester.add_scenario(
         name="Bot Declaring 2 with ADVISOR_RED pair",
@@ -57,7 +57,7 @@ def test_combo_preservation_regression():
         required_pieces=4,
         turn_number=1
     )
-    
+
     # Edge case: Declaring 0 with multiple combo types
     tester.add_scenario(
         name="Declare 0 with Multiple Combos",
@@ -75,10 +75,10 @@ def test_combo_preservation_regression():
         required_pieces=3,
         turn_number=1
     )
-    
+
     # Capture results by modifying the tester slightly
     test_results = []
-    
+
     # Run scenarios and capture results
     for scenario in tester.scenarios:
         # Run the scenario
@@ -97,24 +97,24 @@ def test_combo_preservation_regression():
         )
         result = tester.analyze_decision(context)
         test_results.append(result)
-    
+
     results = test_results
-    
+
     # Verify expectations
     print("\n" + "="*60)
     print("REGRESSION TEST RESULTS")
     print("="*60)
-    
+
     # Check Bot 3 combo preservation is fixed
     bot3_scenario = results[0] if results else None
     if bot3_scenario:
         plan = bot3_scenario.get('plan', {})
         assigned_combos = plan.get('assigned_combos', [])
-        
+
         # When declaring 0, should NOT assign combos to preserve
         if len(assigned_combos) == 0:
             print("✅ Bot 3 correctly did NOT preserve ADVISOR_RED pair when declaring 0")
-            
+
             # Note: Bot 3 will still PLAY high-value pieces as disposal strategy
             # This is correct behavior - dispose high value burden pieces first
             chosen = bot3_scenario.get('chosen_play', [])
@@ -123,32 +123,32 @@ def test_combo_preservation_regression():
         else:
             print("❌ REGRESSION: Bot 3 assigned combos to preserve when declaring 0!")
             return False
-    
+
     # Check contrast case preserves valuable pieces
     strategic_scenario = results[1] if len(results) > 1 else None
     if strategic_scenario:
         plan = strategic_scenario.get('plan', {})
         assigned_combos = plan.get('assigned_combos', [])
         assigned_openers = plan.get('assigned_openers', [])
-        
+
         # ADVISOR_RED pieces can be preserved either as combo OR as openers
         advisor_preserved = False
-        
+
         # Check if preserved as combo
-        if any(combo[0] == "PAIR" and any(p.kind == "ADVISOR_RED" for p in combo[1]) 
+        if any(combo[0] == "PAIR" and any(p.kind == "ADVISOR_RED" for p in combo[1])
                for combo in assigned_combos):
             advisor_preserved = True
             print("✅ Strategic Bot preserved ADVISOR_RED as PAIR combo")
-        
+
         # Check if preserved as openers
         elif any(p.kind == "ADVISOR_RED" for p in assigned_openers):
             advisor_preserved = True
             print("✅ Strategic Bot preserved ADVISOR_RED pieces as openers")
-        
+
         if not advisor_preserved:
             print("❌ ERROR: Strategic Bot should preserve high-value pieces")
             return False
-    
+
     return True
 
 if __name__ == "__main__":

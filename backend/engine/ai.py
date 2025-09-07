@@ -1154,31 +1154,33 @@ def choose_declare_strategic_v2(
 
     play_list = []
     hand_copy = hand.copy()
-    
+
     # Check if player has GENERAL_RED for special rule (needed for both branches)
     has_general_red = any(p.name == "GENERAL" and p.color == "RED" for p in hand)
-    
+
     # Prepare logging data
     log_data = {
-        'position_in_order': position_in_order,
-        'is_starter': is_first_player,
-        'previous_declarations': previous_declarations,
-        'zero_streak': getattr(hand[0], '_bot_zero_streak', 0) if hand else 0,
-        'hand_analysis': {
-            'raw_hand': [f"{p.name}_{p.color}" for p in hand],
-            'hand_strength': {
-                'opener_count': len([p for p in hand if p.point >= 11]),
-                'strong_combos': [],  # Will be filled later
-                'weak_pieces': len([p for p in hand if p.point <= 3]),
-                'average_piece_value': sum(p.point for p in hand) / len(hand) if hand else 0
-            }
+        "position_in_order": position_in_order,
+        "is_starter": is_first_player,
+        "previous_declarations": previous_declarations,
+        "zero_streak": getattr(hand[0], "_bot_zero_streak", 0) if hand else 0,
+        "hand_analysis": {
+            "raw_hand": [f"{p.name}_{p.color}" for p in hand],
+            "hand_strength": {
+                "opener_count": len([p for p in hand if p.point >= 11]),
+                "strong_combos": [],  # Will be filled later
+                "weak_pieces": len([p for p in hand if p.point <= 3]),
+                "average_piece_value": sum(p.point for p in hand) / len(hand)
+                if hand
+                else 0,
+            },
         },
-        'decision_factors': {
-            'has_general_red': has_general_red,
-            'pile_room': calculate_pile_room(previous_declarations, has_general_red),
-            'field_strength': assess_field_strength(previous_declarations),
-            'forbidden_values': []  # Will be filled later
-        }
+        "decision_factors": {
+            "has_general_red": has_general_red,
+            "pile_room": calculate_pile_room(previous_declarations, has_general_red),
+            "field_strength": assess_field_strength(previous_declarations),
+            "forbidden_values": [],  # Will be filled later
+        },
     }
 
     if verbose:
@@ -1233,7 +1235,7 @@ def choose_declare_strategic_v2(
         # =====================================================
         if verbose:
             print("\n🎯 NON-STARTER STRATEGY:")
-        
+
         # Initialize declaration to 0 (will be updated based on logic)
         declaration = 0
 
@@ -1280,7 +1282,9 @@ def choose_declare_strategic_v2(
 
                 if room_left > 0:
                     # Use standard opener threshold for finding additional strong pieces
-                    strong_pieces = [p for p in hand_copy if p.point >= opener_threshold]
+                    strong_pieces = [
+                        p for p in hand_copy if p.point >= opener_threshold
+                    ]
                     # Sort by value descending to take best pieces first
                     strong_pieces.sort(key=lambda p: p.point, reverse=True)
 
@@ -1323,7 +1327,9 @@ def choose_declare_strategic_v2(
 
             # Get strong pieces from remaining hand
             # Use standard opener threshold of 11 points
-            additional_strong = [p for p in remaining_hand if p.point >= opener_threshold]
+            additional_strong = [
+                p for p in remaining_hand if p.point >= opener_threshold
+            ]
             additional_strong.sort(key=lambda p: p.point, reverse=True)
 
             pieces_added = 0
@@ -1359,7 +1365,7 @@ def choose_declare_strategic_v2(
     if declaration in forbidden_declares:
         # Calculate pile room for this position
         pile_room = calculate_pile_room(previous_declarations, has_general_red)
-        
+
         # Special case: if must_declare_nonzero and pile_room is 0, force pile_room to 1
         # This handles the edge case where zero streak rule conflicts with no pile room
         if must_declare_nonzero and 0 in forbidden_declares and pile_room <= 0:
@@ -1393,16 +1399,17 @@ def choose_declare_strategic_v2(
     # Log the decision if logger is available
     if ai_logger:
         # Update log data with final decision
-        log_data['decision_factors']['forbidden_values'] = list(forbidden_declares)
-        log_data['final_declaration'] = declaration
-        log_data['play_list'] = [
+        log_data["decision_factors"]["forbidden_values"] = list(forbidden_declares)
+        log_data["final_declaration"] = declaration
+        log_data["play_list"] = [
             {
-                'type': play['type'],
-                'combo_type': play.get('combo_type'),
-                'pieces': [f"{p.name}_{p.color}" for p in play['pieces']]
-            } for play in play_list
+                "type": play["type"],
+                "combo_type": play.get("combo_type"),
+                "pieces": [f"{p.name}_{p.color}" for p in play["pieces"]],
+            }
+            for play in play_list
         ]
-        
+
         # Determine reasoning
         if declaration == 0:
             reasoning = "No viable plays found"
@@ -1410,10 +1417,10 @@ def choose_declare_strategic_v2(
             reasoning = f"Starter with {len([p for p in play_list if p['type'] == 'opener'])} openers and {len([p for p in play_list if p['type'] == 'combo'])} combos"
         else:
             reasoning = f"Non-starter with pile room {log_data['decision_factors']['pile_room']}"
-            
-        log_data['reasoning'] = reasoning
-        log_data['confidence'] = 0.8 if declaration > 0 else 0.3
-        
+
+        log_data["reasoning"] = reasoning
+        log_data["confidence"] = 0.8 if declaration > 0 else 0.3
+
         # Use the player_name parameter passed to the function
         ai_logger.log_declaration(player_name, log_data)
 
@@ -1467,7 +1474,7 @@ def is_never_win_combo_basic(combo_type: str, pieces: List) -> bool:
     """
     Check if a combination can never win against any other combo of the same type.
     This is a duplicate of the function in ai_turn_strategy.py to avoid circular imports.
-    
+
     Never-win combos:
     1. All-BLACK straights (3+5+7=15 points minimum)
     2. SOLDIER_BLACK pairs (1+1=2 points minimum)
@@ -1482,17 +1489,17 @@ def is_never_win_combo_basic(combo_type: str, pieces: List) -> bool:
             # Minimum straight is 3,5,7 (CANNON_BLACK, HORSE_BLACK, CHARIOT_BLACK)
             if len(points) >= 3 and points[:3] == [3, 5, 7]:
                 return True
-                
+
     elif combo_type == "PAIR":
         # Check if both pieces are SOLDIER_BLACK (1 point each)
         if len(pieces) == 2 and all(p.point == 1 for p in pieces):
             return True
-            
+
     elif combo_type in ["THREE_OF_A_KIND", "FOUR_OF_A_KIND", "FIVE_OF_A_KIND"]:
         # Check if all pieces are SOLDIER_BLACK
         if all(p.point == 1 for p in pieces):
             return True
-            
+
     return False
 
 

@@ -129,7 +129,7 @@ class PreparationState(GameState):
         # Clear turn history for new round
         if hasattr(game, "turn_history_this_round"):
             game.turn_history_this_round.clear()
-        
+
         # Clear turn results for new round
         if hasattr(game, "turn_results"):
             game.turn_results = []
@@ -280,9 +280,7 @@ class PreparationState(GameState):
                 starter = self._determine_starter()
                 game.current_player = starter
                 game.round_starter = starter  # Always set both
-                self.logger.info(
-                    f"✅ No weak hands - determined new starter: {starter}"
-                )
+                self.logger.info(f"✅ No weak hands - determined new starter: {starter}")
                 # Allow time for dealing animation to complete
                 await asyncio.sleep(2.0)
 

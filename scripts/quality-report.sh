@@ -67,7 +67,7 @@ if command -v python &> /dev/null; then
         else
             echo "  - Pylint not installed or no rating available"
         fi
-        
+
         # Check Black formatting
         echo "  Black formatting check:"
         if command -v black &> /dev/null; then
@@ -81,7 +81,7 @@ if command -v python &> /dev/null; then
         else
             echo "  - Black not installed"
         fi
-        
+
         # Backend test coverage
         echo "  Test Coverage:"
         if command -v pytest &> /dev/null; then
@@ -95,7 +95,7 @@ if command -v python &> /dev/null; then
         else
             echo "  - Pytest not installed"
         fi
-        
+
         cd - > /dev/null
     } || echo "  - Backend directory not found"
 else

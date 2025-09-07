@@ -39,7 +39,7 @@ Final declaration: {score}
 
 ### PHASE 1: Core Analysis Framework
 
-**Timeline**: Days 1-4 (4 days)  
+**Timeline**: Days 1-4 (4 days)
 **Goal**: Build foundation classes to capture and analyze AI decision data
 
 #### Task 1.1: Create Analysis Data Structures
@@ -63,7 +63,7 @@ class AIDecisionAnalysis:
     is_starter: bool
     previous_declarations: List[int]
     decision_type: str  # 'declare' or 'play'
-    
+
     # AI reasoning (from verbose output)
     pile_room: int
     field_strength: str
@@ -73,7 +73,7 @@ class AIDecisionAnalysis:
     viable_combos_count: int
     opener_score: float
     final_decision: int  # declaration value or play choice
-    
+
     # Expected vs actual analysis
     expected_decision: Optional[int] = None
     is_correct: Optional[bool] = None
@@ -131,11 +131,11 @@ def parse_ai_verbose_output(output: str) -> Dict[str, Any]:
 # Minimal modification to existing choose_declare_strategic function
 def choose_declare_strategic(..., analysis_callback: Optional[Callable] = None):
     # Existing logic unchanged...
-    
+
     # Phase 9: Debug output (EXISTING - lines 354-363)
     if verbose:
         # Existing print statements...
-        
+
         # NEW: Optional analysis capture
         if analysis_callback:
             analysis_data = {
@@ -180,7 +180,7 @@ class PatternDetector:
 
 ### PHASE 2: Test Framework Integration
 
-**Timeline**: Days 5-7 (3 days)  
+**Timeline**: Days 5-7 (3 days)
 **Goal**: Enhance existing test framework with analysis capabilities
 
 #### Task 2.1: Enhance Existing Test Framework
@@ -197,17 +197,17 @@ class PatternDetector:
 
 ```python
 # Enhanced test_example function based on existing structure (lines 67-92)
-def test_example(example_num: int, hand_str: str, position: int, 
+def test_example(example_num: int, hand_str: str, position: int,
                  previous_decl: list, expected: int, description: str,
                  is_starter: bool = False, enable_analysis: bool = False):
     """Test a single example with optional analysis."""
     # Existing logic preserved...
-    
+
     analysis_data = None
     def capture_analysis(data):
         nonlocal analysis_data
         analysis_data = data
-    
+
     # Call AI with analysis capture
     result = choose_declare(
         hand=hand,
@@ -218,7 +218,7 @@ def test_example(example_num: int, hand_str: str, position: int,
         verbose=True,
         analysis_callback=capture_analysis if enable_analysis else None
     )
-    
+
     # Existing pass/fail logic preserved...
     # NEW: Optional analysis
     if enable_analysis and analysis_data:
@@ -228,7 +228,7 @@ def test_example(example_num: int, hand_str: str, position: int,
             expected_decision=expected
         )
         return result == expected, analysis
-    
+
     return result == expected
 ```
 
@@ -245,12 +245,12 @@ def run_analysis_tests():
     """Run all 18 existing tests with analysis enabled."""
     # Import existing test cases from test_ai_declaration.py
     from test_ai_declaration import tests  # Based on lines 97-169
-    
+
     analyses = []
     for test_case in tests:
         passed, analysis = test_example(*test_case, enable_analysis=True)
         analyses.append(analysis)
-    
+
     return analyses
 ```
 
@@ -272,22 +272,22 @@ class AnalysisReporter:
         return f"""
         📊 AI Decision Analysis Report
         =============================
-        
+
         Test: {analysis.decision_type} Decision
         Expected: {analysis.expected_decision}, Got: {analysis.final_decision}
         Result: {"✅ CORRECT" if analysis.is_correct else "❌ INCORRECT"}
-        
+
         🎯 Strategic Context:
         Position: {analysis.position_in_order} ({"Starter" if analysis.is_starter else "Non-starter"})
         Previous Declarations: {analysis.previous_declarations}
         Pile Room: {analysis.pile_room}/8
         Field Strength: {analysis.field_strength}
-        
+
         🧠 AI Reasoning:
         GENERAL_RED: {analysis.has_general_red}
         Combos Found: {analysis.strong_combos_found} ({analysis.viable_combos_count} viable)
         Opener Score: {analysis.opener_score:.1f}
-        
+
         💭 Analysis: {analysis.reasoning_quality}
         """
 ```
@@ -303,7 +303,7 @@ class AnalysisReporter:
 
 ### PHASE 3: Analysis Pipeline & Automation
 
-**Timeline**: Days 8-10 (3 days)  
+**Timeline**: Days 8-10 (3 days)
 **Goal**: Create automated analysis pipeline for continuous evaluation
 
 #### Task 3.1: Automated Analysis Pipeline
@@ -326,21 +326,21 @@ AI Analysis Pipeline - Automated evaluation of bot decision quality
 def run_full_analysis():
     """Complete AI analysis pipeline"""
     print("🔍 Running AI Decision Analysis...")
-    
+
     # Run all existing tests with analysis
     analyses = run_analysis_tests()
-    
+
     # Generate insights
     patterns = PatternDetector().analyze_patterns(analyses)
-    
+
     # Create reports
     reporter = AnalysisReporter()
     individual_reports = [reporter.generate_test_report(a) for a in analyses]
     summary_report = reporter.generate_summary_report(patterns)
-    
+
     # Save results
     save_analysis_results(individual_reports, summary_report)
-    
+
     print("✅ Analysis complete! Check analysis_results/")
 ```
 
@@ -373,7 +373,7 @@ def run_full_analysis():
 
 ### PHASE 4: Documentation & Enhancement Planning
 
-**Timeline**: Days 11-12 (2 days)  
+**Timeline**: Days 11-12 (2 days)
 **Goal**: Document framework and plan future improvements
 
 #### Task 4.1: Documentation Creation
@@ -417,7 +417,7 @@ def run_full_analysis():
 ### Phase 1 Checklist: Core Analysis Framework
 
 - [ ] AIDecisionAnalysis dataclass created
-- [ ] DecisionEvaluator class implemented  
+- [ ] DecisionEvaluator class implemented
 - [ ] Verbose output capture system working
 - [ ] AI function integration completed (minimal modification)
 - [ ] PatternDetector class functional
@@ -464,7 +464,7 @@ def run_full_analysis():
 ### Code Modification Principles
 
 1. **Minimal Changes**: Only essential modifications to existing AI functions
-2. **Optional Parameters**: New features added as optional parameters only  
+2. **Optional Parameters**: New features added as optional parameters only
 3. **Graceful Degradation**: System works normally if analysis components fail
 4. **Version Safety**: Changes don't break existing AI logic or test expectations
 
@@ -544,7 +544,7 @@ def run_full_analysis():
 ### New Files to Create
 
 - `backend/engine/ai_analysis.py` - Core analysis framework
-- `test_ai_analysis.py` - Enhanced test runner  
+- `test_ai_analysis.py` - Enhanced test runner
 - `run_ai_analysis.py` - Analysis pipeline
 - `AI_ANALYSIS_FRAMEWORK_GUIDE.md` - Usage documentation
 - `AI_ANALYSIS_TECHNICAL_DOCS.md` - Developer documentation

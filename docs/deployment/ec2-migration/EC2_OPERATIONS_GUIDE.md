@@ -67,7 +67,7 @@ docker-compose restart
    ```bash
    # Recent errors
    docker logs liap-tui-game 2>&1 | grep ERROR | tail -20
-   
+
    # Health check failures
    tail -20 /home/ubuntu/logs/health-check.log | grep "❌"
    ```
@@ -414,7 +414,7 @@ docker exec liap-tui-game sqlite3 /app/data/game_events.db "PRAGMA integrity_che
    ```bash
    # Find latest backup
    ls -t /home/ubuntu/backups/ | head -5
-   
+
    # Restore
    ./restore-ec2.sh /home/ubuntu/backups/[latest_backup]
    ```
@@ -436,7 +436,7 @@ docker exec liap-tui-game sqlite3 /app/data/game_events.db "PRAGMA integrity_che
    ```bash
    # Deploy application
    ./deploy-ec2.sh
-   
+
    # Restore data
    ./restore-ec2.sh latest_backup.tar.gz
    ```
@@ -453,7 +453,7 @@ docker exec liap-tui-game sqlite3 /app/data/game_events.db "PRAGMA integrity_che
    ```bash
    # Tag current as backup
    docker tag liap-tui:latest liap-tui:backup
-   
+
    # Use previous version
    docker tag liap-tui:v1.0.0 liap-tui:latest
    docker-compose up -d

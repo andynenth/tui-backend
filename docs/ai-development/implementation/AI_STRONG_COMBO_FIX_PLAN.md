@@ -49,29 +49,29 @@ A combo is strong if its **total value > 12** (value of HORSE_RED pair):
 def is_strong_combo(combo_type: str, pieces: List) -> bool:
     """
     Check if a combo qualifies as a strong combo.
-    
+
     A combo is strong if:
     - It's THREE_OF_A_KIND or higher in hierarchy, OR
     - It's a PAIR with total value > 12 (HORSE_RED pair)
-    
+
     Args:
         combo_type: Type of combo
         pieces: List of pieces in the combo
-        
+
     Returns:
         True if combo is strong
     """
     # Option 1: Hierarchy-based (recommended)
-    if combo_type in ["THREE_OF_A_KIND", "STRAIGHT", "FOUR_OF_A_KIND", 
-                      "EXTENDED_STRAIGHT", "EXTENDED_STRAIGHT_5", 
+    if combo_type in ["THREE_OF_A_KIND", "STRAIGHT", "FOUR_OF_A_KIND",
+                      "EXTENDED_STRAIGHT", "EXTENDED_STRAIGHT_5",
                       "FIVE_OF_A_KIND", "DOUBLE_STRAIGHT"]:
         return True
-    
+
     # For PAIR, check if stronger than HORSE_RED pair
     if combo_type == "PAIR":
         total_value = sum(p.point for p in pieces)
         return total_value > 12  # HORSE_RED pair = 12 points
-    
+
     return False
 ```
 
@@ -87,7 +87,7 @@ Since we're not using average anymore, we should:
 # Strong combo types (hierarchy-based)
 STRONG_COMBO_TYPES = {
     "THREE_OF_A_KIND",
-    "STRAIGHT", 
+    "STRAIGHT",
     "FOUR_OF_A_KIND",
     "EXTENDED_STRAIGHT",
     "EXTENDED_STRAIGHT_5",

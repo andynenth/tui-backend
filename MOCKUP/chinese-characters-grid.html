@@ -238,7 +238,7 @@
 <body>
     <div class="container">
         <h1>Chinese Chess Characters - 2×8 Grid Display</h1>
-        
+
         <div class="legend">
             <div class="legend-item">
                 <div class="legend-color legend-red"></div>
@@ -363,7 +363,7 @@
         <!-- SVG Download Section -->
         <div class="svg-section">
             <h2 style="text-align: center; color: #333; margin-bottom: 20px;">📄 SVG Downloads</h2>
-            
+
             <div style="text-align: center; margin: 20px 0; color: #6c757d;">
                 <p><strong>Click any character to download as SVG</strong></p>
                 <p>Vector format • Scalable • Exact project styling • No background</p>
@@ -422,18 +422,18 @@
         function downloadCharacterAsSVG(character, color) {
             // Set color based on piece type (exact project colors)
             const fillColor = color === 'red' ? '#dc3545' : '#495057';
-            
+
             // Create SVG content with exact project styling
             const svgContent = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
-    <text x="50" y="50" 
-          font-family="'SimSun', '宋体', serif" 
-          font-size="70" 
-          font-weight="bold" 
-          fill="${fillColor}" 
-          text-anchor="middle" 
+    <text x="50" y="50"
+          font-family="'SimSun', '宋体', serif"
+          font-size="70"
+          font-weight="bold"
+          fill="${fillColor}"
+          text-anchor="middle"
           dominant-baseline="central">${character}</text>
 </svg>`;
-            
+
             // Create blob and download
             const blob = new Blob([svgContent], { type: 'image/svg+xml' });
             const url = URL.createObjectURL(blob);
@@ -450,30 +450,30 @@
         function downloadCharacterAsPNG(character, color) {
             const canvas = document.getElementById('downloadCanvas');
             const ctx = canvas.getContext('2d');
-            
+
             // Set high resolution canvas size
             const size = 512; // High resolution for crisp output
             canvas.width = size;
             canvas.height = size;
-            
+
             // Clear canvas with transparent background
             ctx.clearRect(0, 0, size, size);
-            
+
             // Set font properties to match exact project styling
             ctx.font = `bold ${size * 0.7}px 'SimSun', '宋体', serif`;
             ctx.textAlign = 'center';
             ctx.textBaseline = 'middle';
-            
+
             // Set color based on piece type (exact project colors)
             if (color === 'red') {
                 ctx.fillStyle = '#dc3545'; // Exact red from project
             } else {
                 ctx.fillStyle = '#495057'; // Exact black from project
             }
-            
+
             // Draw character centered
             ctx.fillText(character, size / 2, size / 2);
-            
+
             // Convert to PNG and download
             canvas.toBlob(function(blob) {
                 const url = URL.createObjectURL(blob);
@@ -491,30 +491,30 @@
         document.addEventListener('DOMContentLoaded', function() {
             // PNG Download functionality for main grid
             const characters = document.querySelectorAll('.character');
-            
+
             characters.forEach(character => {
                 character.addEventListener('mouseenter', function() {
                     // Add subtle animation on hover
                     this.style.transform = 'scale(1.1)';
                     this.style.zIndex = '10';
                 });
-                
+
                 character.addEventListener('mouseleave', function() {
                     this.style.transform = 'scale(1)';
                     this.style.zIndex = '1';
                 });
-                
+
                 character.addEventListener('click', function() {
                     const char = this.dataset.char;
                     const color = this.dataset.color;
-                    
+
                     if (char && color) {
                         // Flash effect to indicate download
                         this.style.background = 'rgba(40, 167, 69, 0.3)'; // Green flash
                         setTimeout(() => {
                             this.style.background = '';
                         }, 300);
-                        
+
                         // Download PNG
                         downloadCharacterAsPNG(char, color);
                     }
@@ -523,29 +523,29 @@
 
             // SVG Download functionality for SVG grid
             const svgCharacters = document.querySelectorAll('.character-svg');
-            
+
             svgCharacters.forEach(character => {
                 character.addEventListener('mouseenter', function() {
                     this.style.transform = 'scale(1.1)';
                     this.style.zIndex = '10';
                 });
-                
+
                 character.addEventListener('mouseleave', function() {
                     this.style.transform = 'scale(1)';
                     this.style.zIndex = '1';
                 });
-                
+
                 character.addEventListener('click', function() {
                     const char = this.dataset.char;
                     const color = this.dataset.color;
-                    
+
                     if (char && color) {
                         // Flash effect to indicate download (blue for SVG)
                         this.style.background = 'rgba(0, 123, 255, 0.3)'; // Blue flash
                         setTimeout(() => {
                             this.style.background = '';
                         }, 300);
-                        
+
                         // Download SVG
                         downloadCharacterAsSVG(char, color);
                     }

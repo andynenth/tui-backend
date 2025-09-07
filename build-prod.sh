@@ -1,12 +1,12 @@
 #!/bin/bash
 #
 # build-prod.sh - Local Production Build & Deployment Script
-# 
+#
 # This script automates the deployment process for local production testing.
 # It performs version bumping, frontend building, and Docker container deployment.
 #
 # Usage: ./build-prod.sh [version_type]
-# 
+#
 # Version types:
 #   - patch (default): 1.5.17 → 1.5.18
 #   - minor: 1.5.17 → 1.6.0
@@ -61,10 +61,10 @@ print_message() {
     local level=$1      # Message level (INFO, SUCCESS, ERROR, etc.)
     local message=$2    # The actual message
     local color=$3      # Color code to use
-    
+
     # Get current timestamp in readable format
     local timestamp=$(date '+%Y-%m-%d %H:%M:%S')
-    
+
     # Print formatted message with color
     echo -e "${color}[${timestamp}] [${level}] ${message}${NC}"
 }
@@ -74,13 +74,13 @@ print_message() {
 error_handler() {
     local line_number=$1
     local error_code=$2
-    
+
     print_message "ERROR" "Script failed at line ${line_number} with exit code ${error_code}" "$RED"
     print_message "ERROR" "Check the output above for details" "$RED"
-    
+
     # Cleanup actions could go here if needed
     # For example: stopping partially started services
-    
+
     exit $error_code
 }
 
@@ -182,7 +182,7 @@ npm run build
 # Check if build artifacts were created
 if [ -f "../backend/static/bundle.js" ]; then
     print_message "SUCCESS" "Frontend build completed successfully" "$GREEN"
-    
+
     # Show build artifact sizes for information
     BUNDLE_SIZE=$(ls -lh ../backend/static/bundle.js | awk '{print $5}')
     print_message "INFO" "Bundle size: ${BUNDLE_SIZE}" "$BLUE"
@@ -232,7 +232,7 @@ WAITED=0
 while [ $WAITED -lt $MAX_WAIT ]; do
     # Get health status of the container
     HEALTH_STATUS=$(docker inspect --format='{{.State.Health.Status}}' liap-tui-game 2>/dev/null || echo "not-found")
-    
+
     if [ "$HEALTH_STATUS" = "healthy" ]; then
         print_message "SUCCESS" "Container is healthy!" "$GREEN"
         break
@@ -241,11 +241,11 @@ while [ $WAITED -lt $MAX_WAIT ]; do
         docker logs liap-tui-game --tail 50
         exit 1
     fi
-    
+
     # Wait 2 seconds before checking again
     sleep 2
     WAITED=$((WAITED + 2))
-    
+
     # Show progress
     echo -ne "\rWaited ${WAITED}s / ${MAX_WAIT}s..."
 done
@@ -270,7 +270,7 @@ HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:80/api/hea
 
 if [ "$HTTP_STATUS" = "200" ]; then
     print_message "SUCCESS" "API health check passed!" "$GREEN"
-    
+
     # Get and display health information
     HEALTH_INFO=$(curl -s http://localhost:80/api/health | python3 -m json.tool 2>/dev/null || echo "{}")
     print_message "INFO" "Health check response:" "$BLUE"

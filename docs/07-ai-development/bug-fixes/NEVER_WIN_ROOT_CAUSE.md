@@ -37,7 +37,7 @@ In all 8 poor choice cases:
 Game AI_96414, Round 6, Turn 3
 Player: Bot 2
 Declared: 5, Captured: 3, Piles needed: 2
-Remaining hand: ELEPHANT_BLACK, HORSE_RED, ELEPHANT_BLACK, ADVISOR_BLACK, 
+Remaining hand: ELEPHANT_BLACK, HORSE_RED, ELEPHANT_BLACK, ADVISOR_BLACK,
                 SOLDIER_BLACK, SOLDIER_BLACK, CANNON_RED, CHARIOT_RED
 
 What happened:

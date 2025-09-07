@@ -172,7 +172,7 @@ if [ $SCALE_SCORE -ge 50 ]; then
     echo -e "    • t2.small  (1 vCPU, 2 GB RAM) - ~\$16/month"
     echo -e "    • t3.medium (2 vCPU, 4 GB RAM) - ~\$30/month"
     echo -e "    • t3.large  (2 vCPU, 8 GB RAM) - ~\$60/month"
-    
+
     echo -e "\n${YELLOW}Horizontal Scaling (Multiple Instances):${NC}"
     echo -e "  • Add Application Load Balancer (ALB)"
     echo -e "  • Deploy multiple EC2 instances"

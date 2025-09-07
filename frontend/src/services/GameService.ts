@@ -693,14 +693,14 @@ export class GameService extends EventTarget {
         stateRoomId: state.roomId,
         sessionPlayerName: session?.playerName,
       });
-      
+
       // Use session playerName if available (don't require roomId match as it might not be set yet)
       if (session && session.playerName) {
         playerNameToUse = session.playerName;
         console.log('🔄 [REFRESH_DEBUG] Using playerName from session:', playerNameToUse);
         // Also update the state with the playerName
         newState.playerName = playerNameToUse;
-        
+
         // Also set roomId if missing
         if (!state.roomId && session.roomId) {
           newState.roomId = session.roomId;
@@ -718,7 +718,7 @@ export class GameService extends EventTarget {
         handLength: myPlayerData.hand?.length,
         myPlayerData,
       });
-      
+
       if (myPlayerData.hand) {
         // Convert string pieces back to objects for frontend with original indices
         const unsortedHand = myPlayerData.hand.map(
@@ -770,7 +770,7 @@ export class GameService extends EventTarget {
               declared: playerData.declared,
             });
           }
-          
+
           return {
             name: playerName, // Use the key as the name
             score: playerData.score || 0,
@@ -798,7 +798,7 @@ export class GameService extends EventTarget {
         );
         newState.players = phaseData.players.map((player: any) => {
           const existing = existingPlayersMap.get(player.name);
-          
+
           // DEBUG logging to track the bug
           if (player.name === 'TestPlayer' || player.name.includes('Bot 2')) {
             console.log(`🔍 [CAPTURED_DECLARED_DEBUG] Mapping ${player.name}:`, {
@@ -808,7 +808,7 @@ export class GameService extends EventTarget {
               will_set_declared: existing?.declared || 0,
             });
           }
-          
+
           return {
             ...player,
             avatar_color: player.avatar_color,

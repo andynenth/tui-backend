@@ -475,8 +475,8 @@
                 <h1 class="slide-title" id="slideTitle">Welcome to Castellan!</h1>
                 <svg class="progress-ring">
                     <circle cx="16" cy="16" r="14"></circle>
-                    <circle class="progress" cx="16" cy="16" r="14" 
-                            stroke-dasharray="88" 
+                    <circle class="progress" cx="16" cy="16" r="14"
+                            stroke-dasharray="88"
                             stroke-dashoffset="77"></circle>
                 </svg>
             </div>
@@ -492,7 +492,7 @@
                         <h2 style="font-size: 20px; color: #1e293b; margin-bottom: 8px;">Welcome to Castellan!</h2>
                         <p style="font-size: 13px; color: #64748b;">Master the art of prediction in this strategic card game</p>
                     </div>
-                    
+
                     <div class="info-cards">
                         <div class="info-card">
                             <div class="info-card-title">🎯 Objective</div>
@@ -516,7 +516,7 @@
                 <!-- Slide 2: Pieces -->
                 <div class="slide-card next" data-slide="1">
                     <h2 style="font-size: 16px; color: #1e293b; margin-bottom: 16px; text-align: center;">Know Your Army</h2>
-                    
+
                     <div class="piece-grid">
                         <div class="piece-card">
                             <div class="piece-icon">帥</div>
@@ -593,7 +593,7 @@
                 <!-- Slide 3: Preparation -->
                 <div class="slide-card far" data-slide="2">
                     <h2 style="font-size: 16px; color: #1e293b; margin-bottom: 16px;">Phase 1: Preparation</h2>
-                    
+
                     <div class="phase-cards">
                         <div class="phase-card">
                             <div>
@@ -602,7 +602,7 @@
                             </div>
                             <div class="phase-desc">Each player receives 8 random pieces from the deck</div>
                         </div>
-                        
+
                         <div class="phase-card warning">
                             <div>
                                 <span class="phase-number">2</span>
@@ -613,7 +613,7 @@
                                 ⚠️ Warning: Requesting redeal reduces your score multiplier!
                             </div>
                         </div>
-                        
+
                         <div class="phase-card danger">
                             <div>
                                 <span class="phase-number">3</span>
@@ -627,7 +627,7 @@
                 <!-- Slide 4: Declaration -->
                 <div class="slide-card far" data-slide="3">
                     <h2 style="font-size: 16px; color: #1e293b; margin-bottom: 16px;">Phase 2: Declaration</h2>
-                    
+
                     <div class="phase-cards">
                         <div class="phase-card">
                             <div>
@@ -636,7 +636,7 @@
                             </div>
                             <div class="phase-desc">Each player declares how many tricks (0-8) they expect to win this round</div>
                         </div>
-                        
+
                         <div class="phase-card danger">
                             <div>
                                 <span class="phase-number">!</span>
@@ -658,7 +658,7 @@
                 <!-- Slide 5: Playing -->
                 <div class="slide-card far" data-slide="4">
                     <h2 style="font-size: 16px; color: #1e293b; margin-bottom: 16px;">Phase 3: Playing</h2>
-                    
+
                     <div class="phase-cards">
                         <div class="phase-card">
                             <div>
@@ -667,7 +667,7 @@
                             </div>
                             <div class="phase-desc">Play 1-6 pieces in a valid combination</div>
                         </div>
-                        
+
                         <div class="phase-card">
                             <div>
                                 <span class="phase-number">2</span>
@@ -675,7 +675,7 @@
                             </div>
                             <div class="phase-desc">Must play same number of pieces (can be invalid to forfeit)</div>
                         </div>
-                        
+
                         <div class="phase-card success">
                             <div>
                                 <span class="phase-number">3</span>
@@ -694,7 +694,7 @@
                 <!-- Slide 6: Valid Plays -->
                 <div class="slide-card far" data-slide="5">
                     <h2 style="font-size: 16px; color: #1e293b; margin-bottom: 16px;">Valid Play Types</h2>
-                    
+
                     <div class="demo-area" style="background: linear-gradient(135deg, #dbeafe, #bfdbfe);">
                         <div style="font-size: 12px; font-weight: 600; color: #1e40af;">Try clicking pieces to combine them!</div>
                         <div class="demo-pieces">
@@ -728,7 +728,7 @@
                 <!-- Slide 7: Scoring -->
                 <div class="slide-card far" data-slide="6">
                     <h2 style="font-size: 16px; color: #1e293b; margin-bottom: 16px;">Scoring System</h2>
-                    
+
                     <div class="phase-cards">
                         <div class="phase-card success">
                             <div>
@@ -740,7 +740,7 @@
                                 Example: Declare 2, Win 2 = 2 + 5 = <strong>+7 points</strong>
                             </div>
                         </div>
-                        
+
                         <div class="phase-card danger">
                             <div>
                                 <span class="phase-number">✗</span>
@@ -751,7 +751,7 @@
                                 Example: Declare 3, Win 1 = -(3-1) = <strong>-2 points</strong>
                             </div>
                         </div>
-                        
+
                         <div class="phase-card warning">
                             <div>
                                 <span class="phase-number">💎</span>
@@ -777,7 +777,7 @@
             <button class="nav-btn" onclick="prevSlide()" disabled>
                 ←
             </button>
-            
+
             <div class="nav-dots">
                 <div class="nav-dot active" onclick="goToSlide(0)"></div>
                 <div class="nav-dot" onclick="goToSlide(1)"></div>
@@ -787,7 +787,7 @@
                 <div class="nav-dot" onclick="goToSlide(5)"></div>
                 <div class="nav-dot" onclick="goToSlide(6)"></div>
             </div>
-            
+
             <button class="nav-btn" onclick="nextSlide()">
                 →
             </button>
@@ -812,7 +812,7 @@
         function updateSlide() {
             slides.forEach((slide, index) => {
                 slide.classList.remove('active', 'prev', 'next', 'far');
-                
+
                 if (index === currentSlide) {
                     slide.classList.add('active');
                 } else if (index === currentSlide - 1) {
@@ -829,7 +829,7 @@
             });
 
             document.getElementById('slideTitle').textContent = titles[currentSlide];
-            
+
             // Update progress ring
             const progress = document.querySelector('.progress');
             const circumference = 2 * Math.PI * 14;

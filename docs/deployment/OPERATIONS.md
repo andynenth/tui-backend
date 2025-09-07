@@ -38,7 +38,7 @@ This guide provides comprehensive documentation for all API endpoints, monitorin
 ### 1.2 GET /api/health/detailed
 - **Purpose**: Comprehensive system health metrics
 - **Parameters**: None
-- **Response Fields**: 
+- **Response Fields**:
   - `uptime`: Service uptime in seconds
   - `cpu_usage`: Current CPU percentage
   - `memory_usage`: Memory usage in MB
@@ -93,7 +93,7 @@ This guide provides comprehensive documentation for all API endpoints, monitorin
 
 ### 2.3 POST /api/recovery/trigger/{procedure_name}
 - **Purpose**: Manually trigger recovery procedure
-- **Path Parameters**: 
+- **Path Parameters**:
   - `procedure_name`: "room_recovery" | "connection_reset" | "cache_clear"
 - **Request Body**: Optional configuration object
 - **Response**: `{"success": true, "procedure": "room_recovery", "timestamp": 1234567890}`
@@ -124,7 +124,7 @@ This guide provides comprehensive documentation for all API endpoints, monitorin
 
 ### 3.1 GET /api/debug/player-activity/{room_id}
 - **Purpose**: Current player activity status
-- **Path Parameters**: 
+- **Path Parameters**:
   - `room_id`: Room identifier
 - **Query Parameters**: None
 - **Response Fields**:
@@ -169,7 +169,7 @@ This guide provides comprehensive documentation for all API endpoints, monitorin
 
 ### 4.2 GET /api/debug/events/{room_id}
 - **Purpose**: List room events
-- **Path Parameters**: 
+- **Path Parameters**:
   - `room_id`: Room identifier
 - **Query Parameters**:
   - `limit`: Max events
@@ -179,14 +179,14 @@ This guide provides comprehensive documentation for all API endpoints, monitorin
 
 ### 4.3 GET /api/debug/replay/{room_id}
 - **Purpose**: Replay and reconstruct game state
-- **Path Parameters**: 
+- **Path Parameters**:
   - `room_id`: Room identifier
 - **Response**: Reconstructed game state object
 - **Status**: 200 OK | 404 Not Found
 
 ### 4.4 GET /api/debug/events/{room_id}/sequence/{seq}
 - **Purpose**: Events since sequence number
-- **Path Parameters**: 
+- **Path Parameters**:
   - `room_id`: Room identifier
   - `seq`: Sequence number (exclusive)
 - **Query Parameters**:
@@ -196,7 +196,7 @@ This guide provides comprehensive documentation for all API endpoints, monitorin
 
 ### 4.5 GET /api/debug/export/{room_id}
 - **Purpose**: Export complete room history
-- **Path Parameters**: 
+- **Path Parameters**:
   - `room_id`: Room identifier
 - **Response**: Complete history with timeline and analysis
 - **Status**: 200 OK
@@ -209,7 +209,7 @@ This guide provides comprehensive documentation for all API endpoints, monitorin
 
 ### 4.7 GET /api/debug/turns/{room_id}
 - **Purpose**: Turn play history
-- **Path Parameters**: 
+- **Path Parameters**:
   - `room_id`: Room identifier
 - **Query Parameters**:
   - `turn_number`: Specific turn
@@ -226,7 +226,7 @@ This guide provides comprehensive documentation for all API endpoints, monitorin
 
 ### 4.9 GET /api/debug/validate/{room_id}
 - **Purpose**: Validate event sequence integrity
-- **Path Parameters**: 
+- **Path Parameters**:
   - `room_id`: Room identifier
 - **Response**: Validation results with any gaps or issues
 - **Status**: 200 OK
@@ -254,7 +254,7 @@ This guide provides comprehensive documentation for all API endpoints, monitorin
 
 ### 4.13 GET /api/debug/connection-timeline/{room_id}
 - **Purpose**: Connection event timeline
-- **Path Parameters**: 
+- **Path Parameters**:
   - `room_id`: Room identifier
 - **Query Parameters**:
   - `player_name`: Filter by player
@@ -263,7 +263,7 @@ This guide provides comprehensive documentation for all API endpoints, monitorin
 
 ### 4.14 GET /api/debug/bot-control-analysis/{room_id}
 - **Purpose**: Analyze bot control patterns
-- **Path Parameters**: 
+- **Path Parameters**:
   - `room_id`: Room identifier
 - **Response**: Bot takeover analysis with timings and patterns
 - **Status**: 200 OK
@@ -274,14 +274,14 @@ This guide provides comprehensive documentation for all API endpoints, monitorin
 
 ### 5.1 GET /api/rooms/{room_id}/events
 - **Purpose**: Get all room events
-- **Path Parameters**: 
+- **Path Parameters**:
   - `room_id`: Room identifier
 - **Response**: Same as /api/debug/events/{room_id}
 - **Status**: 200 OK
 
 ### 5.2 GET /api/rooms/{room_id}/events/{since_sequence}
 - **Purpose**: Get events since sequence
-- **Path Parameters**: 
+- **Path Parameters**:
   - `room_id`: Room identifier
   - `since_sequence`: Sequence number (exclusive)
 - **Response**: Array of events after sequence
@@ -289,7 +289,7 @@ This guide provides comprehensive documentation for all API endpoints, monitorin
 
 ### 5.3 GET /api/rooms/{room_id}/state
 - **Purpose**: Reconstructed game state
-- **Path Parameters**: 
+- **Path Parameters**:
   - `room_id`: Room identifier
 - **Response**: Current game state from events
 - **Status**: 200 OK
@@ -312,7 +312,7 @@ This guide provides comprehensive documentation for all API endpoints, monitorin
 
 ### 6.1 GET /api/rooms/{room_id}/play-history
 - **Purpose**: Complete play history from SQLite
-- **Path Parameters**: 
+- **Path Parameters**:
   - `room_id`: Room identifier
 - **Query Parameters**:
   - `format`: "full" | "compact" (default: "full")
@@ -325,7 +325,7 @@ This guide provides comprehensive documentation for all API endpoints, monitorin
 
 ### 6.2 GET /api/rooms/{room_id}/play-history/rounds
 - **Purpose**: Get specific round range
-- **Path Parameters**: 
+- **Path Parameters**:
   - `room_id`: Room identifier
 - **Query Parameters**:
   - `from`: Starting round (inclusive)
@@ -335,7 +335,7 @@ This guide provides comprehensive documentation for all API endpoints, monitorin
 
 ### 6.3 GET /api/rooms/{room_id}/play-history/round/{round_number}
 - **Purpose**: Get specific round details
-- **Path Parameters**: 
+- **Path Parameters**:
   - `room_id`: Room identifier
   - `round_number`: Round to retrieve
 - **Response**: Single round data
@@ -367,7 +367,7 @@ This guide provides comprehensive documentation for all API endpoints, monitorin
 
 ### 7.3 GET /api/metrics/{endpoint_path}
 - **Purpose**: Metrics for specific endpoint
-- **Path Parameters**: 
+- **Path Parameters**:
   - `endpoint_path`: URL-encoded endpoint path
 - **Response**: Endpoint-specific metrics
 - **Status**: 200 OK
@@ -494,14 +494,14 @@ This guide provides comprehensive documentation for all API endpoints, monitorin
 
 ### 10.2 GET /api/privacy/export/{session_id}
 - **Purpose**: Export user data (GDPR)
-- **Path Parameters**: 
+- **Path Parameters**:
   - `session_id`: Session identifier
 - **Response**: All data for session
 - **Status**: 200 OK | 404 Not Found
 
 ### 10.3 DELETE /api/privacy/delete/{session_id}
 - **Purpose**: Delete user data
-- **Path Parameters**: 
+- **Path Parameters**:
   - `session_id`: Session identifier
 - **Response**: `{"success": true, "deleted_events": 123}`
 - **Status**: 200 OK | 404 Not Found
@@ -546,7 +546,7 @@ This guide provides comprehensive documentation for all API endpoints, monitorin
 
 ### 12.1 WebSocket /ws/{room_id}
 - **Purpose**: Main game connection
-- **Path Parameters**: 
+- **Path Parameters**:
   - `room_id`: Room identifier or "lobby"
 - **Connection**: `ws://localhost:5050/ws/{room_id}`
 - **Events (Client → Server)**:

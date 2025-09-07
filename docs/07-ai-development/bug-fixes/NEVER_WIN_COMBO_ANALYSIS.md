@@ -9,7 +9,7 @@ The AI had better alternatives available but still chose never-win combos:
 - Most common: SOLDIER_BLACK pairs [1,1] when better pairs were available
 - Example: Bot chose SOLDIER_BLACK pair (2 pts) when ELEPHANT pair (18-20 pts) was available
 
-### 2. Forced Plays (18 plays - 69%)  
+### 2. Forced Plays (18 plays - 69%)
 The AI had no choice - all valid plays matching the required piece count were never-win combos:
 - Most common: All-BLACK straights [3,5,7] when no mixed-color straights available
 - These are acceptable as the AI made the best choice available
@@ -65,7 +65,7 @@ Remaining hand had 5 pieces
 
 ### Example 3: Forced Play (Acceptable)
 ```
-Game AI_96414, Round 4, Turn 2  
+Game AI_96414, Round 4, Turn 2
 Player: Bot 4
 Played: STRAIGHT [CANNON_BLACK(3), HORSE_BLACK(5), CHARIOT_BLACK(7)]
 Required pieces: 3

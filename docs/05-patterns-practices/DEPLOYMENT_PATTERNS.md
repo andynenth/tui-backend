@@ -33,7 +33,7 @@ graph TB
     subgraph "Internet"
         Users[Players]
     end
-    
+
     subgraph "AWS"
         subgraph "EC2 Instance"
             Docker[Docker Engine]
@@ -45,21 +45,21 @@ graph TB
             SQLite[(SQLite DB)]
             Volume[EBS Volume]
         end
-        
+
         SG[Security Group]
         EIP[Elastic IP]
     end
-    
+
     subgraph "Monitoring"
         CW[CloudWatch]
         Logs[CloudWatch Logs]
     end
-    
+
     subgraph "Backup"
         S3[S3 Bucket]
         Snapshot[EBS Snapshot]
     end
-    
+
     Users --> EIP
     EIP --> SG
     SG --> Docker
@@ -68,12 +68,12 @@ graph TB
     App --> Python
     Python --> SQLite
     SQLite --> Volume
-    
+
     Docker --> CW
     Docker --> Logs
     Volume --> Snapshot
     SQLite --> S3
-    
+
     style Docker fill:#0db7ed
     style SQLite fill:#003B57
     style EC2 fill:#FF9900
@@ -322,7 +322,7 @@ Database:
   Permissions: 644
   Owner: ec2-user
   Group: ec2-user
-  
+
   # Volume mapping in docker-compose.yml
   volumes:
     - ./game_events.db:/app/data/game_events.db
@@ -368,11 +368,11 @@ from datetime import datetime, timedelta
 
 class DatabaseMaintenance:
     """SQLite maintenance tasks."""
-    
+
     def __init__(self, db_path: str):
         self.db_path = db_path
         self.logger = logging.getLogger(__name__)
-    
+
     def vacuum_database(self):
         """Reclaim unused space."""
         conn = sqlite3.connect(self.db_path)
@@ -382,7 +382,7 @@ class DatabaseMaintenance:
             self.logger.info("VACUUM completed")
         finally:
             conn.close()
-    
+
     def analyze_database(self):
         """Update query optimizer statistics."""
         conn = sqlite3.connect(self.db_path)
@@ -391,20 +391,20 @@ class DatabaseMaintenance:
             self.logger.info("ANALYZE completed")
         finally:
             conn.close()
-    
+
     def archive_old_events(self, days_to_keep: int = 30):
         """Archive events older than specified days."""
         conn = sqlite3.connect(self.db_path)
         try:
             cutoff_date = datetime.now() - timedelta(days=days_to_keep)
-            
+
             # Count events to archive
             cursor = conn.execute(
                 "SELECT COUNT(*) FROM events WHERE timestamp < ?",
                 (cutoff_date.timestamp(),)
             )
             count = cursor.fetchone()[0]
-            
+
             if count > 0:
                 # Create archive table if not exists
                 conn.execute("""
@@ -412,22 +412,22 @@ class DatabaseMaintenance:
                         LIKE events INCLUDING ALL
                     )
                 """)
-                
+
                 # Move old events
                 conn.execute("""
-                    INSERT INTO events_archive 
-                    SELECT * FROM events 
+                    INSERT INTO events_archive
+                    SELECT * FROM events
                     WHERE timestamp < ?
                 """, (cutoff_date.timestamp(),))
-                
+
                 conn.execute("""
-                    DELETE FROM events 
+                    DELETE FROM events
                     WHERE timestamp < ?
                 """, (cutoff_date.timestamp(),))
-                
+
                 conn.commit()
                 self.logger.info(f"Archived {count} events")
-            
+
         finally:
             conn.close()
 ```
@@ -480,7 +480,7 @@ services:
     image: liap-tui:latest
     container_name: liap-tui
     restart: unless-stopped
-    
+
     # Resource limits
     deploy:
       resources:
@@ -490,14 +490,14 @@ services:
         reservations:
           cpus: '0.5'
           memory: 512M
-    
+
     # Performance settings
     environment:
       - PYTHONUNBUFFERED=1
       - WORKERS=4
       - MAX_CONNECTIONS=1000
       - DATABASE_POOL_SIZE=20
-    
+
     # Logging optimization
     logging:
       driver: "json-file"
@@ -520,16 +520,16 @@ asyncio.set_event_loop_policy(uvloop.EventLoopPolicy())
 
 class PerformanceOptimizer:
     """Application performance optimizations."""
-    
+
     def __init__(self):
         self.connection_pool = None
         self.cache = {}
-    
+
     @lru_cache(maxsize=1000)
     def get_cached_game_state(self, room_id: str, sequence: int):
         """Cache frequently accessed game states."""
         return self._fetch_game_state(room_id, sequence)
-    
+
     async def batch_database_writes(self, events: list):
         """Batch multiple writes for efficiency."""
         if len(events) < 10:
@@ -588,15 +588,15 @@ from datetime import datetime
 
 class MetricsPublisher:
     """Publish custom metrics to CloudWatch."""
-    
+
     def __init__(self):
         self.cloudwatch = boto3.client('cloudwatch')
         self.namespace = 'LiapTui'
-    
+
     async def publish_game_metrics(self, room_manager):
         """Publish game-related metrics."""
         metrics = []
-        
+
         # Active connections
         metrics.append({
             'MetricName': 'ActiveConnections',
@@ -604,7 +604,7 @@ class MetricsPublisher:
             'Unit': 'Count',
             'Timestamp': datetime.utcnow()
         })
-        
+
         # Active game rooms
         active_games = sum(
             1 for room in room_manager.rooms.values()
@@ -616,7 +616,7 @@ class MetricsPublisher:
             'Unit': 'Count',
             'Timestamp': datetime.utcnow()
         })
-        
+
         # WebSocket latency (from ping/pong)
         if hasattr(room_manager, 'latency_stats'):
             metrics.append({
@@ -630,7 +630,7 @@ class MetricsPublisher:
                 'Unit': 'Milliseconds',
                 'Timestamp': datetime.utcnow()
             })
-        
+
         # Publish metrics
         if metrics:
             self.cloudwatch.put_metric_data(
@@ -760,15 +760,15 @@ import jwt
 
 class SecurityHardening:
     """Security hardening for EC2 deployment."""
-    
+
     def __init__(self):
         self.secret_key = os.environ.get('JWT_SECRET', secrets.token_urlsafe(32))
         self.rate_limits = {}
-    
+
     def setup_cors(self, app):
         """Configure CORS for production."""
         from fastapi.middleware.cors import CORSMiddleware
-        
+
         app.add_middleware(
             CORSMiddleware,
             allow_origins=["https://yourdomain.com"],
@@ -777,32 +777,32 @@ class SecurityHardening:
             allow_headers=["*"],
             max_age=3600,
         )
-    
+
     def rate_limit_check(self, ip: str, endpoint: str) -> bool:
         """Simple rate limiting."""
         key = f"{ip}:{endpoint}"
         now = datetime.now()
-        
+
         if key not in self.rate_limits:
             self.rate_limits[key] = []
-        
+
         # Clean old entries
         self.rate_limits[key] = [
-            t for t in self.rate_limits[key] 
+            t for t in self.rate_limits[key]
             if now - t < timedelta(minutes=1)
         ]
-        
+
         # Check limit (100 requests per minute)
         if len(self.rate_limits[key]) >= 100:
             return False
-        
+
         self.rate_limits[key].append(now)
         return True
-    
+
     def generate_csrf_token(self) -> str:
         """Generate CSRF token."""
         return secrets.token_urlsafe(32)
-    
+
     def validate_input(self, data: dict) -> dict:
         """Sanitize user input."""
         # Remove any potential SQL injection attempts
@@ -860,15 +860,15 @@ echo "0 0,12 * * * root certbot renew --quiet" | sudo tee /etc/cron.d/certbot
 server {
     listen 443 ssl;
     server_name yourdomain.com;
-    
+
     ssl_certificate /etc/letsencrypt/live/yourdomain.com/fullchain.pem;
     ssl_certificate_key /etc/letsencrypt/live/yourdomain.com/privkey.pem;
-    
+
     # SSL hardening
     ssl_protocols TLSv1.2 TLSv1.3;
     ssl_ciphers HIGH:!aNULL:!MD5;
     ssl_prefer_server_ciphers on;
-    
+
     # Security headers
     add_header Strict-Transport-Security "max-age=31536000" always;
     add_header X-Frame-Options "SAMEORIGIN" always;
@@ -961,13 +961,13 @@ create_ebs_snapshot() {
         --instance-ids $(curl -s http://169.254.169.254/latest/meta-data/instance-id) \
         --query 'Reservations[0].Instances[0].BlockDeviceMappings[0].Ebs.VolumeId' \
         --output text)
-    
+
     SNAPSHOT_ID=$(aws ec2 create-snapshot \
         --volume-id $VOLUME_ID \
         --description "Liap Tui backup $(date +%Y%m%d_%H%M%S)" \
         --query 'SnapshotId' \
         --output text)
-    
+
     echo "Created snapshot: $SNAPSHOT_ID"
 }
 
@@ -975,17 +975,17 @@ create_ebs_snapshot() {
 backup_application() {
     # Stop application gracefully
     docker-compose stop
-    
+
     # Create tarball
     tar -czf /tmp/liap-tui-backup-$(date +%Y%m%d_%H%M%S).tar.gz \
         /home/ec2-user/liap-tui \
         --exclude='logs/*' \
         --exclude='*.log'
-    
+
     # Upload to S3
     aws s3 cp /tmp/liap-tui-backup-*.tar.gz \
         s3://liap-tui-backups/application/
-    
+
     # Restart application
     docker-compose up -d
 }
@@ -993,14 +993,14 @@ backup_application() {
 # Recovery procedures
 recover_from_snapshot() {
     SNAPSHOT_ID=$1
-    
+
     # Create volume from snapshot
     VOLUME_ID=$(aws ec2 create-volume \
         --snapshot-id $SNAPSHOT_ID \
         --availability-zone $(curl -s http://169.254.169.254/latest/meta-data/placement/availability-zone) \
         --query 'VolumeId' \
         --output text)
-    
+
     echo "Created volume: $VOLUME_ID from snapshot: $SNAPSHOT_ID"
     # Additional steps to attach and mount volume...
 }
@@ -1017,7 +1017,7 @@ Parameters:
   SnapshotId:
     Type: String
     Description: EBS Snapshot ID for recovery
-    
+
 Resources:
   RecoveryInstance:
     Type: AWS::EC2::Instance

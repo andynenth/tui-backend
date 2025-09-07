@@ -48,12 +48,12 @@ class TurnState(GameState):
         self.current_player_index: int = 0
         self.turn_complete: bool = False
         self.winner: Optional[str] = None
-        self._turn_resolution_cache: Optional[Dict[str, Any]] = (
-            None  # Cache to avoid duplicate resolve_turn calls
-        )
-        self._last_validation_error: Optional[str] = (
-            None  # Store validation error messages
-        )
+        self._turn_resolution_cache: Optional[
+            Dict[str, Any]
+        ] = None  # Cache to avoid duplicate resolve_turn calls
+        self._last_validation_error: Optional[
+            str
+        ] = None  # Store validation error messages
 
     async def _setup_phase(self) -> None:
         """Initialize turn phase"""
@@ -128,9 +128,7 @@ class TurnState(GameState):
         # Put the new starter at the beginning
         self.turn_order.insert(0, new_starter)
 
-        self.logger.info(
-            f"🔄 Updated turn order - new starter first: {self.turn_order}"
-        )
+        self.logger.info(f"🔄 Updated turn order - new starter first: {self.turn_order}")
 
     async def start_next_turn_if_needed(self) -> bool:
         """
@@ -696,11 +694,15 @@ class TurnState(GameState):
                 )
             else:
                 self.logger.info("🏁 All hands are now empty - round complete")
-            
+
             # Transfer turn history to turn_results for scoring_state
-            if hasattr(game, "turn_history_this_round") and hasattr(game, "turn_results"):
+            if hasattr(game, "turn_history_this_round") and hasattr(
+                game, "turn_results"
+            ):
                 game.turn_results = game.turn_history_this_round.copy()
-                self.logger.info(f"📋 Transferred {len(game.turn_results)} turns to turn_results for scoring")
+                self.logger.info(
+                    f"📋 Transferred {len(game.turn_results)} turns to turn_results for scoring"
+                )
         else:
             # Update starter for next turn
             if self.winner:

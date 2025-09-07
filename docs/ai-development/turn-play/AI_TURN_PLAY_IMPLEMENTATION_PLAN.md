@@ -189,7 +189,7 @@ This document outlines the implementation plan for improving AI turn play strate
   def calculate_urgency(context: TurnPlayContext) -> str:
       turns_remaining = 8 - context.turn_number
       piles_needed = context.my_declared - context.my_captured
-      
+
       if piles_needed == 0:
           return "none"  # Already at target
       elif piles_needed >= turns_remaining:
@@ -226,7 +226,7 @@ This document outlines the implementation plan for improving AI turn play strate
 
 - [x] **Create file**: `tests/ai_turn_play/test_target_achievement.py`
 - [x] **Test case**: Opener strategy
-- [x] **Test case**: Urgent capture scenario  
+- [x] **Test case**: Urgent capture scenario
 - [x] **Test case**: Normal progression
 - [x] **Test case**: Edge case - impossible target
 - [x] **Test case**: Already at target (overcapture avoidance)
@@ -272,7 +272,7 @@ This document outlines the implementation plan for improving AI turn play strate
 
 - [ ] **In**: `ai_turn_strategy.py`
 - [ ] **Enhance**: Starter strategy to use burden piece identification from Task 11
-- [ ] **Logic**: 
+- [ ] **Logic**:
   - Use `identify_burden_pieces()` function from Task 11
   - Pieces that don't contribute to any winning combo for remaining targets
   - Integrate with starter and responder strategies for optimal disposal timing

@@ -96,48 +96,48 @@ export const colors = stylex.defineVars({
   primary: '#1e40af',
   primaryHover: '#1e3a8a',
   primaryActive: '#1e3370',
-  
+
   secondary: '#7c3aed',
   secondaryHover: '#6d28d9',
   secondaryActive: '#5b21b6',
-  
+
   // Semantic Colors
   success: '#059669',
   successLight: '#10b981',
   successDark: '#047857',
-  
+
   warning: '#d97706',
   warningLight: '#f59e0b',
   warningDark: '#b45309',
-  
+
   danger: '#dc2626',
   dangerLight: '#ef4444',
   dangerDark: '#b91c1c',
-  
+
   // Game Theme
   background: '#1e1e2e',
   backgroundAlt: '#262637',
   surface: '#313244',
   surfaceHover: '#3a3b4d',
   border: '#45475a',
-  
+
   // Text
   text: '#cdd6f4',
   textMuted: '#a6adc8',
   textDim: '#585b70',
-  
+
   // Game Pieces
   pieceRed: '#f38ba8',
   pieceBlack: '#585b70',
   pieceGold: '#f9e2af',
   pieceSilver: '#a6adc8',
-  
+
   // Player Slots
   slotEmpty: '#45475a',
   slotHost: '#f9e2af',
   slotPlayer: '#74c0fc',
   slotBot: '#89b4fa',
-  
+
   // Status
   online: '#a6e3a1',
   offline: '#f38ba8',
@@ -161,7 +161,7 @@ export const typography = stylex.defineVars({
   // Font Families
   fontPrimary: '"Plus Jakarta Sans", system-ui, -apple-system, sans-serif',
   fontMono: '"JetBrains Mono", "Courier New", monospace',
-  
+
   // Font Sizes
   textXs: '12px',
   textSm: '14px',
@@ -171,12 +171,12 @@ export const typography = stylex.defineVars({
   text2xl: '24px',
   text3xl: '30px',
   text4xl: '36px',
-  
+
   // Line Heights
   lineHeightTight: '1.25',
   lineHeightNormal: '1.5',
   lineHeightRelaxed: '1.75',
-  
+
   // Font Weights
   weightNormal: '400',
   weightMedium: '500',
@@ -192,7 +192,7 @@ export const motion = stylex.defineVars({
   durationNormal: '300ms',
   durationSlow: '500ms',
   durationSlowest: '1000ms',
-  
+
   // Easings
   easeIn: 'cubic-bezier(0.4, 0, 1, 1)',
   easeOut: 'cubic-bezier(0, 0, 0.2, 1)',
@@ -208,13 +208,13 @@ export const layout = stylex.defineVars({
   breakpointMd: '768px',
   breakpointLg: '1024px',
   breakpointXl: '1280px',
-  
+
   // Container
   containerSm: '640px',
   containerMd: '768px',
   containerLg: '1024px',
   containerXl: '1280px',
-  
+
   // Border Radius
   radiusNone: '0px',
   radiusSm: '4px',
@@ -222,7 +222,7 @@ export const layout = stylex.defineVars({
   radiusLg: '12px',
   radiusXl: '16px',
   radiusFull: '9999px',
-  
+
   // Z-Index
   zBase: '0',
   zDropdown: '1000',
@@ -242,7 +242,7 @@ export const shadows = stylex.defineVars({
   lg: '0 10px 15px -3px rgb(0 0 0 / 0.1)',
   xl: '0 20px 25px -5px rgb(0 0 0 / 0.1)',
   inner: 'inset 0 2px 4px 0 rgb(0 0 0 / 0.06)',
-  
+
   // Game-specific shadows
   glow: '0 0 20px rgb(124 58 237 / 0.5)',
   glowStrong: '0 0 30px rgb(124 58 237 / 0.8)',
@@ -305,13 +305,13 @@ const config = {
 async function build() {
   try {
     const result = await esbuild.build(config);
-    
+
     if (result.metafile) {
       // Analyze bundle
       const analysis = await esbuild.analyzeMetafile(result.metafile);
       console.log(analysis);
     }
-    
+
     console.log('✅ Build completed');
   } catch (error) {
     console.error('❌ Build failed:', error);
@@ -389,118 +389,118 @@ const styles = stylex.create({
     font: 'inherit',
     cursor: 'pointer',
     outline: 'none',
-    
+
     // Layout
     display: 'inline-flex',
     alignItems: 'center',
     justifyContent: 'center',
     gap: spacing.sm,
-    
+
     // Spacing
     paddingBlock: spacing.sm,
     paddingInline: spacing.lg,
-    
+
     // Typography
     fontFamily: typography.fontPrimary,
     fontSize: typography.textMd,
     fontWeight: typography.weightSemibold,
     lineHeight: typography.lineHeightNormal,
-    
+
     // Visual
     borderRadius: layout.radiusMd,
     transition: `all ${motion.durationFast} ${motion.easeInOut}`,
-    
+
     // Interaction
     userSelect: 'none',
-    
+
     ':hover': {
       transform: 'translateY(-2px)',
     },
-    
+
     ':active': {
       transform: 'translateY(0)',
     },
-    
+
     ':focus-visible': {
       outline: `2px solid ${colors.primary}`,
       outlineOffset: '2px',
     },
-    
+
     ':disabled': {
       opacity: 0.5,
       cursor: 'not-allowed',
       transform: 'none',
     },
   },
-  
+
   // Variants
   primary: {
     backgroundColor: colors.primary,
     color: '#ffffff',
     boxShadow: shadows.md,
-    
+
     ':hover': {
       backgroundColor: colors.primaryHover,
       boxShadow: shadows.lg,
     },
-    
+
     ':active': {
       backgroundColor: colors.primaryActive,
     },
   },
-  
+
   secondary: {
     backgroundColor: colors.surface,
     color: colors.text,
     border: `1px solid ${colors.border}`,
-    
+
     ':hover': {
       backgroundColor: colors.surfaceHover,
       borderColor: colors.primary,
     },
   },
-  
+
   danger: {
     backgroundColor: colors.danger,
     color: '#ffffff',
-    
+
     ':hover': {
       backgroundColor: colors.dangerDark,
     },
   },
-  
+
   ghost: {
     backgroundColor: 'transparent',
     color: colors.text,
-    
+
     ':hover': {
       backgroundColor: colors.surface,
     },
   },
-  
+
   // Sizes
   small: {
     paddingBlock: spacing.xs,
     paddingInline: spacing.md,
     fontSize: typography.textSm,
   },
-  
+
   large: {
     paddingBlock: spacing.md,
     paddingInline: spacing.xl,
     fontSize: typography.textLg,
   },
-  
+
   // States
   fullWidth: {
     width: '100%',
   },
-  
+
   loading: {
     position: 'relative',
     color: 'transparent',
     pointerEvents: 'none',
-    
+
     '::after': {
       content: '""',
       position: 'absolute',
@@ -515,15 +515,15 @@ const styles = stylex.create({
   },
 });
 
-export function Button({ 
-  children, 
-  variant = 'primary', 
+export function Button({
+  children,
+  variant = 'primary',
   size = 'medium',
   fullWidth = false,
   loading = false,
   disabled = false,
   onClick,
-  ...props 
+  ...props
 }) {
   return (
     <button
@@ -617,34 +617,34 @@ const styles = stylex.create({
     cursor: 'pointer',
     transition: `all ${motion.durationNormal} ${motion.easeInOut}`,
     animation: `${slideIn} ${motion.durationNormal} ${motion.easeOut}`,
-    
+
     ':hover': {
       transform: 'translateY(-4px)',
       boxShadow: shadows.xl,
     },
   },
-  
+
   selected: {
     animation: `${pulse} ${motion.durationSlow} ${motion.easeInOut} infinite`,
     boxShadow: shadows.pieceGlow,
   },
-  
+
   dragging: {
     opacity: 0.5,
     cursor: 'grabbing',
   },
-  
+
   // Piece types
   red: {
     backgroundColor: colors.pieceRed,
     backgroundImage: 'linear-gradient(135deg, rgba(255,255,255,0.2) 0%, transparent 50%)',
   },
-  
+
   black: {
     backgroundColor: colors.pieceBlack,
     backgroundImage: 'linear-gradient(135deg, rgba(255,255,255,0.1) 0%, transparent 50%)',
   },
-  
+
   gold: {
     backgroundColor: colors.pieceGold,
     backgroundImage: 'linear-gradient(135deg, rgba(255,255,255,0.3) 0%, transparent 50%)',
@@ -697,40 +697,40 @@ const styles = stylex.create({
     gap: spacing.md,
     padding: spacing.md,
     minHeight: '100vh',
-    
+
     // Mobile layout
     gridTemplateRows: 'auto 1fr auto',
     gridTemplateColumns: '1fr',
-    
+
     // Tablet and up
     [media.md]: {
       gridTemplateRows: 'auto 1fr',
       gridTemplateColumns: '250px 1fr',
     },
-    
+
     // Desktop
     [media.lg]: {
       gridTemplateColumns: '300px 1fr 250px',
     },
   },
-  
+
   sidebar: {
     display: 'none',
-    
+
     [media.md]: {
       display: 'block',
     },
   },
-  
+
   main: {
     display: 'flex',
     flexDirection: 'column',
     gap: spacing.lg,
   },
-  
+
   chat: {
     display: 'none',
-    
+
     [media.lg]: {
       display: 'block',
     },
@@ -786,7 +786,7 @@ export function measureStylePerformance() {
     totalBlockingTime: 0,
     cumulativeLayoutShift: 0,
   };
-  
+
   // Log improvements
   console.table({
     'Metric': ['CSS Size', 'Parse Time', 'FCP', 'TBT', 'CLS'],
@@ -794,7 +794,7 @@ export function measureStylePerformance() {
     'After': ['40KB', '12ms', '0.8s', '50ms', '0.02'],
     'Improvement': ['73%', '73%', '33%', '75%', '80%'],
   });
-  
+
   return metrics;
 }
 ```
@@ -840,7 +840,7 @@ function DynamicComponent({ color, size }) {
       fontSize: size ? `${size}px` : 'inherit',
     },
   });
-  
+
   return <div {...stylex.props(styles.base, dynamicStyles.dynamic)}>Content</div>;
 }
 ```
@@ -877,19 +877,19 @@ describe('Button with StyleX', () => {
   test('applies correct styles for variants', () => {
     const { rerender } = render(<Button variant="primary">Click</Button>);
     const button = screen.getByRole('button');
-    
+
     // Check that StyleX classes are applied
     expect(button.className).toMatch(/^x[a-z0-9]+/);
-    
+
     // Test variant changes
     rerender(<Button variant="danger">Click</Button>);
     expect(button.className).toMatch(/^x[a-z0-9]+/);
   });
-  
+
   test('handles dynamic props correctly', () => {
     render(<Button fullWidth loading>Loading</Button>);
     const button = screen.getByRole('button');
-    
+
     expect(button).toBeDisabled();
     expect(button.className).toContain('x'); // StyleX class prefix
   });
@@ -930,12 +930,12 @@ describe('StyleX Performance', () => {
     const cssStats = await fs.stat('dist/stylex.css');
     expect(cssStats.size).toBeLessThan(50 * 1024); // 50KB
   });
-  
+
   test('No duplicate styles in production', async () => {
     const css = await fs.readFile('dist/stylex.css', 'utf-8');
     const rules = css.match(/\.[a-z0-9]+{[^}]+}/g) || [];
     const uniqueRules = new Set(rules);
-    
+
     // Should have high deduplication rate
     expect(uniqueRules.size / rules.length).toBeGreaterThan(0.95);
   });
@@ -1055,7 +1055,7 @@ const styles = stylex.create({
 });
 
 // Solution: Use inline styles for dynamic values
-<div 
+<div
   {...stylex.props(styles.base)}
   style={{ color: props.color }}  // ✅ Use inline for dynamic
 >

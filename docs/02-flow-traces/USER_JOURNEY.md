@@ -23,9 +23,9 @@ graph LR
     Lobby --> Room[Room Page]
     Room --> Game[Game Page]
     Game --> GameOver[Game Over]
-    
+
     GameOver --> Lobby
-    
+
     style Start fill:#e1f5fe
     style Lobby fill:#c5e1a5
     style Room fill:#fff9c4
@@ -68,7 +68,7 @@ sequenceDiagram
     participant UI as Start Page
     participant App as AppContext
     participant Router as React Router
-    
+
     Alice->>UI: Types "Alice" in name field
     Alice->>UI: Clicks "Enter Lobby"
     UI->>App: updatePlayerName("Alice")
@@ -112,7 +112,7 @@ sequenceDiagram
 const onSubmit = async (data) => {
   // Update context
   app.updatePlayerName(data.playerName);
-  
+
   // Navigate to lobby
   navigate('/lobby');
 };
@@ -143,14 +143,14 @@ sequenceDiagram
     participant NS as NetworkService
     participant WS as WebSocket
     participant Backend as FastAPI Backend
-    
+
     UI->>NS: connectToRoom('lobby')
     NS->>WS: new WebSocket('ws://host/ws/lobby')
     WS->>Backend: Connection request
     Backend->>WS: Connection accepted
     WS->>NS: onopen event
     NS->>UI: Connection established
-    
+
     UI->>NS: on('room_list', handler)
     Backend->>WS: {"event": "room_list", "data": {...}}
     WS->>NS: onmessage event
@@ -164,7 +164,7 @@ sequenceDiagram
 // User clicks "Create Room"
 const handleCreateRoom = async () => {
   setIsCreatingRoom(true);
-  
+
   networkService.send('lobby', 'create_room', {
     player_name: playerName,
     room_settings: {
@@ -236,14 +236,14 @@ sequenceDiagram
     participant WS as WebSocket
     participant Room as Room Manager
     participant Broadcast as All Clients
-    
+
     Bob->>WS: join_room("ABCD1234", "Bob")
     WS->>Room: Add player to room
     Room->>Room: Validate and add
     Room->>Broadcast: player_joined event
-    
+
     Note over Broadcast: All clients update UI
-    
+
     Broadcast->>Bob: room_state (full sync)
     Broadcast->>Bob: You joined successfully
 ```
@@ -378,16 +378,16 @@ sequenceDiagram
     participant UI as Game UI
     participant Backend as State Machine
     participant Others as Other Players
-    
+
     Note over Alice: Alice's turn
     Alice->>UI: Select 2 pieces
     Alice->>UI: Click "Play"
     UI->>Backend: play(["p1", "p3"])
     Backend->>Backend: Validate play
     Backend->>Others: phase_change
-    
+
     Note over Others: Everyone sees played pieces
-    
+
     Backend->>Backend: Determine winner
     Backend->>Others: turn_results
 ```
@@ -564,15 +564,15 @@ sequenceDiagram
     participant Game as Game UI
     participant NS as NetworkService
     participant Backend as Backend
-    
+
     Note over Game,Backend: Playing normally
-    
+
     Game->>NS: send(play_action)
     NS--xBackend: Connection lost
     NS->>NS: Queue message
     NS->>Game: Connection lost event
     Game->>Game: Show reconnecting UI
-    
+
     NS->>Backend: Reconnect attempt
     Backend->>NS: Connection restored
     NS->>Backend: Send queued messages

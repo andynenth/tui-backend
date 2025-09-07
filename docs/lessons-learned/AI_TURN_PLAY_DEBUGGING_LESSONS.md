@@ -4,7 +4,7 @@
 
 ## Issue Summary
 After implementing the AI turn play improvements (commit 4f3615df), users reported that:
-1. Bots appeared to "just play from low rank to high" 
+1. Bots appeared to "just play from low rank to high"
 2. Game seemed stuck with "bot doesn't play"
 3. Room state showed `phase: null` in API responses
 
@@ -25,7 +25,7 @@ After implementing the AI turn play improvements (commit 4f3615df), users report
 ### Issue 2: Game Appeared Stuck
 **What appeared to be happening**: Bot 2's turn but it doesn't play
 
-**Actual situation**: 
+**Actual situation**:
 - Bot 2 had already played (SOLDIER_RED)
 - Bot 3 had played (SOLDIER_RED)
 - Bot 4 had played (SOLDIER_BLACK)

@@ -35,7 +35,7 @@ echo -e "${YELLOW}Creating billing alarms...${NC}"
 # Create alarms that log to CloudWatch (no email needed for setup)
 for THRESHOLD in 1 5 10; do
     echo -e "${YELLOW}Creating alarm for \$${THRESHOLD}...${NC}"
-    
+
     aws cloudwatch put-metric-alarm \
         --alarm-name "Billing-Alert-${THRESHOLD}USD" \
         --alarm-description "Alert when AWS charges exceed \$${THRESHOLD}" \
@@ -48,7 +48,7 @@ for THRESHOLD in 1 5 10; do
         --evaluation-periods 1 \
         --dimensions Name=Currency,Value=USD \
         --treat-missing-data notBreaching 2>/dev/null
-    
+
     if [ $? -eq 0 ]; then
         echo -e "${GREEN}✅ Created \$${THRESHOLD} alarm${NC}"
     else

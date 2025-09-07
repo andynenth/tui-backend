@@ -37,13 +37,13 @@ INSERT INTO game_summaries_new (
     last_activity,
     game_config
 )
-SELECT 
+SELECT
     room_id,
     players as player_names,
     '{}' as player_types,  -- default empty object
     total_rounds,
     total_rounds as current_round,  -- use total_rounds as current
-    CASE 
+    CASE
         WHEN completed_at IS NOT NULL THEN 'completed'
         ELSE 'active'
     END as game_status,
@@ -65,30 +65,30 @@ CREATE TABLE round_snapshots_new (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     room_id TEXT NOT NULL,
     round_number INTEGER NOT NULL,
-    
+
     -- Round setup
     starter_player TEXT NOT NULL,
     starter_reason TEXT,
     initial_hands JSON NOT NULL,
-    
+
     -- Gameplay data
     declarations JSON NOT NULL,
     turn_count INTEGER NOT NULL CHECK (turn_count BETWEEN 1 AND 8),
     turn_sequence JSON NOT NULL,
-    
+
     -- Round results
     round_scores JSON NOT NULL,
     pile_counts JSON NOT NULL,
     cumulative_scores JSON NOT NULL,
-    
+
     -- Win check
     has_winner BOOLEAN DEFAULT FALSE,
     winning_player TEXT,
-    
+
     -- Metadata
     duration_seconds REAL,
     created_at TEXT NOT NULL DEFAULT (datetime('now')),
-    
+
     UNIQUE(room_id, round_number)
 );
 
@@ -110,7 +110,7 @@ INSERT INTO round_snapshots_new (
     duration_seconds,
     created_at
 )
-SELECT 
+SELECT
     room_id,
     round_number,
     starter_player,
@@ -139,19 +139,19 @@ CREATE TABLE turn_details_new (
     room_id TEXT NOT NULL,
     round_number INTEGER NOT NULL,
     turn_number INTEGER NOT NULL,
-    
+
     -- Turn data
     starter_player TEXT NOT NULL,  -- was 'starter'
     plays JSON NOT NULL,
     winner TEXT,
     piles_won INTEGER,
-    
+
     -- Analysis data
     play_sequence_time JSON,  -- new column
     ai_analysis JSON,  -- new column
-    
+
     created_at TEXT NOT NULL DEFAULT (datetime('now')),
-    
+
     UNIQUE(room_id, round_number, turn_number)
 );
 
@@ -168,7 +168,7 @@ INSERT INTO turn_details_new (
     ai_analysis,
     created_at
 )
-SELECT 
+SELECT
     room_id,
     round_number,
     turn_number,

@@ -26,7 +26,7 @@ echo ""
 check_resource() {
     local resource_name=$1
     local count=$2
-    
+
     if [ "$count" = "0" ] || [ -z "$count" ]; then
         echo -e "${GREEN}✓ No ${resource_name} found${NC}"
     else
@@ -88,7 +88,7 @@ if [ "$VOLUME_COUNT" != "0" ]; then
         --region $AWS_REGION \
         --query 'Volumes[].[VolumeId,Size,State,Attachments[0].InstanceId]' \
         --output table
-    
+
     # Calculate total size
     TOTAL_SIZE=$(aws ec2 describe-volumes \
         --region $AWS_REGION \
@@ -207,12 +207,12 @@ if [ -n "$S3_BUCKETS" ]; then
             --bucket $bucket \
             --query 'LocationConstraint' \
             --output text 2>/dev/null || echo "unknown")
-        
+
         # us-east-1 returns null for location
         if [ "$BUCKET_REGION" = "None" ] || [ "$BUCKET_REGION" = "" ]; then
             BUCKET_REGION="us-east-1"
         fi
-        
+
         if [ "$BUCKET_REGION" = "us-east-1" ]; then
             # Get bucket size
             BUCKET_SIZE=$(aws s3 ls s3://$bucket --recursive --summarize 2>/dev/null | grep "Total Size" | awk '{print $3}' || echo "0")

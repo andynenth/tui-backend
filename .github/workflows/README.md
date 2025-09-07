@@ -134,7 +134,7 @@ black . --check
 pylint engine/ api/
 pytest tests/unit/ -v
 
-# Frontend quality checks  
+# Frontend quality checks
 cd frontend
 npm run lint
 npm run type-check
@@ -248,6 +248,6 @@ For pipeline issues:
 
 **Next Steps**: This pipeline provides a solid foundation. Consider adding:
 - Staging environment deployment
-- Database migration testing  
+- Database migration testing
 - Load testing for high-traffic scenarios
 - Multi-browser E2E testing

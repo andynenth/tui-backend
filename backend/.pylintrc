@@ -8,7 +8,7 @@ unsafe-load-any-extension=no
 # Disable specific warnings that might be too strict for your project
 disable=
     C0114,  # missing-module-docstring
-    C0115,  # missing-class-docstring  
+    C0115,  # missing-class-docstring
     C0116,  # missing-function-docstring
     R0903,  # too-few-public-methods
     R0913,  # too-many-arguments
@@ -20,7 +20,7 @@ disable=
 # Enable specific warnings that would catch your bugs
 enable=
     W0611,  # unused-import
-    W0612,  # unused-variable  
+    W0612,  # unused-variable
     E1101,  # no-member (catches attribute errors)
     E1121,  # too-many-function-args
     E1120,  # no-value-for-parameter

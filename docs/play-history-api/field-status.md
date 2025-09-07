@@ -4,7 +4,7 @@
 
 ### ✅ Successfully Fixed/Populated Fields:
 
-1. **player_order** ✅ 
+1. **player_order** ✅
    - Now populated from declaration order
    - Example: `["Bot 3", "Bot 4", "Andy", "Bot 2"]`
 

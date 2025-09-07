@@ -51,7 +51,7 @@ class PlayerActivity:
     last_action_type: str
     heartbeat_data: dict
     action_history: deque  # Last 50 actions
-    
+
     def is_active(self) -> bool:
         """Check if player is considered active"""
         return (time.time() - self.last_heartbeat) < 90  # 90 seconds
@@ -65,17 +65,17 @@ class HangDiagnostic:
     room_id: str
     hang_type: str
     duration_seconds: float
-    
+
     # Context data
     game_phase: str
     last_actions: List[dict]
     pending_actions: List[str]
-    
+
     # Network state
     connection_status: str
     message_queue_size: int
     last_heartbeat_delta: float
-    
+
     # Client state
     client_ui_state: dict
     client_memory_mb: float
@@ -100,7 +100,7 @@ private async sendHeartbeat(roomId: string): Promise<void> {
         message_queue_size: this.getQueueSize(roomId),
         memory_usage: performance.memory?.usedJSHeapSize,
     };
-    
+
     this.send(roomId, 'heartbeat', activityData);
 }
 ```
@@ -155,11 +155,11 @@ TAKEOVER_GRACE_PERIOD = 30  # additional seconds
 def check_idle_players(self):
     """Check for idle players and initiate bot takeover"""
     current_time = time.time()
-    
+
     for room_id, players in self.activities.items():
         for player_name, activity in players.items():
             idle_duration = current_time - activity.last_action
-            
+
             if idle_duration > IDLE_TIMEOUT:
                 if not activity.takeover_initiated:
                     self.initiate_takeover(room_id, player_name)
@@ -184,7 +184,7 @@ async def initiate_takeover(self, room_id: str, player_name: str):
         "grace_period": TAKEOVER_GRACE_PERIOD,
         "reason": "idle_timeout"
     })
-    
+
     # Schedule takeover
     asyncio.create_task(
         self._execute_takeover_after_grace(room_id, player_name)
@@ -193,11 +193,11 @@ async def initiate_takeover(self, room_id: str, player_name: str):
 async def _execute_takeover_after_grace(self, room_id, player_name):
     """Execute takeover after grace period"""
     await asyncio.sleep(TAKEOVER_GRACE_PERIOD)
-    
+
     # Check if player became active
     if self.is_player_active(room_id, player_name):
         return
-    
+
     # Execute takeover
     await self.bot_manager.takeover_player(room_id, player_name)
 ```
@@ -298,8 +298,8 @@ if hangs_per_hour > 5:
 
 #### 1. False Idle Detection
 
-**Symptoms**: Active player marked as idle  
-**Causes**: 
+**Symptoms**: Active player marked as idle
+**Causes**:
 - Network latency
 - Client-side performance issues
 - Clock synchronization
@@ -313,7 +313,7 @@ HEARTBEAT_INTERVAL = 20  # Decrease from 30
 
 #### 2. Takeover During Active Play
 
-**Symptoms**: Bot takes over during player's turn  
+**Symptoms**: Bot takes over during player's turn
 **Causes**:
 - Heartbeat not sent
 - Action not recorded
@@ -328,7 +328,7 @@ if player.is_currently_playing():
 
 #### 3. Reconnection Issues
 
-**Symptoms**: Player can't resume after reconnect  
+**Symptoms**: Player can't resume after reconnect
 **Causes**:
 - Session state mismatch
 - Bot already took over
@@ -353,16 +353,16 @@ ACTIVITY_CONFIG = {
     "heartbeat_timeout": 90,
     "idle_timeout": 60,
     "takeover_grace_period": 30,
-    
+
     # Detection
     "hang_detection_enabled": True,
     "auto_takeover_enabled": True,
     "takeover_min_players": 2,  # Don't takeover if <2 human players
-    
+
     # Diagnostics
     "diagnostic_buffer_size": 100,
     "action_history_size": 50,
-    
+
     # Performance
     "cleanup_interval": 300,  # Clean old data every 5 min
 }
@@ -448,10 +448,10 @@ diagnostic = HangDiagnostic(
 # test_player_activity_monitor.py
 async def test_idle_detection():
     tracker = PlayerActivityTracker()
-    
+
     # Simulate player activity
     tracker.record_action("room1", "player1", "play")
-    
+
     # Fast-forward time
     with mock.patch('time.time', return_value=time.time() + 70):
         idle_players = tracker.get_idle_players()

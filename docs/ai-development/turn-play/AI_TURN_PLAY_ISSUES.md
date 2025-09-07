@@ -9,29 +9,29 @@ Analysis of 8 rounds of gameplay reveals several critical issues with the AI tur
 ### 🚨 CRITICAL ISSUES
 
 #### 1. Overcapture Avoidance Not Working
-**Priority**: CRITICAL  
-**Impact**: Core feature completely broken  
-**Expected**: Bots at target should play weak pieces to avoid winning  
+**Priority**: CRITICAL
+**Impact**: Core feature completely broken
+**Expected**: Bots at target should play weak pieces to avoid winning
 **Actual**: Bots continue playing normally and overcapture
 
 **Evidence**:
 - **Round 1**: Bot 3 declared 1, captured 4 (300% overcapture!)
   - Should have stopped trying to win after 1 pile
   - Continued winning turns 3, 5, and 6
-- **Round 3**: Alexanderium declared 4, captured 5 
+- **Round 3**: Alexanderium declared 4, captured 5
   - Human player also affected, suggesting feature not implemented
 - **Round 7**: Bot 3 declared 2, captured 2 (correctly stopped, but likely coincidence)
 
-**Root Cause Hypothesis**: 
+**Root Cause Hypothesis**:
 - `avoid_overcapture_strategy` may not be triggering
 - Condition check `context.my_captured == context.my_declared` might be evaluated at wrong time
 
 ---
 
 #### 2. Declaration Logic Too Conservative
-**Priority**: HIGH  
-**Impact**: Unbalanced gameplay, bots underperform  
-**Expected**: Declarations should average 2-4 based on hand strength  
+**Priority**: HIGH
+**Impact**: Unbalanced gameplay, bots underperform
+**Expected**: Declarations should average 2-4 based on hand strength
 **Actual**: Most declarations are 0-2
 
 **Evidence**:
@@ -61,9 +61,9 @@ Average: 1.67 piles per bot per round (too low!)
 ### ⚠️ HIGH PRIORITY ISSUES
 
 #### 3. Opener Timing Not Strategic
-**Priority**: HIGH  
-**Impact**: Reduced strategic depth  
-**Expected**: Openers played when `hand_size > main_plan_size` with varying probability  
+**Priority**: HIGH
+**Impact**: Reduced strategic depth
+**Expected**: Openers played when `hand_size > main_plan_size` with varying probability
 **Actual**: Openers played randomly without pattern
 
 **Evidence**:
@@ -88,9 +88,9 @@ Turn 3: 3 times (12.5%)
 ---
 
 #### 4. No Evidence of Burden Disposal Strategy
-**Priority**: HIGH  
-**Impact**: Poor resource management  
-**Expected**: High-value burden pieces disposed early  
+**Priority**: HIGH
+**Impact**: Poor resource management
+**Expected**: High-value burden pieces disposed early
 **Actual**: Random piece disposal
 
 **Evidence**:
@@ -108,9 +108,9 @@ Turn 3: 3 times (12.5%)
 ### 📊 MEDIUM PRIORITY ISSUES
 
 #### 5. No Plan Formation Evidence
-**Priority**: MEDIUM  
-**Impact**: All role-based strategies fail  
-**Expected**: Turn 1 should form strategic plan with role assignments  
+**Priority**: MEDIUM
+**Impact**: All role-based strategies fail
+**Expected**: Turn 1 should form strategic plan with role assignments
 **Actual**: No evidence of differentiated play based on roles
 
 **Evidence**:
@@ -126,9 +126,9 @@ Turn 3: 3 times (12.5%)
 ---
 
 #### 6. Field Strength Not Affecting Decisions
-**Priority**: MEDIUM  
-**Impact**: Incorrect combo viability  
-**Expected**: Pair viability should change based on opponent declarations  
+**Priority**: MEDIUM
+**Impact**: Incorrect combo viability
+**Expected**: Pair viability should change based on opponent declarations
 **Actual**: Pairs played regardless of field strength
 
 **Evidence**:
@@ -153,9 +153,9 @@ Round 4: Total declared 12 (very strong) - Pairs still played
 ### 🔧 LOW PRIORITY ISSUES
 
 #### 7. No Aggressive Capture Mode
-**Priority**: LOW  
-**Impact**: No recovery when plan fails  
-**Expected**: Strongest plays when plan becomes impossible  
+**Priority**: LOW
+**Impact**: No recovery when plan fails
+**Expected**: Strongest plays when plan becomes impossible
 **Actual**: No change in strategy
 
 **Evidence**:
@@ -166,13 +166,13 @@ Round 4: Total declared 12 (very strong) - Pairs still played
 ---
 
 #### 8. Invalid Play Classifications
-**Priority**: LOW (Cosmetic)  
-**Impact**: Confusing logs  
-**Expected**: Multi-piece non-starter plays labeled correctly  
+**Priority**: LOW (Cosmetic)
+**Impact**: Confusing logs
+**Expected**: Multi-piece non-starter plays labeled correctly
 **Actual**: Shows "INVALID" but marked as valid (✅)
 
 **Evidence**:
-- Round 1, Turn 1: Bot 3 plays [SOLDIER_BLACK(1), HORSE_BLACK(5), HORSE_BLACK(5)] 
+- Round 1, Turn 1: Bot 3 plays [SOLDIER_BLACK(1), HORSE_BLACK(5), HORSE_BLACK(5)]
   - Labeled "INVALID" but marked ✅
   - This is actually valid for non-starter
 

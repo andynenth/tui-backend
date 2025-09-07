@@ -44,9 +44,9 @@ class ConnectionManager:
         # Track connections by room_id -> player_name -> PlayerConnection
         self.connections: Dict[str, Dict[str, PlayerConnection]] = {}
         # Track websocket to player mapping
-        self.websocket_to_player: Dict[str, tuple[str, str]] = (
-            {}
-        )  # ws_id -> (room_id, player_name)
+        self.websocket_to_player: Dict[
+            str, tuple[str, str]
+        ] = {}  # ws_id -> (room_id, player_name)
         # Lock for thread-safe operations
         self.lock = asyncio.Lock()
 

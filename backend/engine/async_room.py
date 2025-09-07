@@ -515,7 +515,7 @@ class AsyncRoom:
         human_count = 0
         bot_count = 0
         grace_period_count = 0
-        
+
         for player in self.game.players:
             if player:
                 if player.is_bot:

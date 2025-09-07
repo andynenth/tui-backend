@@ -164,7 +164,6 @@ class GameStateMachine:
         logger.info("State machine process loop started")
         while self.is_running:
             try:
-
                 # Process any pending actions
                 await self.process_pending_actions()
 
@@ -309,9 +308,9 @@ class GameStateMachine:
 
         # Convert to JSON-safe format using the same method as auto-broadcast
         from backend.engine.state_machine.base_state import GameState
-        
+
         # Use the _make_json_safe method from base_state
-        if hasattr(self.current_state, '_make_json_safe'):
+        if hasattr(self.current_state, "_make_json_safe"):
             return self.current_state._make_json_safe(raw_data)
         else:
             # Fallback to simple conversion
@@ -528,7 +527,6 @@ class GameStateMachine:
             if self.current_phase == GamePhase.DECLARATION:
                 current_declarer = phase_data.get("current_declarer")
                 if current_declarer:
-
                     # Send phase_change event with full data for bot to decide action
                     try:
                         await bot_manager.handle_game_event(
@@ -564,7 +562,6 @@ class GameStateMachine:
             elif self.current_phase == GamePhase.TURN:
                 current_player = phase_data.get("current_player")
                 if current_player:
-
                     # Send phase_change event with full data for bot to decide action
                     await bot_manager.handle_game_event(
                         room_id,

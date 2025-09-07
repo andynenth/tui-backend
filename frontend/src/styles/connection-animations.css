@@ -146,7 +146,7 @@
 
 /* Player avatar state transitions */
 .player-avatar-transition {
-  transition: opacity 0.3s ease-in-out, 
+  transition: opacity 0.3s ease-in-out,
               filter 0.3s ease-in-out,
               transform 0.3s ease-in-out;
 }

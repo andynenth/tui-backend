@@ -67,20 +67,20 @@ The game follows this sequence:
 ```python
 def run_game(self) -> Dict:
     self.setup_game()  # Create 4 AI players
-    
+
     while not is_game_over(self.game) and rounds_played < 10:
         # 1. Deal pieces
         self.game.deal_pieces()
-        
+
         # 2. Declaration Phase
         self._run_declaration_phase()
-        
+
         # 3. Turn Phase (8 turns)
         self._run_turn_phase()
-        
+
         # 4. Scoring Phase
         self._run_scoring_phase()
-        
+
         rounds_played += 1
 ```
 
@@ -98,7 +98,7 @@ def _run_declaration_phase(self):
             player_index=i,
             verbose=self.verbose
         )
-        
+
         # Log the decision with context
         self.ai_logger.log_declaration(
             player_name=player.name,
@@ -126,7 +126,7 @@ def _run_turn_phase(self):
                 turn_number=turn_number,
                 verbose=self.verbose
             )
-            
+
             # Create and validate turn play
             turn_play = TurnPlay(
                 player=player,
@@ -159,7 +159,7 @@ The AIBugDetector analyzes decisions in real-time:
 ```python
 def check_declaration_bugs(self, player_name: str, declaration_data: Dict):
     bugs = []
-    
+
     # Check for zero declaration with strong hand
     if declaration == 0 and opener_count >= 2:
         bugs.append(BugReport(
@@ -167,7 +167,7 @@ def check_declaration_bugs(self, player_name: str, declaration_data: Dict):
             severity=BugSeverity.HIGH,
             description="Declared 0 with 2+ openers"
         ))
-    
+
     return bugs
 ```
 

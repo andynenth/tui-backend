@@ -53,7 +53,7 @@ if required > 1 and context.required_play_type:
     # Find all valid combinations of the required size and type
     from itertools import combinations
     valid_plays = []
-    
+
     for combo in combinations(disposal_candidates, required):
         combo_list = list(combo)
         if is_valid_play(combo_list):
@@ -67,7 +67,7 @@ if required > 1 and context.required_play_type:
                     'value': total_value,
                     'is_never_win': is_never_win
                 })
-    
+
     if valid_plays:
         # Sort by: non-never-win first, then by lowest value (to dispose burden)
         valid_plays.sort(key=lambda x: (x['is_never_win'], x['value']))

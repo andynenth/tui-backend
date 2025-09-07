@@ -188,7 +188,7 @@ def calculate_performance_metrics(game_logs):
 
 ### Phase 1: Immediate Value (Current Data)
 1. Declaration accuracy analyzer
-2. Hand strength evaluator  
+2. Hand strength evaluator
 3. Rule violation tracker
 4. Basic performance metrics
 
@@ -211,7 +211,7 @@ def calculate_performance_metrics(game_logs):
 class AIGameAnalyzer:
     def __init__(self, log_directory):
         self.games = self.load_game_logs(log_directory)
-    
+
     def analyze_all(self):
         """Run all available analyses on current data"""
         return {
@@ -222,7 +222,7 @@ class AIGameAnalyzer:
             'rule_compliance': self.check_violations(),
             'performance': self.calculate_metrics()
         }
-    
+
     # Individual analysis methods using ONLY available data
 ```
 

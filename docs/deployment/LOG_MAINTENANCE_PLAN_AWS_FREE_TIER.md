@@ -66,7 +66,7 @@ class FreeTierMaintenanceScheduler:
                 retries={'max_attempts': 2}  # Minimize requests
             )
         )
-        
+
     def start(self):
         # Daily cleanup at 3 AM
         self.scheduler.add_job(
@@ -75,7 +75,7 @@ class FreeTierMaintenanceScheduler:
             hour=3,
             minute=0
         )
-        
+
         # Monthly S3 backup on the 1st at 4 AM
         self.scheduler.add_job(
             self.monthly_s3_backup,
@@ -84,63 +84,63 @@ class FreeTierMaintenanceScheduler:
             hour=4,
             minute=0
         )
-        
+
         self.scheduler.start()
-    
+
     async def daily_maintenance(self):
         """Daily local maintenance within free tier"""
         try:
             # 1. Archive events older than 3 days locally
             await self.archive_to_local(days_old=3)
-            
+
             # 2. Delete from main DB
             await self.event_store.cleanup_old_events(hours=72)
-            
+
             # 3. Vacuum database
             await self.vacuum_database()
-            
+
             # 4. Clean up local archives older than 14 days
             self.cleanup_local_archives(days=14)
-            
+
             # 5. Log metrics (locally, not CloudWatch)
             self.log_local_metrics()
-            
+
         except Exception as e:
             # Log error locally, avoid CloudWatch costs
             logger.error(f"Maintenance failed: {e}")
-    
+
     async def archive_to_local(self, days_old):
         """Archive to compressed local files"""
         date = datetime.now() - timedelta(days=days_old)
         archive_name = f"archives/game_events_{date.strftime('%Y_%m_%d')}.db"
-        
+
         # Export day's events to separate SQLite file
         await self.export_events_by_date(date, archive_name)
-        
+
         # Compress with maximum compression
         with open(archive_name, 'rb') as f_in:
             with gzip.open(f"{archive_name}.gz", 'wb', compresslevel=9) as f_out:
                 shutil.copyfileobj(f_in, f_out)
-        
+
         # Remove uncompressed file
         os.remove(archive_name)
-    
+
     async def monthly_s3_backup(self):
         """Monthly backup to S3 (within free tier)"""
         last_month = datetime.now() - timedelta(days=30)
         month_str = last_month.strftime('%Y_%m')
-        
+
         # Create monthly archive from local files
         archive_path = f"/tmp/game_events_{month_str}.tar.gz"
         self.create_monthly_archive(last_month, archive_path)
-        
+
         # Upload to S3 (minimize PUT requests)
         try:
             file_size = os.path.getsize(archive_path)
             if file_size > 500_000_000:  # 500MB limit per archive
                 logger.warning(f"Archive too large: {file_size}")
                 return
-                
+
             self.s3_client.upload_file(
                 archive_path,
                 'liap-tui-archives',  # Your bucket name
@@ -150,10 +150,10 @@ class FreeTierMaintenanceScheduler:
                     'ServerSideEncryption': 'AES256'
                 }
             )
-            
+
             # Clean up old S3 files (keep only 6 months)
             await self.cleanup_old_s3_files(months=6)
-            
+
         finally:
             os.remove(archive_path)
 ```
@@ -164,10 +164,10 @@ class FreeTierMaintenanceScheduler:
 # backend/api/services/local_monitoring.py
 class LocalMetricsCollector:
     """Collect metrics locally without CloudWatch costs"""
-    
+
     def __init__(self):
         self.metrics_file = "logs/maintenance_metrics.json"
-    
+
     def record_metrics(self):
         metrics = {
             "timestamp": datetime.now().isoformat(),
@@ -176,19 +176,19 @@ class LocalMetricsCollector:
             "total_archive_size_mb": self.get_archive_size_mb(),
             "oldest_event_days": self.get_oldest_event_age_days()
         }
-        
+
         # Append to local metrics file
         with open(self.metrics_file, 'a') as f:
             f.write(json.dumps(metrics) + '\n')
-        
+
         # Check thresholds
         self.check_alerts(metrics)
-    
+
     def check_alerts(self, metrics):
         # Simple local alerting
         if metrics["database_size_mb"] > 500:
             self.create_alert("Database size exceeds 500MB")
-        
+
         if metrics["total_archive_size_mb"] > 2000:
             self.create_alert("Local archives exceed 2GB")
 ```

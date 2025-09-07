@@ -19,20 +19,20 @@ def test_with_debug():
     """Test with full debug output"""
     print("\nTEST: Opener-only hand scenario")
     print("="*60)
-    
+
     # Create opener-only hand (opener + singles, no combos)
     hand = [
         Piece("ADVISOR_RED"),     # 12 points - opener
         Piece("SOLDIER_BLACK"),   # 1 point
-        Piece("CANNON_BLACK"),    # 3 points  
+        Piece("CANNON_BLACK"),    # 3 points
         Piece("CHARIOT_BLACK"),   # 7 points
         Piece("ELEPHANT_BLACK"),  # 9 points
     ]
-    
+
     print(f"Hand: {[(p.name, p.point) for p in hand]}")
     print(f"Has opener (>=11 pts): YES - ADVISOR(12)")
     print(f"Valid combos possible: NO (all different pieces)")
-    
+
     # Create starter context
     context = TurnPlayContext(
         my_name="TestBot",
@@ -47,17 +47,17 @@ def test_with_debug():
         revealed_pieces=[],
         player_states={"TestBot": {"captured": 0, "declared": 2}}
     )
-    
+
     print("\nCalling choose_strategic_play...")
     print("-"*60)
-    
+
     # Get strategic play - this will show all debug output
     result = choose_strategic_play(hand, context)
-    
+
     print("-"*60)
     print(f"\nRESULT: Played {len(result)} pieces")
     print(f"Pieces: {[(p.name, p.point) for p in result]}")
-    
+
     if len(result) == 1 and result[0].point >= 11:
         print("✅ OPENER TIMING ACTIVATED!")
     else:

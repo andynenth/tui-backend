@@ -11,7 +11,7 @@ This directory contains detailed AI implementation documentation organized by fu
 ```
 ai-development/
 ├── declaration/           # Declaration phase AI logic
-├── evaluation/           # Hand evaluation algorithms  
+├── evaluation/           # Hand evaluation algorithms
 ├── implementation/       # Core implementation details
 └── turn-play/           # Turn playing strategies
 ```
@@ -31,7 +31,7 @@ Content is being migrated to:
 - [AI Declaration Implementation](./declaration/AI_DECLARATION_IMPLEMENTATION.md) - Code details
 - [AI Declaration Examples](./declaration/AI_DECLARATION_EXAMPLES.md) - Example scenarios
 
-### Hand Evaluation  
+### Hand Evaluation
 - [AI Hand Evaluation Explained](./evaluation/AI_HAND_EVALUATION_EXPLAINED.md) - Algorithm details
 - [Evaluation Consistency Plan](./evaluation/AI_HAND_EVALUATION_CONSISTENCY_PLAN.md) - Improvement plan
 
@@ -61,7 +61,7 @@ Please start with the consolidated documentation at:
 ## Migration Timeline
 
 - ✅ Directory structure created
-- ✅ Comprehensive guides consolidated  
+- ✅ Comprehensive guides consolidated
 - 🔄 Individual files being migrated
 - 📅 Completion target: End of current sprint
 

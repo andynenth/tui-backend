@@ -21,7 +21,7 @@ def test_avoid_overcapture_when_at_target():
         Piece("SOLDIER_BLACK"),
         Piece("SOLDIER_BLACK")
     ]
-    
+
     # Create context where bot is at target
     context = TurnPlayContext(
         my_name="Bot1",
@@ -36,10 +36,10 @@ def test_avoid_overcapture_when_at_target():
         revealed_pieces=[],
         player_states={}
     )
-    
+
     # Execute strategic play
     result = choose_strategic_play(hand, context)
-    
+
     # Should return 2 pieces as required
     assert len(result) == 2
     # Note: Current AI prioritizes burden disposal (GENERAL) over weak pieces when at target
@@ -55,7 +55,7 @@ def test_avoid_overcapture_with_single_piece_required():
         Piece("SOLDIER_BLACK"),
         Piece("CHARIOT_RED")
     ]
-    
+
     context = TurnPlayContext(
         my_name="Bot2",
         my_hand=hand,
@@ -69,9 +69,9 @@ def test_avoid_overcapture_with_single_piece_required():
         revealed_pieces=[],
         player_states={}
     )
-    
+
     result = choose_strategic_play(hand, context)
-    
+
     # Should return single weakest piece (SOLDIER)
     assert len(result) == 1
     assert result[0].name == "SOLDIER"
@@ -85,7 +85,7 @@ def test_avoid_overcapture_no_required_count():
         Piece("SOLDIER_BLACK"),
         Piece("HORSE_RED")
     ]
-    
+
     context = TurnPlayContext(
         my_name="Bot3",
         my_hand=hand,
@@ -99,9 +99,9 @@ def test_avoid_overcapture_no_required_count():
         revealed_pieces=[],
         player_states={}
     )
-    
+
     result = choose_strategic_play(hand, context)
-    
+
     # Should return single weakest piece when no requirement
     assert len(result) == 1
     assert result[0].name == "SOLDIER"
@@ -114,7 +114,7 @@ def test_normal_play_when_not_at_target():
         Piece("SOLDIER_BLACK"),
         Piece("SOLDIER_BLACK")
     ]
-    
+
     context = TurnPlayContext(
         my_name="Bot4",
         my_hand=hand,
@@ -128,11 +128,11 @@ def test_normal_play_when_not_at_target():
         revealed_pieces=[],
         player_states={}
     )
-    
+
     # This should use normal logic (choose_best_play)
     # which would prefer the GENERAL for high points
     result = choose_strategic_play(hand, context)
-    
+
     # With current implementation, it delegates to choose_best_play
     # We can't test the exact behavior without importing that function
     assert len(result) == 2
@@ -146,7 +146,7 @@ def test_forfeit_when_no_valid_play():
         Piece("SOLDIER_BLACK"),
         Piece("CANNON_RED")
     ]
-    
+
     context = TurnPlayContext(
         my_name="Bot5",
         my_hand=hand,
@@ -160,9 +160,9 @@ def test_forfeit_when_no_valid_play():
         revealed_pieces=[],
         player_states={}
     )
-    
+
     result = choose_strategic_play(hand, context)
-    
+
     # Should return all 3 pieces (will forfeit)
     assert len(result) == 3
     # Note: Current AI uses disposal priority (burden, then reserve)

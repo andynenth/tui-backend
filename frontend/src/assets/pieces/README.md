@@ -29,7 +29,7 @@ All files follow the exact naming convention from `backend/engine/constants.py`:
 
 ### SVG Properties
 - **Format**: Scalable Vector Graphics (SVG)
-- **Colors**: 
+- **Colors**:
   - Red pieces: `#dc3545` (exact match to project CSS)
   - Black pieces: `#495057` (exact match to project CSS)
 - **Font**: SimSun/宋体 serif (matches current character rendering)
@@ -73,8 +73,8 @@ import { GENERAL_RED } from './assets/pieces';
 
 function GamePiece({ pieceType }) {
   return (
-    <img 
-      src={GENERAL_RED} 
+    <img
+      src={GENERAL_RED}
       alt="Red General"
       className="game-piece"
     />

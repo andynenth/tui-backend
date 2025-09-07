@@ -151,15 +151,15 @@ const AppRouterContent = ({ sessionToRecover }) => {
     <Routes>
       {/* Start page - no requirements */}
       <Route path="/" element={<StartPage />} />
-      
+
       {/* Tutorial page - no requirements - Lazy loaded */}
-      <Route 
-        path="/tutorial" 
+      <Route
+        path="/tutorial"
         element={
           <Suspense fallback={<PageLoader message="Loading tutorial..." />}>
             <TutorialPage />
           </Suspense>
-        } 
+        }
       />
 
       {/* Lobby - requires player name - Lazy loaded */}
@@ -197,13 +197,13 @@ const AppRouterContent = ({ sessionToRecover }) => {
       />
 
       {/* Admin-only Play History - direct URL access only - Lazy loaded */}
-      <Route 
-        path="/history/:roomId" 
+      <Route
+        path="/history/:roomId"
         element={
           <Suspense fallback={<PageLoader message="Loading play history..." />}>
             <PlayHistoryPage />
           </Suspense>
-        } 
+        }
       />
 
       {/* Catch all - redirect to start */}

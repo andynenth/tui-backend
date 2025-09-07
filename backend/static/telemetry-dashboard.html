@@ -389,40 +389,40 @@
                 grid-template-columns: repeat(2, 1fr);
                 gap: 10px;
             }
-            
+
             .metric-card {
                 padding: 15px;
             }
-            
+
             .metric-value {
                 font-size: 1.5rem;
             }
-            
+
             .analytics-content {
                 grid-template-columns: 1fr;
                 gap: 20px;
             }
-            
+
             .analytics-sidebar {
                 order: 2;
                 flex-direction: row;
                 overflow-x: auto;
             }
-            
+
             .summary-item {
                 min-width: 120px;
                 flex-shrink: 0;
             }
-            
+
             .feed-item {
                 grid-template-columns: 60px 1fr;
                 gap: 10px;
             }
-            
+
             .feed-session {
                 display: none;
             }
-            
+
             .alerts-bar {
                 padding: 12px 15px;
             }
@@ -432,11 +432,11 @@
             .metrics-grid {
                 grid-template-columns: 1fr;
             }
-            
+
             .dashboard {
                 padding: 15px;
             }
-            
+
             .header h1 {
                 font-size: 2rem;
             }
@@ -571,7 +571,7 @@
             const wsUrl = `${protocol}//${window.location.host}/api/ws/telemetry-monitor`;
 
             updateConnectionStatus('connecting');
-            
+
             ws = new WebSocket(wsUrl);
 
             ws.onopen = function() {
@@ -588,7 +588,7 @@
             ws.onclose = function(event) {
                 console.log('📡 WebSocket disconnected:', event.code);
                 updateConnectionStatus('disconnected');
-                
+
                 // Attempt to reconnect
                 if (reconnectAttempts < maxReconnectAttempts) {
                     reconnectAttempts++;
@@ -605,13 +605,13 @@
         function updateConnectionStatus(status) {
             const statusEl = document.getElementById('connectionStatus');
             statusEl.className = `connection-status ${status}`;
-            
+
             const statusText = {
                 connecting: 'Connecting...',
                 connected: 'Connected',
                 disconnected: 'Disconnected'
             };
-            
+
             statusEl.querySelector('span').textContent = statusText[status];
         }
 
@@ -620,24 +620,24 @@
                 case 'initial_data':
                     updateMetrics(data.data);
                     break;
-                    
+
                 case 'live_event':
                     addEventToFeed(data.event);
                     break;
-                    
+
                 case 'live_stats':
                 case 'periodic_update':
                     updateLiveStats(data.data);
                     break;
-                    
+
                 case 'recent_events':
                     populateFeed(data.data);
                     break;
-                    
+
                 case 'pong':
                     // Keep-alive response
                     break;
-                    
+
                 default:
                     console.log('📡 Unknown message type:', data.type);
             }
@@ -645,15 +645,15 @@
 
         function updateMetrics(data) {
             // Update main metrics
-            document.getElementById('successRate').textContent = 
+            document.getElementById('successRate').textContent =
                 ((data.success_rate || 0) * 100).toFixed(1) + '%';
-            document.getElementById('avgLoadTime').textContent = 
+            document.getElementById('avgLoadTime').textContent =
                 (data.avg_load_time || 0).toFixed(0) + 'ms';
-            document.getElementById('totalSessions').textContent = 
+            document.getElementById('totalSessions').textContent =
                 (data.total_sessions || 0).toLocaleString();
-            document.getElementById('errorCount').textContent = 
+            document.getElementById('errorCount').textContent =
                 (data.total_errors || 0).toLocaleString();
-            
+
             // Update analytics sidebar if mobile percentage exists
             if (data.mobile_percentage !== undefined) {
                 const mobileEl = document.getElementById('mobilePercentage');
@@ -666,20 +666,20 @@
         function updateLiveStats(data) {
             if (data.last_hour) {
                 // Update any live metrics
-                document.getElementById('recentErrors').textContent = 
+                document.getElementById('recentErrors').textContent =
                     data.last_hour.errors || 0;
-                document.getElementById('slowConnections').textContent = 
+                document.getElementById('slowConnections').textContent =
                     data.last_hour.slow_connections || 0;
             }
-            
+
             if (data.last_5_minutes) {
                 // Could update a "recent activity" indicator
                 console.log('Recent errors (5min):', data.last_5_minutes.recent_errors);
             }
-            
+
             // Update mobile percentage in analytics sidebar
             if (data.mobile_percentage !== undefined) {
-                document.getElementById('mobilePercentage').textContent = 
+                document.getElementById('mobilePercentage').textContent =
                     data.mobile_percentage.toFixed(1) + '%';
             }
         }
@@ -688,10 +688,10 @@
         function showAlert(severity, message) {
             const alertsBar = document.getElementById('alertsBar');
             const alertMessage = document.getElementById('alertMessage');
-            
+
             alertsBar.className = `alerts-bar active ${severity === 'warning' ? 'warning' : ''}`;
             alertMessage.textContent = message;
-            
+
             // Auto-dismiss after 10 seconds for warnings
             if (severity === 'warning') {
                 setTimeout(() => {
@@ -709,7 +709,7 @@
         function toggleAnalytics() {
             const button = event.target;
             const content = document.querySelector('.analytics-content');
-            
+
             if (content.style.display === 'none') {
                 content.style.display = 'grid';
                 button.textContent = 'Collapse Details';
@@ -721,22 +721,22 @@
 
         function addEventToFeed(event) {
             const feed = document.getElementById('liveFeed');
-            
+
             // Remove empty state if present
             const emptyState = feed.querySelector('.empty-state');
             if (emptyState) {
                 emptyState.remove();
             }
-            
+
             const item = createFeedItem(event);
             feed.insertBefore(item, feed.firstChild);
-            
+
             // Limit feed size
             const maxItems = 50;
             while (feed.children.length > maxItems) {
                 feed.removeChild(feed.lastChild);
             }
-            
+
             // Auto-scroll to top if enabled
             if (autoScroll) {
                 feed.scrollTop = 0;
@@ -746,19 +746,19 @@
         function createFeedItem(event) {
             const item = document.createElement('div');
             item.className = `feed-item ${event.severity}`;
-            
+
             const time = new Date().toLocaleTimeString();
             const eventTypeDisplay = event.event_type.replace('_', ' ').toUpperCase();
-            
+
             let details = [];
             if (event.browser && event.browser !== 'Unknown') details.push(event.browser);
             if (event.connection && event.connection !== 'unknown' && event.connection !== '') details.push(event.connection);
             if (event.load_time) details.push(`${event.load_time}ms`);
             if (event.attempt && event.attempt > 1) details.push(`Attempt ${event.attempt}`);
-            
+
             // Show session ID truncated
             const sessionDisplay = event.session_id ? event.session_id.substring(0, 6) + '...' : 'Unknown';
-            
+
             item.innerHTML = `
                 <div class="feed-timestamp">${time}</div>
                 <div class="feed-content">
@@ -768,18 +768,18 @@
                 </div>
                 <div class="feed-session">${sessionDisplay}</div>
             `;
-            
+
             // Trigger alert for critical events
             if (event.severity === 'critical') {
                 showAlert('critical', `${eventTypeDisplay}: ${event.error || 'Critical issue detected'}`);
             }
-            
+
             return item;
         }
 
         function populateFeed(events) {
             const feed = document.getElementById('liveFeed');
-            
+
             if (!events || events.length === 0) {
                 feed.innerHTML = `
                     <div class="empty-state">
@@ -789,9 +789,9 @@
                 `;
                 return;
             }
-            
+
             feed.innerHTML = '';
-            
+
             events.forEach(event => {
                 const item = createHistoricalFeedItem(event);
                 feed.appendChild(item);
@@ -801,19 +801,19 @@
         function createHistoricalFeedItem(event) {
             const item = document.createElement('div');
             item.className = `feed-item ${event.severity}`;
-            
+
             const time = new Date(event.timestamp).toLocaleTimeString();
             const eventTypeDisplay = event.event_type.replace('_', ' ').toUpperCase();
-            
+
             let details = [];
             if (event.browser && event.browser !== 'Unknown') details.push(event.browser);
             if (event.connection && event.connection !== 'unknown' && event.connection !== '') details.push(event.connection);
             if (event.load_time) details.push(`${event.load_time}ms`);
             if (event.attempt && event.attempt > 1) details.push(`Attempt ${event.attempt}`);
-            
+
             // Show session ID truncated
             const sessionDisplay = event.session_id ? event.session_id.substring(0, 6) + '...' : 'Unknown';
-            
+
             item.innerHTML = `
                 <div class="feed-timestamp">${time}</div>
                 <div class="feed-content">
@@ -823,7 +823,7 @@
                 </div>
                 <div class="feed-session">${sessionDisplay}</div>
             `;
-            
+
             return item;
         }
 
@@ -857,11 +857,11 @@
                 // Load analytics data via REST API
                 const response = await fetch('/api/analytics/bundle-load-stats?hours=24');
                 const contentType = response.headers.get('content-type');
-                
+
                 if (contentType && contentType.includes('application/json')) {
                     const data = await response.json();
                     updateMetrics(data.summary);
-                    
+
                     // Load additional analytics for overview section
                     loadAnalyticsOverview();
                 } else {
@@ -874,23 +874,23 @@
                 updateChartsContainer('Failed to load analytics data. Please check the server connection.');
             }
         }
-        
+
         async function loadAnalyticsOverview() {
             try {
                 // Load error analysis
                 const clientErrorsResponse = await fetch('/api/analytics/client-errors?hours=1&min_occurrences=1');
                 const clientErrors = await clientErrorsResponse.json();
-                
+
                 // Load device breakdown for slow connections
                 const deviceResponse = await fetch('/api/analytics/device-breakdown?hours=1');
                 const deviceData = await deviceResponse.json();
-                
+
                 // Update the charts container with real analytics
                 const slowConnections = (deviceData.connections['2g'] || 0) + (deviceData.connections['slow-2g'] || 0);
                 const errorSummary = `
                     <div style="padding: 20px; text-align: left; line-height: 1.6;">
                         <h3 style="margin-bottom: 15px; color: #2d3748;">📊 Analytics Summary</h3>
-                        
+
                         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px;">
                             <div style="background: #f8fafc; padding: 15px; border-radius: 8px; border-left: 4px solid #e53e3e;">
                                 <strong style="color: #e53e3e;">Error Analysis</strong><br>
@@ -898,7 +898,7 @@
                                 • Total Occurrences: ${clientErrors.total_occurrences}<br>
                                 • Sessions Affected: ${clientErrors.unique_sessions_affected}
                             </div>
-                            
+
                             <div style="background: #f8fafc; padding: 15px; border-radius: 8px; border-left: 4px solid #d69e2e;">
                                 <strong style="color: #d69e2e;">Connection Quality</strong><br>
                                 • Slow Connections: ${slowConnections}<br>
@@ -906,29 +906,29 @@
                                 • Mobile Users: ${deviceData.devices.mobile || 0}
                             </div>
                         </div>
-                        
+
                         <div style="background: #f8fafc; padding: 15px; border-radius: 8px; margin-bottom: 15px;">
                             <strong style="color: #2d3748;">Top Error Types:</strong><br>
                             ${clientErrors.errors.slice(0, 3).map(error => `
                                 • ${error.type}: "${error.message}" (${error.occurrences}x, severity: ${error.severity})
                             `).join('<br>')}
                         </div>
-                        
+
                         <div style="background: #e6fffa; padding: 15px; border-radius: 8px; border-left: 4px solid #38a169;">
                             <strong style="color: #38a169;">✅ Real-time monitoring active</strong><br>
                             All telemetry data is being collected and processed successfully.
                         </div>
                     </div>
                 `;
-                
+
                 updateChartsContainer(errorSummary);
-                
+
             } catch (error) {
                 console.error('Failed to load analytics overview:', error);
                 updateChartsContainer('Analytics data loaded successfully, but detailed overview failed to load.');
             }
         }
-        
+
         function updateChartsContainer(content) {
             const container = document.getElementById('chartsContainer');
             if (container) {
@@ -945,7 +945,7 @@
 
         // Initialize on page load
         document.addEventListener('DOMContentLoaded', init);
-        
+
         // Handle page visibility changes
         document.addEventListener('visibilitychange', () => {
             if (!document.hidden && ws && ws.readyState !== WebSocket.OPEN) {

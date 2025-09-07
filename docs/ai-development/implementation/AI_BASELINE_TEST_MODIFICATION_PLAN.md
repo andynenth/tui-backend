@@ -89,25 +89,25 @@ from backend.engine.ai import choose_declare_strategic_v2  # New function
 ```python
 def get_baseline_v2_scenarios():
     """Get baseline test scenarios updated for new AI logic."""
-    
+
     baseline_v2_tests = [
         # Strong hands with opener
         ("baseline_01", "[ADVISOR_RED, CHARIOT_BLACK, HORSE_BLACK, CANNON_BLACK, SOLDIER_RED, SOLDIER_RED, SOLDIER_BLACK, SOLDIER_BLACK]",
          0, [], 4, "Strong Hand with Opener (As Starter)", True, "Starter finds straight first, then opener"),
-        
+
         ("baseline_02", "[ADVISOR_RED, CHARIOT_BLACK, HORSE_BLACK, CANNON_BLACK, SOLDIER_RED, SOLDIER_RED, SOLDIER_BLACK, SOLDIER_BLACK]",
          2, [0, 1], 1, "Same Hand, Weak Field", False, "Non-starter finds opener, limited by pile room"),
-        
+
         ("baseline_03", "[ADVISOR_RED, CHARIOT_BLACK, HORSE_BLACK, CANNON_BLACK, SOLDIER_RED, SOLDIER_RED, SOLDIER_BLACK, SOLDIER_BLACK]",
          2, [5, 4], 1, "Same Hand, Strong Field (No Room)", False, "Pile room = 1, only opener counts"),
-        
+
         # Good combos without opener
         ("baseline_04", "[CHARIOT_RED, HORSE_RED, CANNON_RED, ELEPHANT_BLACK, SOLDIER_RED, SOLDIER_RED, SOLDIER_BLACK, SOLDIER_BLACK]",
          0, [], 5, "Good Combos, No Opener (Starter)", True, "Starter finds straight + SOLDIER pair"),
-        
+
         ("baseline_05", "[CHARIOT_RED, HORSE_RED, CANNON_RED, ELEPHANT_BLACK, SOLDIER_RED, SOLDIER_RED, SOLDIER_BLACK, SOLDIER_BLACK]",
          2, [0, 1], 0, "Good Combos, No Opener (Weak Field)", False, "Non-starter with no opener declares 0"),
-        
+
         # ... continue with updated expected values
     ]
 ```
@@ -118,7 +118,7 @@ def get_baseline_v2_scenarios():
 def execute_test_scenario_v2(scenario: TestScenario, verbose: bool = False) -> TestResult:
     """Execute test scenario using new v2 declaration logic."""
     hand = parse_hand(scenario.hand_str)
-    
+
     # Use new v2 function
     actual = choose_declare_strategic_v2(
         hand=hand,
@@ -128,9 +128,9 @@ def execute_test_scenario_v2(scenario: TestScenario, verbose: bool = False) -> T
         must_declare_nonzero=False,
         verbose=verbose
     )
-    
+
     passed = (actual == scenario.expected)
-    
+
     return TestResult(
         scenario=scenario,
         actual_result=actual,
@@ -149,11 +149,11 @@ def compare_v1_v2_results():
     """Compare results between v1 and v2 declaration logic."""
     v1_scenarios = get_baseline_scenarios()
     v2_scenarios = get_baseline_v2_scenarios()
-    
+
     for v1, v2 in zip(v1_scenarios, v2_scenarios):
         v1_result = execute_test_scenario(v1)
         v2_result = execute_test_scenario_v2(v2)
-        
+
         if v1_result.actual_result != v2_result.actual_result:
             print(f"{v1.scenario_id}: v1={v1_result.actual_result}, v2={v2_result.actual_result}")
 ```
@@ -168,7 +168,7 @@ def explain_declaration_v2(scenario: TestScenario):
     print(f"\n{'='*60}")
     print(f"Explaining {scenario.scenario_id}")
     print(f"{'='*60}")
-    
+
     result = execute_test_scenario_v2(scenario, verbose=True)
     # Verbose mode will show play list construction
 ```

@@ -42,19 +42,19 @@ class ErrorCategory(Enum):
     # Network errors
     CONNECTION = "connection"
     TIMEOUT = "timeout"
-    
+
     # Game logic errors
     INVALID_MOVE = "invalid_move"
     GAME_STATE = "game_state"
-    
+
     # Data errors
     VALIDATION = "validation"
     SERIALIZATION = "serialization"
-    
+
     # System errors
     RESOURCE = "resource"
     INTERNAL = "internal"
-    
+
     # User errors
     AUTHENTICATION = "authentication"
     AUTHORIZATION = "authorization"
@@ -70,19 +70,19 @@ graph TB
         GameError[Game Errors<br/>Invalid state]
         SystemError[System Errors<br/>Server issues]
     end
-    
+
     subgraph "Recovery Strategies"
         Retry[Retry<br/>Automatic]
         Fallback[Fallback<br/>Degraded mode]
         Reset[Reset<br/>Clean state]
         Manual[Manual<br/>User action]
     end
-    
+
     UserError --> Manual
     NetworkError --> Retry
     GameError --> Reset
     SystemError --> Fallback
-    
+
     style UserError fill:#FFE4B5
     style NetworkError fill:#FFB6C1
     style GameError fill:#E6E6FA
@@ -97,7 +97,7 @@ graph TB
 # backend/exceptions.py
 class LiapTuiException(Exception):
     """Base exception for all game errors."""
-    
+
     def __init__(
         self,
         code: str,
@@ -112,7 +112,7 @@ class LiapTuiException(Exception):
         self.details = details or {}
         self.recoverable = recoverable
         super().__init__(message)
-    
+
     def to_dict(self) -> Dict:
         return {
             "code": self.code,
@@ -126,7 +126,7 @@ class LiapTuiException(Exception):
 # Specific exceptions
 class GameStateError(LiapTuiException):
     """Game state related errors."""
-    
+
     def __init__(self, message: str, state: Optional[Dict] = None):
         super().__init__(
             code="GAME_STATE_ERROR",
@@ -137,7 +137,7 @@ class GameStateError(LiapTuiException):
 
 class InvalidPlayError(LiapTuiException):
     """Invalid game play attempt."""
-    
+
     def __init__(
         self,
         message: str,
@@ -154,7 +154,7 @@ class InvalidPlayError(LiapTuiException):
                 "suggestion": self._get_suggestion(play_details)
             }
         )
-    
+
     def _get_suggestion(self, play_details: Dict) -> str:
         """Provide helpful suggestion based on error."""
         if "wrong_count" in play_details:
@@ -165,7 +165,7 @@ class InvalidPlayError(LiapTuiException):
 
 class ConnectionError(LiapTuiException):
     """WebSocket connection errors."""
-    
+
     def __init__(
         self,
         message: str,
@@ -193,12 +193,12 @@ import traceback
 
 class ErrorHandlerMiddleware:
     """Global error handler for all requests."""
-    
+
     async def __call__(self, request: Request, call_next):
         try:
             response = await call_next(request)
             return response
-            
+
         except LiapTuiException as e:
             # Handle known game errors
             logger.warning(
@@ -209,7 +209,7 @@ class ErrorHandlerMiddleware:
                     "method": request.method
                 }
             )
-            
+
             return JSONResponse(
                 status_code=self._get_status_code(e),
                 content={
@@ -217,7 +217,7 @@ class ErrorHandlerMiddleware:
                     "request_id": request.state.request_id
                 }
             )
-            
+
         except Exception as e:
             # Handle unexpected errors
             error_id = str(uuid.uuid4())
@@ -230,7 +230,7 @@ class ErrorHandlerMiddleware:
                     "traceback": traceback.format_exc()
                 }
             )
-            
+
             return JSONResponse(
                 status_code=500,
                 content={
@@ -242,7 +242,7 @@ class ErrorHandlerMiddleware:
                     }
                 }
             )
-    
+
     def _get_status_code(self, error: LiapTuiException) -> int:
         """Map error to HTTP status code."""
         status_map = {
@@ -262,7 +262,7 @@ class ErrorHandlerMiddleware:
 # backend/websocket/error_handler.py
 class WebSocketErrorHandler:
     """Handle errors in WebSocket connections."""
-    
+
     async def handle_error(
         self,
         websocket: WebSocket,
@@ -270,23 +270,23 @@ class WebSocketErrorHandler:
         context: Optional[Dict] = None
     ):
         """Handle WebSocket errors appropriately."""
-        
+
         if isinstance(error, WebSocketDisconnect):
             # Normal disconnection
             await self.handle_disconnect(websocket, error.code)
-            
+
         elif isinstance(error, LiapTuiException):
             # Send error to client
             await self.send_error(websocket, error)
-            
+
         elif isinstance(error, ValidationError):
             # Invalid message format
             await self.send_validation_error(websocket, error)
-            
+
         else:
             # Unexpected error
             await self.handle_unexpected_error(websocket, error, context)
-    
+
     async def send_error(
         self,
         websocket: WebSocket,
@@ -301,7 +301,7 @@ class WebSocketErrorHandler:
         except:
             # Connection might be closed
             pass
-    
+
     async def handle_disconnect(
         self,
         websocket: WebSocket,
@@ -317,10 +317,10 @@ class WebSocketErrorHandler:
         else:
             # Abnormal closure
             logger.warning(f"Abnormal disconnect: {code}")
-        
+
         # Clean up resources
         await self.cleanup_connection(websocket)
-    
+
     async def handle_unexpected_error(
         self,
         websocket: WebSocket,
@@ -329,7 +329,7 @@ class WebSocketErrorHandler:
     ):
         """Handle unexpected errors."""
         error_id = str(uuid.uuid4())
-        
+
         # Log full error details
         logger.error(
             f"WebSocket error: {error_id}",
@@ -340,7 +340,7 @@ class WebSocketErrorHandler:
                 "connection": self.get_connection_info(websocket)
             }
         )
-        
+
         # Send generic error to client
         try:
             await websocket.send_json({
@@ -362,11 +362,11 @@ class WebSocketErrorHandler:
 # backend/game/state_protection.py
 class StateProtector:
     """Protect game state from corruption."""
-    
+
     def __init__(self):
         self.state_snapshots = {}
         self.max_snapshots = 10
-    
+
     async def protect_operation(
         self,
         game_id: str,
@@ -377,23 +377,23 @@ class StateProtector:
         """Execute operation with state protection."""
         # Take snapshot before operation
         snapshot = await self.create_snapshot(game_id)
-        
+
         try:
             # Execute operation
             result = await operation(*args, **kwargs)
-            
+
             # Validate state after operation
             if not await self.validate_state(game_id):
                 raise GameStateError("State validation failed")
-            
+
             return result
-            
+
         except Exception as e:
             # Restore from snapshot on error
             logger.error(f"Operation failed, restoring state: {e}")
             await self.restore_snapshot(game_id, snapshot)
             raise
-    
+
     async def create_snapshot(self, game_id: str) -> Dict:
         """Create state snapshot."""
         state = await self.get_game_state(game_id)
@@ -402,23 +402,23 @@ class StateProtector:
             "state": copy.deepcopy(state),
             "hash": self.calculate_state_hash(state)
         }
-        
+
         # Store snapshot
         if game_id not in self.state_snapshots:
             self.state_snapshots[game_id] = deque(maxlen=self.max_snapshots)
         self.state_snapshots[game_id].append(snapshot)
-        
+
         return snapshot
-    
+
     async def restore_snapshot(self, game_id: str, snapshot: Dict):
         """Restore game state from snapshot."""
         logger.warning(
             f"Restoring game {game_id} to snapshot from {snapshot['timestamp']}"
         )
-        
+
         # Restore state
         await self.set_game_state(game_id, snapshot['state'])
-        
+
         # Notify players of restoration
         await self.notify_state_restoration(game_id, snapshot)
 ```
@@ -449,11 +449,11 @@ export class ErrorBoundary extends React.Component<
             errorCount: 0
         };
     }
-    
+
     static getDerivedStateFromError(error: Error): Partial<ErrorBoundaryState> {
         return { hasError: true };
     }
-    
+
     componentDidCatch(error: Error, errorInfo: ErrorInfo) {
         // Log to error reporting service
         logger.error('React Error Boundary caught error:', {
@@ -461,14 +461,14 @@ export class ErrorBoundary extends React.Component<
             componentStack: errorInfo.componentStack,
             timestamp: new Date().toISOString()
         });
-        
+
         // Update state with error details
         this.setState(prevState => ({
             error,
             errorInfo,
             errorCount: prevState.errorCount + 1
         }));
-        
+
         // Send to analytics
         if (window.analytics) {
             window.analytics.track('error_boundary_triggered', {
@@ -477,7 +477,7 @@ export class ErrorBoundary extends React.Component<
             });
         }
     }
-    
+
     handleReset = () => {
         this.setState({
             hasError: false,
@@ -485,14 +485,14 @@ export class ErrorBoundary extends React.Component<
             errorInfo: null
         });
     };
-    
+
     render() {
         if (this.state.hasError) {
             // Check if we should show full error or retry
             if (this.state.errorCount > 3) {
                 return <FullErrorPage onReset={this.handleReset} />;
             }
-            
+
             return (
                 <ErrorFallback
                     error={this.state.error}
@@ -500,7 +500,7 @@ export class ErrorBoundary extends React.Component<
                 />
             );
         }
-        
+
         return this.props.children;
     }
 }
@@ -530,7 +530,7 @@ export class ErrorRecoveryService {
     private retryQueue: Map<string, RetryOperation> = new Map();
     private maxRetries = 3;
     private baseDelay = 1000;
-    
+
     async executeWithRetry<T>(
         operation: () => Promise<T>,
         options: RetryOptions = {}
@@ -541,19 +541,19 @@ export class ErrorRecoveryService {
             onRetry = () => {},
             shouldRetry = this.defaultShouldRetry
         } = options;
-        
+
         let lastError: Error;
-        
+
         for (let attempt = 1; attempt <= maxAttempts; attempt++) {
             try {
                 return await operation();
             } catch (error) {
                 lastError = error as Error;
-                
+
                 if (!shouldRetry(error, attempt)) {
                     throw error;
                 }
-                
+
                 if (attempt < maxAttempts) {
                     const delay = this.calculateDelay(attempt, backoff);
                     await this.delay(delay);
@@ -561,29 +561,29 @@ export class ErrorRecoveryService {
                 }
             }
         }
-        
+
         throw new MaxRetriesError(
             `Operation failed after ${maxAttempts} attempts`,
             lastError!
         );
     }
-    
+
     private defaultShouldRetry(error: any, attempt: number): boolean {
         // Retry on network errors
         if (error.code === 'NETWORK_ERROR') return true;
-        
+
         // Retry on specific WebSocket errors
         if (error.code === 'CONNECTION_LOST') return true;
-        
+
         // Retry on rate limiting with backoff
         if (error.code === 'RATE_LIMITED') return attempt <= 2;
-        
+
         // Don't retry on game logic errors
         if (error.code?.startsWith('GAME_')) return false;
-        
+
         return false;
     }
-    
+
     private calculateDelay(attempt: number, backoff: string): number {
         switch (backoff) {
             case 'exponential':
@@ -595,7 +595,7 @@ export class ErrorRecoveryService {
                 return this.baseDelay;
         }
     }
-    
+
     private delay(ms: number): Promise<void> {
         return new Promise(resolve => setTimeout(resolve, ms));
     }
@@ -609,11 +609,11 @@ export class ErrorRecoveryService {
 export class GlobalErrorHandler {
     private errorQueue: ErrorInfo[] = [];
     private listeners: Set<ErrorListener> = new Set();
-    
+
     constructor() {
         this.setupGlobalHandlers();
     }
-    
+
     private setupGlobalHandlers() {
         // Unhandled promise rejections
         window.addEventListener('unhandledrejection', event => {
@@ -623,11 +623,11 @@ export class GlobalErrorHandler {
                 timestamp: Date.now(),
                 context: { promise: event.promise }
             });
-            
+
             // Prevent default browser behavior
             event.preventDefault();
         });
-        
+
         // Global error handler
         window.addEventListener('error', event => {
             this.handleError({
@@ -640,21 +640,21 @@ export class GlobalErrorHandler {
                     colno: event.colno
                 }
             });
-            
+
             // Prevent default browser behavior
             event.preventDefault();
         });
     }
-    
+
     handleError(errorInfo: ErrorInfo) {
         // Add to queue
         this.errorQueue.push(errorInfo);
-        
+
         // Limit queue size
         if (this.errorQueue.length > 100) {
             this.errorQueue.shift();
         }
-        
+
         // Notify listeners
         this.listeners.forEach(listener => {
             try {
@@ -663,22 +663,22 @@ export class GlobalErrorHandler {
                 console.error('Error in error listener:', e);
             }
         });
-        
+
         // Log to console in development
         if (process.env.NODE_ENV === 'development') {
             console.error('Global error:', errorInfo);
         }
-        
+
         // Send to analytics/logging service
         this.reportError(errorInfo);
     }
-    
+
     private reportError(errorInfo: ErrorInfo) {
         // Send to logging service
         if (window.logService) {
             window.logService.error(errorInfo);
         }
-        
+
         // Send to analytics
         if (window.analytics) {
             window.analytics.track('error', {
@@ -688,12 +688,12 @@ export class GlobalErrorHandler {
             });
         }
     }
-    
+
     subscribe(listener: ErrorListener): () => void {
         this.listeners.add(listener);
         return () => this.listeners.delete(listener);
     }
-    
+
     getRecentErrors(count: number = 10): ErrorInfo[] {
         return this.errorQueue.slice(-count);
     }
@@ -711,112 +711,112 @@ export class ConnectionRecoveryStrategy {
     private maxReconnectAttempts = 5;
     private reconnectDelay = 1000;
     private maxReconnectDelay = 30000;
-    
+
     async handleDisconnection(
         reason: DisconnectReason,
         context: ConnectionContext
     ): Promise<void> {
         logger.info('Connection lost:', reason);
-        
+
         // Determine recovery strategy
         const strategy = this.determineStrategy(reason);
-        
+
         switch (strategy) {
             case 'immediate':
                 await this.reconnectImmediately(context);
                 break;
-                
+
             case 'backoff':
                 await this.reconnectWithBackoff(context);
                 break;
-                
+
             case 'manual':
                 await this.promptUserReconnect(context);
                 break;
-                
+
             case 'abandon':
                 await this.abandonConnection(context);
                 break;
         }
     }
-    
+
     private determineStrategy(reason: DisconnectReason): RecoveryStrategy {
         // Network issues - try automatic reconnection
         if (reason.code >= 1006 && reason.code <= 1015) {
             return 'backoff';
         }
-        
+
         // Clean closure - don't reconnect
         if (reason.code === 1000) {
             return 'abandon';
         }
-        
+
         // Authentication failure - manual intervention
         if (reason.code === 4001) {
             return 'manual';
         }
-        
+
         // Server going away - immediate reconnect
         if (reason.code === 1001) {
             return 'immediate';
         }
-        
+
         // Default to backoff
         return 'backoff';
     }
-    
+
     private async reconnectWithBackoff(context: ConnectionContext) {
         while (this.reconnectAttempts < this.maxReconnectAttempts) {
             this.reconnectAttempts++;
-            
+
             const delay = Math.min(
                 this.reconnectDelay * Math.pow(2, this.reconnectAttempts - 1),
                 this.maxReconnectDelay
             );
-            
+
             logger.info(
                 `Reconnection attempt ${this.reconnectAttempts}/${this.maxReconnectAttempts} in ${delay}ms`
             );
-            
+
             // Show reconnection UI
             this.showReconnectionUI(this.reconnectAttempts, delay);
-            
+
             await this.delay(delay);
-            
+
             try {
                 await context.reconnect();
-                
+
                 // Success - reset attempts
                 this.reconnectAttempts = 0;
                 this.hideReconnectionUI();
-                
+
                 // Resync state
                 await this.resyncState(context);
-                
+
                 return;
             } catch (error) {
                 logger.error('Reconnection failed:', error);
             }
         }
-        
+
         // Max attempts reached
         this.showReconnectionFailedUI();
     }
-    
+
     private async resyncState(context: ConnectionContext) {
         // Request state sync from server
         const syncRequest: SyncRequest = {
             last_sequence: context.lastSequenceNumber,
             client_state_hash: context.stateHash
         };
-        
+
         const syncResponse = await context.requestSync(syncRequest);
-        
+
         // Apply missed events
         for (const event of syncResponse.missed_events) {
             await context.applyEvent(event);
         }
-        
+
         // Verify state consistency
         if (syncResponse.state_hash !== context.calculateStateHash()) {
             // Full state refresh needed
@@ -834,7 +834,7 @@ export class ConnectionRecoveryStrategy {
 # backend/game/state_recovery.py
 class StateRecoveryManager:
     """Manage game state recovery after errors."""
-    
+
     def __init__(self):
         self.recovery_strategies = {
             GamePhase.PREPARATION: self.recover_preparation,
@@ -842,14 +842,14 @@ class StateRecoveryManager:
             GamePhase.TURN: self.recover_turn,
             GamePhase.SCORING: self.recover_scoring
         }
-    
+
     async def recover_game_state(
         self,
         game_id: str,
         error: Exception
     ) -> RecoveryResult:
         """Attempt to recover game state after error."""
-        
+
         # Get current state
         state = await self.get_game_state(game_id)
         if not state:
@@ -857,47 +857,47 @@ class StateRecoveryManager:
                 success=False,
                 reason="Game state not found"
             )
-        
+
         # Determine recovery strategy
         phase = state.get('phase')
         strategy = self.recovery_strategies.get(phase)
-        
+
         if not strategy:
             return RecoveryResult(
                 success=False,
                 reason=f"No recovery strategy for phase {phase}"
             )
-        
+
         try:
             # Execute recovery
             recovered_state = await strategy(state, error)
-            
+
             # Validate recovered state
             if not self.validate_state(recovered_state):
                 raise ValueError("Invalid recovered state")
-            
+
             # Apply recovered state
             await self.apply_recovered_state(game_id, recovered_state)
-            
+
             # Notify players
             await self.notify_recovery(game_id, recovered_state, error)
-            
+
             return RecoveryResult(
                 success=True,
                 recovered_state=recovered_state
             )
-            
+
         except Exception as recovery_error:
             logger.error(
                 f"Recovery failed for game {game_id}",
                 exc_info=True
             )
-            
+
             return RecoveryResult(
                 success=False,
                 reason=str(recovery_error)
             )
-    
+
     async def recover_turn(
         self,
         state: Dict,
@@ -905,15 +905,15 @@ class StateRecoveryManager:
     ) -> Dict:
         """Recover from turn phase error."""
         phase_data = state['phase_data']
-        
+
         # Check if turn can be replayed
         if self.can_replay_turn(phase_data):
             # Reset current turn
             phase_data['current_plays'] = {}
             phase_data['turn_complete'] = False
-            
+
             logger.info("Resetting current turn for replay")
-            
+
         else:
             # Skip to next turn
             phase_data['current_player'] = self.get_next_player(
@@ -922,30 +922,30 @@ class StateRecoveryManager:
             )
             phase_data['turn_number'] += 1
             phase_data['current_plays'] = {}
-            
+
             logger.info("Skipping to next turn due to error")
-        
+
         return state
-    
+
     def validate_state(self, state: Dict) -> bool:
         """Validate recovered state."""
         required_fields = ['phase', 'phase_data', 'players', 'round_number']
-        
+
         # Check required fields
         for field in required_fields:
             if field not in state:
                 return False
-        
+
         # Validate phase data
         phase = state['phase']
         phase_data = state['phase_data']
-        
+
         if phase == GamePhase.TURN:
             return all(
                 field in phase_data
                 for field in ['current_player', 'turn_number']
             )
-        
+
         return True
 ```
 
@@ -956,13 +956,13 @@ class StateRecoveryManager:
 export class ClientStateRecovery {
     private stateCache: StateCache;
     private stateValidator: StateValidator;
-    
+
     async recoverFromError(
         error: GameError,
         currentState: GameState
     ): Promise<GameState | null> {
         logger.info('Attempting state recovery:', error);
-        
+
         // Try recovery strategies in order
         const strategies = [
             () => this.recoverFromCache(),
@@ -970,11 +970,11 @@ export class ClientStateRecovery {
             () => this.recoverFromLocalStorage(),
             () => this.reconstructFromEvents()
         ];
-        
+
         for (const strategy of strategies) {
             try {
                 const recoveredState = await strategy();
-                
+
                 if (recoveredState && this.stateValidator.isValid(recoveredState)) {
                     logger.info('State recovered successfully');
                     return recoveredState;
@@ -983,24 +983,24 @@ export class ClientStateRecovery {
                 logger.error('Recovery strategy failed:', e);
             }
         }
-        
+
         // All strategies failed
         return null;
     }
-    
+
     private async recoverFromCache(): Promise<GameState | null> {
         // Get most recent valid state from cache
         const cachedStates = this.stateCache.getRecentStates(5);
-        
+
         for (const cached of cachedStates) {
             if (this.stateValidator.isValid(cached.state)) {
                 return cached.state;
             }
         }
-        
+
         return null;
     }
-    
+
     private async recoverFromServer(): Promise<GameState | null> {
         // Request current state from server
         try {
@@ -1011,18 +1011,18 @@ export class ClientStateRecovery {
             return null;
         }
     }
-    
+
     private async reconstructFromEvents(): Promise<GameState | null> {
         // Get event history
         const events = await this.getEventHistory();
-        
+
         if (!events || events.length === 0) {
             return null;
         }
-        
+
         // Find last known good state
         let state = this.getInitialState();
-        
+
         // Replay events
         for (const event of events) {
             try {
@@ -1033,7 +1033,7 @@ export class ClientStateRecovery {
                 break;
             }
         }
-        
+
         return state;
     }
 }
@@ -1047,12 +1047,12 @@ export class ClientStateRecovery {
 // frontend/src/components/ErrorNotification.tsx
 export const ErrorNotificationSystem: React.FC = () => {
     const [notifications, setNotifications] = useState<ErrorNotification[]>([]);
-    
+
     useEffect(() => {
         const unsubscribe = errorService.subscribe((error) => {
             const notification = createNotification(error);
             setNotifications(prev => [...prev, notification]);
-            
+
             // Auto-dismiss after timeout
             if (notification.autoDismiss) {
                 setTimeout(() => {
@@ -1060,10 +1060,10 @@ export const ErrorNotificationSystem: React.FC = () => {
                 }, notification.duration);
             }
         });
-        
+
         return unsubscribe;
     }, []);
-    
+
     const createNotification = (error: GameError): ErrorNotification => {
         return {
             id: Date.now().toString(),
@@ -1075,34 +1075,34 @@ export const ErrorNotificationSystem: React.FC = () => {
             duration: error.severity === 'critical' ? 10000 : 5000
         };
     };
-    
+
     const getErrorActions = (error: GameError): NotificationAction[] => {
         const actions: NotificationAction[] = [];
-        
+
         if (error.recoverable) {
             actions.push({
                 label: 'Retry',
                 action: () => errorService.retry(error)
             });
         }
-        
+
         if (error.code === 'CONNECTION_LOST') {
             actions.push({
                 label: 'Reconnect',
                 action: () => connectionService.reconnect()
             });
         }
-        
+
         if (error.details?.suggestion) {
             actions.push({
                 label: 'Learn More',
                 action: () => showErrorHelp(error)
             });
         }
-        
+
         return actions;
     };
-    
+
     return (
         <div className="error-notifications">
             <TransitionGroup>
@@ -1130,15 +1130,15 @@ const ErrorNotificationItem: React.FC<{
 }> = ({ notification, onDismiss }) => {
     const icon = getNotificationIcon(notification.type);
     const className = `notification notification--${notification.type}`;
-    
+
     return (
         <div className={className} role="alert">
             <div className="notification__icon">{icon}</div>
-            
+
             <div className="notification__content">
                 <h4 className="notification__title">{notification.title}</h4>
                 <p className="notification__message">{notification.message}</p>
-                
+
                 {notification.actions.length > 0 && (
                     <div className="notification__actions">
                         {notification.actions.map((action, index) => (
@@ -1153,7 +1153,7 @@ const ErrorNotificationItem: React.FC<{
                     </div>
                 )}
             </div>
-            
+
             <button
                 className="notification__dismiss"
                 onClick={onDismiss}
@@ -1175,16 +1175,16 @@ export const InlineError: React.FC<{
     fieldName: string;
 }> = ({ error, fieldName }) => {
     const [isExpanded, setIsExpanded] = useState(false);
-    
+
     if (!error) return null;
-    
+
     return (
         <div className="inline-error" role="alert">
             <div className="inline-error__message">
                 <Icon name="error" />
                 <span>{error.message}</span>
             </div>
-            
+
             {error.details && (
                 <button
                     className="inline-error__toggle"
@@ -1194,7 +1194,7 @@ export const InlineError: React.FC<{
                     {isExpanded ? 'Less' : 'More'} info
                 </button>
             )}
-            
+
             {isExpanded && error.details && (
                 <div className="inline-error__details">
                     <p>{error.details}</p>
@@ -1212,20 +1212,20 @@ export const InlineError: React.FC<{
 // Form with inline errors
 export const GameForm: React.FC = () => {
     const [errors, setErrors] = useState<Record<string, FieldError>>({});
-    
+
     const handleSubmit = async (data: FormData) => {
         try {
             // Clear previous errors
             setErrors({});
-            
+
             // Validate and submit
             await submitForm(data);
-            
+
         } catch (error) {
             if (error instanceof ValidationError) {
                 // Show field-specific errors
                 const fieldErrors: Record<string, FieldError> = {};
-                
+
                 error.errors.forEach(err => {
                     fieldErrors[err.field] = {
                         message: err.message,
@@ -1233,7 +1233,7 @@ export const GameForm: React.FC = () => {
                         suggestion: err.suggestion
                     };
                 });
-                
+
                 setErrors(fieldErrors);
             } else {
                 // Show general error
@@ -1241,7 +1241,7 @@ export const GameForm: React.FC = () => {
             }
         }
     };
-    
+
     return (
         <form onSubmit={handleSubmit}>
             <div className="form-field">
@@ -1256,7 +1256,7 @@ export const GameForm: React.FC = () => {
                 />
                 <InlineError error={errors.playerName} fieldName="playerName" />
             </div>
-            
+
             {/* Other fields... */}
         </form>
     );
@@ -1274,11 +1274,11 @@ from typing import Any, Dict
 
 class GameLogger:
     """Structured logging for game events."""
-    
+
     def __init__(self):
         self.logger = structlog.get_logger()
         self.configure_processors()
-    
+
     def configure_processors(self):
         """Configure structlog processors."""
         structlog.configure(
@@ -1299,33 +1299,33 @@ class GameLogger:
             logger_factory=structlog.stdlib.LoggerFactory(),
             cache_logger_on_first_use=True,
         )
-    
+
     def add_game_context(self, logger, log_method, event_dict):
         """Add game-specific context to logs."""
         # Add request ID if available
         if hasattr(g, 'request_id'):
             event_dict['request_id'] = g.request_id
-        
+
         # Add game context
         if hasattr(g, 'game_id'):
             event_dict['game_id'] = g.game_id
-        
+
         if hasattr(g, 'player_id'):
             event_dict['player_id'] = g.player_id
-        
+
         # Add performance metrics
         if hasattr(g, 'start_time'):
             event_dict['duration_ms'] = (time.time() - g.start_time) * 1000
-        
+
         return event_dict
-    
+
     def sanitize_sensitive_data(self, logger, log_method, event_dict):
         """Remove sensitive data from logs."""
         sensitive_fields = [
             'password', 'token', 'session_id',
             'email', 'credit_card', 'ssn'
         ]
-        
+
         def sanitize_dict(d: Dict[str, Any]) -> Dict[str, Any]:
             sanitized = {}
             for key, value in d.items():
@@ -1336,9 +1336,9 @@ class GameLogger:
                 else:
                     sanitized[key] = value
             return sanitized
-        
+
         return sanitize_dict(event_dict)
-    
+
     def log_error(
         self,
         message: str,
@@ -1354,7 +1354,7 @@ class GameLogger:
             context=context or {},
             stack_info=True
         )
-    
+
     def log_game_event(
         self,
         event_type: str,
@@ -1398,7 +1398,7 @@ import time
 
 class ErrorMetrics:
     """Track error metrics for monitoring."""
-    
+
     def __init__(self):
         # Error counters
         self.error_counter = Counter(
@@ -1406,36 +1406,36 @@ class ErrorMetrics:
             'Total number of errors',
             ['error_type', 'severity', 'phase']
         )
-        
+
         # Recovery metrics
         self.recovery_attempts = Counter(
             'error_recovery_attempts_total',
             'Total recovery attempts',
             ['strategy', 'phase']
         )
-        
+
         self.recovery_success = Counter(
             'error_recovery_success_total',
             'Successful recoveries',
             ['strategy', 'phase']
         )
-        
+
         # Error rate
         self.error_rate = Gauge(
             'game_error_rate',
             'Current error rate per minute'
         )
-        
+
         # Recovery time
         self.recovery_time = Histogram(
             'error_recovery_duration_seconds',
             'Time taken to recover from errors',
             ['error_type']
         )
-        
+
         # Start error rate calculation
         self.start_error_rate_calculation()
-    
+
     def record_error(
         self,
         error_type: str,
@@ -1448,7 +1448,7 @@ class ErrorMetrics:
             severity=severity,
             phase=phase
         ).inc()
-    
+
     def record_recovery_attempt(
         self,
         strategy: str,
@@ -1461,17 +1461,17 @@ class ErrorMetrics:
             strategy=strategy,
             phase=phase
         ).inc()
-        
+
         if success:
             self.recovery_success.labels(
                 strategy=strategy,
                 phase=phase
             ).inc()
-        
+
         self.recovery_time.labels(
             error_type=strategy
         ).observe(duration)
-    
+
     def start_error_rate_calculation(self):
         """Calculate error rate periodically."""
         def calculate_rate():
@@ -1483,7 +1483,7 @@ class ErrorMetrics:
                 current_rate = self.get_error_rate(window)
                 self.error_rate.set(current_rate)
                 time.sleep(10)  # Update every 10 seconds
-        
+
         import threading
         thread = threading.Thread(target=calculate_rate, daemon=True)
         thread.start()
@@ -1503,44 +1503,44 @@ from unittest.mock import Mock, patch
 
 class TestErrorHandling:
     """Test error handling scenarios."""
-    
+
     @pytest.mark.asyncio
     async def test_game_state_recovery(self):
         """Test game state recovery after error."""
         # Setup
         game = create_test_game()
         original_state = game.get_state()
-        
+
         # Simulate error during play
         with patch.object(game, 'process_play', side_effect=Exception("Test error")):
             with pytest.raises(Exception):
                 await game.play_pieces("Alice", ["p1", "p2"])
-        
+
         # Verify state unchanged
         assert game.get_state() == original_state
-        
+
         # Verify recovery logged
         assert_recovery_logged("game_state_recovery", game.id)
-    
+
     @pytest.mark.asyncio
     async def test_network_error_recovery(self):
         """Test recovery from network errors."""
         client = create_test_client()
-        
+
         # Simulate network failure
         with patch.object(client.websocket, 'send', side_effect=ConnectionError()):
             result = await client.send_with_retry({
                 "event": "play",
                 "data": {"piece_ids": ["p1"]}
             })
-        
+
         # Verify retry attempted
         assert client.websocket.send.call_count >= 2
-        
+
         # Verify exponential backoff
         delays = get_retry_delays(client.websocket.send)
         assert delays == [1000, 2000, 4000]  # Exponential
-    
+
     @pytest.mark.asyncio
     async def test_validation_error_handling(self):
         """Test validation error responses."""
@@ -1549,11 +1549,11 @@ class TestErrorHandling:
             player="Alice",
             piece_ids=["invalid_id"]
         )
-        
+
         assert response.status_code == 400
         assert response.json()["error"]["code"] == "INVALID_PLAY"
         assert "suggestion" in response.json()["error"]["details"]
-    
+
     def test_error_boundary_recovery(self):
         """Test React error boundary recovery."""
         # Render component that will error
@@ -1562,16 +1562,16 @@ class TestErrorHandling:
                 <BuggyComponent />
             </ErrorBoundary>
         );
-        
+
         // Trigger error
         fireEvent.click(getByText("Trigger Error"));
-        
+
         # Verify error UI shown
         expect(getByText("Something went wrong")).toBeInTheDocument();
-        
+
         # Test recovery
         fireEvent.click(getByText("Try again"));
-        
+
         # Verify component recovered
         expect(getByText("Component loaded")).toBeInTheDocument();
 ```
@@ -1582,7 +1582,7 @@ class TestErrorHandling:
 # tests/chaos/error_injection.py
 class ChaosErrorInjector:
     """Inject errors for chaos testing."""
-    
+
     def __init__(self, probability: float = 0.1):
         self.probability = probability
         self.enabled = False
@@ -1592,27 +1592,27 @@ class ChaosErrorInjector:
             TimeoutError("Simulated timeout"),
             ValidationError("Simulated validation failure")
         ]
-    
+
     def maybe_inject_error(self):
         """Randomly inject an error."""
         if not self.enabled:
             return
-        
+
         if random.random() < self.probability:
             error = random.choice(self.error_types)
             logger.warning(f"Chaos: Injecting {type(error).__name__}")
             raise error
-    
+
     @contextmanager
     def chaos_mode(self, probability: float = None):
         """Enable chaos mode temporarily."""
         old_probability = self.probability
         old_enabled = self.enabled
-        
+
         self.enabled = True
         if probability:
             self.probability = probability
-        
+
         try:
             yield
         finally:
@@ -1626,25 +1626,25 @@ chaos = ChaosErrorInjector()
 async def test_game_resilience():
     """Test game resilience under chaos."""
     game = create_test_game()
-    
+
     with chaos.chaos_mode(probability=0.2):
         # Play 100 turns with 20% error probability
         errors = []
         recoveries = []
-        
+
         for i in range(100):
             try:
                 await game.play_turn()
             except Exception as e:
                 errors.append(e)
-                
+
                 # Attempt recovery
                 recovered = await game.recover()
                 recoveries.append(recovered)
-        
+
         # Verify game still playable
         assert game.is_valid()
-        
+
         # Verify recovery rate
         recovery_rate = sum(recoveries) / len(errors)
         assert recovery_rate > 0.8  # 80% recovery rate
@@ -1659,7 +1659,7 @@ async def test_game_resilience():
    # ❌ Bad
    except Exception:
        logger.error("Something went wrong")
-   
+
    # ✅ Good
    except InvalidPlayError as e:
        logger.error(f"Invalid play: {e.message}", extra={
@@ -1672,7 +1672,7 @@ async def test_game_resilience():
    ```typescript
    // ❌ Bad
    throw new Error("Invalid move");
-   
+
    // ✅ Good
    throw new GameError({
        code: "INVALID_MOVE",
