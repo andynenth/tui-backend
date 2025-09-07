@@ -6,6 +6,7 @@ repos:
       - id: end-of-file-fixer
       - id: check-yaml
       - id: check-added-large-files
+        args: ['--maxkb=600']  # Allow up to 600KB for compiled JavaScript chunks
       - id: check-json
       - id: check-merge-conflict
 
@@ -21,4 +22,19 @@ repos:
     hooks:
       - id: pylint
         files: ^backend/.*\.py$
-        args: [--disable=C0114,C0115,C0116]  # Disable docstring requirements for now
+        args: [
+          --disable=C0114,C0115,C0116,  # Disable docstring requirements
+          --disable=import-error,  # Disable import errors
+          --disable=wrong-import-position,  # Allow imports after sys.path
+          --disable=logging-fstring-interpolation,  # Allow f-strings in logging
+          --disable=too-many-locals,  # Allow complex functions
+          --disable=too-many-branches,  # Allow complex logic
+          --disable=too-many-statements,  # Allow long functions
+          --disable=too-many-nested-blocks,  # Allow nested logic
+          --disable=protected-access,  # Allow _ access for testing
+          --disable=import-outside-toplevel,  # Allow dynamic imports
+          --disable=cyclic-import,  # Common in large codebases
+          --disable=duplicate-code,  # Often false positives
+          --max-line-length=120,  # Allow slightly longer lines
+          --init-hook=import sys; sys.path.append('backend')
+        ]

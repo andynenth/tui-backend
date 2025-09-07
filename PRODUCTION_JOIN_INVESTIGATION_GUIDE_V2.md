@@ -24,28 +24,28 @@ Add these log points to capture join race conditions without changing the databa
 # In AsyncRoom.join_room()
 async def join_room(self, player_name: str) -> dict:
     join_start = time.time()
-    
+
     # Log entry with timestamp
     logger.info(f"JOIN_TRACE [{self.room_id}] Enter: player={player_name}, "
                 f"time={join_start:.6f}, current_slots={[p.name if p else None for p in self.players]}")
-    
+
     # Track if we're waiting for lock
     lock_wait_start = time.time()
-    
+
     async with self._join_lock:
         lock_acquired_time = time.time()
         lock_wait_ms = (lock_acquired_time - lock_wait_start) * 1000
-        
+
         # Log when lock acquired
         logger.info(f"JOIN_TRACE [{self.room_id}] Lock acquired: player={player_name}, "
                     f"wait_ms={lock_wait_ms:.1f}")
-        
+
         # ... existing join logic ...
-        
+
         # Before returning, store join attempt event
         join_end = time.time()
         total_ms = (join_end - join_start) * 1000
-        
+
         # Store in existing event store
         await event_store.store_event(
             self.room_id,
@@ -64,11 +64,11 @@ async def join_room(self, player_name: str) -> dict:
             },
             player_id=player_name
         )
-        
+
     # Log exit
     logger.info(f"JOIN_TRACE [{self.room_id}] Exit: player={player_name}, "
                 f"result={result['success']}, total_ms={total_ms:.1f}")
-    
+
     return result
 ```
 
@@ -78,7 +78,7 @@ The current schema (game_events_v2) already supports investigation queries:
 
 ```sql
 -- Find all join attempts for a room in a time window
-SELECT 
+SELECT
     id,
     room_id,
     event_type,
@@ -96,7 +96,7 @@ ORDER BY timestamp;
 
 -- Detect concurrent joins (within 1 second window)
 WITH join_windows AS (
-    SELECT 
+    SELECT
         room_id,
         player_id,
         timestamp,
@@ -106,7 +106,7 @@ WITH join_windows AS (
     WHERE event_type = 'join_attempt'
       AND timestamp > unixepoch('now') - 3600  -- Last hour
 )
-SELECT 
+SELECT
     room_id,
     COUNT(*) as concurrent_attempts,
     SUM(CASE WHEN success = 1 THEN 1 ELSE 0 END) as successful,
@@ -117,7 +117,7 @@ GROUP BY room_id
 HAVING COUNT(*) > 3;  -- At least 4 rapid attempts
 
 -- Failed joins analysis
-SELECT 
+SELECT
     json_extract(payload, '$.error_type') as error_type,
     COUNT(*) as count,
     AVG(json_extract(payload, '$.lock_wait_ms')) as avg_lock_wait_ms
@@ -155,7 +155,7 @@ Create log filters for JOIN_TRACE:
 fields @timestamp, @message
 | filter @message like /JOIN_TRACE/
 | parse @message /JOIN_TRACE \[(?<room_id>[^\]]+)\] (?<action>\w+): player=(?<player>[^,]+)/
-| stats count(*) as attempts, 
+| stats count(*) as attempts,
         sum(action = "Lock acquired") as locks_acquired,
         avg(lock_wait_ms) as avg_lock_wait
 by room_id
@@ -170,10 +170,10 @@ Add to existing health monitoring:
 # In health_monitor.py
 async def check_join_health(self) -> Dict[str, Any]:
     """Monitor join operation health"""
-    
+
     # Query recent join attempts
     cursor = self.conn.execute("""
-        SELECT 
+        SELECT
             COUNT(*) as total_attempts,
             SUM(CASE WHEN json_extract(payload, '$.success') = 1 THEN 1 ELSE 0 END) as successful,
             AVG(json_extract(payload, '$.lock_wait_ms')) as avg_lock_wait_ms,
@@ -182,9 +182,9 @@ async def check_join_health(self) -> Dict[str, Any]:
         WHERE event_type = 'join_attempt'
           AND timestamp > unixepoch('now') - 300  -- Last 5 minutes
     """)
-    
+
     stats = cursor.fetchone()
-    
+
     # Define thresholds
     health = {
         'total_attempts': stats[0] or 0,
@@ -193,16 +193,16 @@ async def check_join_health(self) -> Dict[str, Any]:
         'max_lock_wait_ms': stats[3] or 0,
         'status': 'healthy'
     }
-    
+
     # Check thresholds
     if health['max_lock_wait_ms'] > 3000:  # 3 second lock wait
         health['status'] = 'degraded'
         health['alert'] = 'High lock contention detected'
-    
+
     if health['success_rate'] < 80:
         health['status'] = 'unhealthy'
         health['alert'] = 'Low join success rate'
-    
+
     return health
 ```
 
@@ -213,14 +213,14 @@ async def check_join_health(self) -> Dict[str, Any]:
 ```python
 async def visualize_join_timeline(room_id: str, start_time: float, end_time: float):
     """Create visual timeline of join attempts"""
-    
+
     events = await event_store.get_events_by_type(
-        room_id, 
+        room_id,
         "join_attempt",
         start_time,
         end_time
     )
-    
+
     # Create timeline
     timeline = []
     for event in events:
@@ -231,22 +231,22 @@ async def visualize_join_timeline(room_id: str, start_time: float, end_time: flo
             'duration_ms': event['payload'].get('total_ms'),
             'lock_wait_ms': event['payload'].get('lock_wait_ms')
         })
-    
+
     # Sort by time
     timeline.sort(key=lambda x: x['time'])
-    
+
     # Print visual representation
     print(f"Join Timeline for Room {room_id}")
     print("=" * 80)
-    
+
     for i, event in enumerate(timeline):
         t = datetime.fromtimestamp(event['time'])
         status = "✓" if event['success'] else "✗"
         wait = event['lock_wait_ms'] or 0
-        
+
         # Visual bar for wait time
         bar = "█" * int(wait / 100)  # Each block = 100ms
-        
+
         print(f"{t.strftime('%H:%M:%S.%f')[:-3]} {status} {event['player']:15} "
               f"Wait: {wait:6.1f}ms {bar}")
 ```
@@ -256,10 +256,10 @@ async def visualize_join_timeline(room_id: str, start_time: float, end_time: flo
 ```python
 async def detect_concurrent_joins(time_window: int = 3600) -> List[Dict]:
     """Detect rooms with concurrent join issues"""
-    
+
     query = """
     WITH join_pairs AS (
-        SELECT 
+        SELECT
             e1.room_id,
             e1.player_id as player1,
             e2.player_id as player2,
@@ -269,15 +269,15 @@ async def detect_concurrent_joins(time_window: int = 3600) -> List[Dict]:
             json_extract(e1.payload, '$.success') as p1_success,
             json_extract(e2.payload, '$.success') as p2_success
         FROM game_events_v2 e1
-        JOIN game_events_v2 e2 
-          ON e1.room_id = e2.room_id 
+        JOIN game_events_v2 e2
+          ON e1.room_id = e2.room_id
           AND e1.id < e2.id
           AND ABS(e1.timestamp - e2.timestamp) < 0.5  -- Within 500ms
         WHERE e1.event_type = 'join_attempt'
           AND e2.event_type = 'join_attempt'
           AND e1.timestamp > unixepoch('now') - ?
     )
-    SELECT 
+    SELECT
         room_id,
         COUNT(*) as concurrent_pairs,
         MIN(time_diff) as min_gap_seconds,
@@ -286,7 +286,7 @@ async def detect_concurrent_joins(time_window: int = 3600) -> List[Dict]:
     GROUP BY room_id
     ORDER BY concurrent_pairs DESC
     """
-    
+
     cursor = event_store.conn.execute(query, (time_window,))
     return [dict(row) for row in cursor.fetchall()]
 ```
@@ -300,17 +300,17 @@ async def detect_concurrent_joins(time_window: int = 3600) -> List[Dict]:
 class RoomManager:
     def __init__(self):
         self.detailed_join_logging = False
-        
+
     async def enable_join_debugging(self, room_id: str = None):
         """Enable detailed join logging for debugging"""
         self.detailed_join_logging = True
         logger.setLevel(logging.DEBUG)
-        
+
         if room_id:
             logger.info(f"JOIN_DEBUG: Enabled for room {room_id}")
             # Start monitoring specific room
             asyncio.create_task(self.monitor_room_joins(room_id))
-    
+
     async def monitor_room_joins(self, room_id: str):
         """Monitor joins for a specific room"""
         while self.detailed_join_logging:
@@ -318,7 +318,7 @@ class RoomManager:
             recent = await detect_concurrent_joins_for_room(room_id, 60)
             if recent:
                 logger.warning(f"JOIN_DEBUG: Concurrent joins detected: {recent}")
-            
+
             await asyncio.sleep(5)
 ```
 
@@ -327,25 +327,25 @@ class RoomManager:
 ```python
 class JoinRateLimiter:
     """Emergency rate limiter for join operations"""
-    
+
     def __init__(self, max_joins_per_second: int = 10):
         self.max_joins_per_second = max_joins_per_second
         self.join_times = defaultdict(deque)
-    
+
     async def check_rate_limit(self, room_id: str, player_name: str) -> bool:
         """Check if join should be rate limited"""
         now = time.time()
-        
+
         # Clean old entries
         self.join_times[room_id] = deque(
-            t for t in self.join_times[room_id] 
+            t for t in self.join_times[room_id]
             if now - t < 1.0
         )
-        
+
         # Check rate
         if len(self.join_times[room_id]) >= self.max_joins_per_second:
             logger.warning(f"JOIN_RATELIMIT: Room {room_id} hit rate limit")
-            
+
             # Store rate limit event
             await event_store.store_event(
                 room_id,
@@ -358,7 +358,7 @@ class JoinRateLimiter:
                 player_id=player_name
             )
             return False
-        
+
         # Record this attempt
         self.join_times[room_id].append(now)
         return True
@@ -369,7 +369,7 @@ class JoinRateLimiter:
 ```sql
 -- Complete join investigation report
 WITH join_stats AS (
-    SELECT 
+    SELECT
         room_id,
         COUNT(*) as total_attempts,
         COUNT(DISTINCT player_id) as unique_players,
@@ -384,10 +384,10 @@ WITH join_stats AS (
       AND timestamp BETWEEN ? AND ?
     GROUP BY room_id
 )
-SELECT 
+SELECT
     *,
     (last_attempt - first_attempt) as duration_seconds,
-    CASE 
+    CASE
         WHEN total_attempts > 10 AND duration_seconds < 5 THEN 'JOIN_STORM'
         WHEN max_lock_wait > 3000 THEN 'HIGH_CONTENTION'
         WHEN successful < total_attempts * 0.8 THEN 'HIGH_FAILURE_RATE'
@@ -404,7 +404,7 @@ sqlite3 game_events.db <<EOF
 .mode csv
 .headers on
 .output join_investigation_$(date +%Y%m%d_%H%M%S).csv
-SELECT 
+SELECT
     datetime(timestamp, 'unixepoch') as time,
     room_id,
     player_id,

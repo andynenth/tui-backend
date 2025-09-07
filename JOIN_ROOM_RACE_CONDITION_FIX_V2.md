@@ -16,7 +16,7 @@ if room.is_full():  # ← RACE CONDITION: Non-atomic check
     # send error
     continue
 
-# Check if room has started  
+# Check if room has started
 if room.started:   # ← RACE CONDITION: Non-atomic check
     # send error
     continue
@@ -45,28 +45,28 @@ async def join_room(self, player_name: str) -> dict:
     """
     Allow a player to join the room asynchronously.
     Thread-safe with all validation inside the lock.
-    
+
     Returns:
         dict: Structured response with success/failure details
     """
     join_start = time.time()
-    
+
     # Log entry (per investigation guide)
     logger.info(f"JOIN_TRACE [{self.room_id}] Enter: player={player_name}, "
                 f"time={join_start:.6f}, current_slots={[p.name if p else None for p in self.players]}")
-    
+
     # Track lock wait time
     lock_wait_start = time.time()
-    
+
     async with self._join_lock:
         lock_acquired_time = time.time()
         lock_wait_ms = (lock_acquired_time - lock_wait_start) * 1000
-        
+
         logger.info(f"JOIN_TRACE [{self.room_id}] Lock acquired: player={player_name}, "
                     f"wait_ms={lock_wait_ms:.1f}")
-        
+
         self._last_activity = datetime.now()
-        
+
         # Check if game already started
         if self.started:
             result = {
@@ -75,7 +75,7 @@ async def join_room(self, player_name: str) -> dict:
                 'error_type': 'game_started',
                 'room_state': await self._get_room_state()
             }
-        
+
         # Check if player already in room
         elif any(p and p.name == player_name for p in self.players):
             slot = next(i for i, p in enumerate(self.players) if p and p.name == player_name)
@@ -85,11 +85,11 @@ async def join_room(self, player_name: str) -> dict:
                 'already_joined': True,
                 'room_state': await self._get_room_state()
             }
-        
+
         else:
             # Try to find a slot (empty or bot)
             slot_found = False
-            
+
             # First try empty slots
             for i, player in enumerate(self.players):
                 if player is None:
@@ -107,7 +107,7 @@ async def join_room(self, player_name: str) -> dict:
                     }
                     slot_found = True
                     break
-            
+
             # If no empty slot, try replacing a bot
             if not slot_found:
                 for i, player in enumerate(self.players):
@@ -128,24 +128,24 @@ async def join_room(self, player_name: str) -> dict:
                         }
                         slot_found = True
                         break
-            
+
             # No slots available
             if not slot_found:
                 result = {
                     'success': False,
                     'error': 'Room is full',
-                    'error_type': 'room_full', 
+                    'error_type': 'room_full',
                     'room_state': await self._get_room_state()
                 }
-    
+
     # Calculate total time
     join_end = time.time()
     total_ms = (join_end - join_start) * 1000
-    
+
     # Log exit
     logger.info(f"JOIN_TRACE [{self.room_id}] Exit: player={player_name}, "
                 f"result={result['success']}, total_ms={total_ms:.1f}")
-    
+
     # Store event for investigation (per guide)
     from backend.shared_event_store import event_store
     await event_store.store_event(
@@ -162,7 +162,7 @@ async def join_room(self, player_name: str) -> dict:
         },
         player_id=player_name
     )
-    
+
     return result
 ```
 
@@ -175,7 +175,7 @@ elif event_name == "join_room":
     # Handle room joining from lobby (using validated data)
     room_id_to_join = event_data.get("room_id")
     player_name = event_data.get("player_name")
-    
+
     try:
         # Get the room
         room = await room_manager.get_room(room_id_to_join)
@@ -188,13 +188,13 @@ elif event_name == "join_room":
                 }
             })
             continue
-        
+
         # REMOVED: Redundant is_full() check (lines 624-634)
         # REMOVED: Redundant started check (lines 637-647)
         # Let join_room handle ALL validation atomically
-        
+
         result = await room.join_room(player_name)
-        
+
         if result['success']:
             # Send success response
             await registered_ws.send_json({
@@ -208,7 +208,7 @@ elif event_name == "join_room":
                     "already_joined": result.get('already_joined', False),
                 }
             })
-            
+
             # Only broadcast room update if not already joined
             if not result.get('already_joined', False):
                 room_summary = await room.summary()
@@ -224,7 +224,7 @@ elif event_name == "join_room":
                         "replaced_bot": result.get('replaced_bot_name'),
                     },
                 )
-                
+
                 # Update lobby
                 from .routes import notify_lobby_room_updated
                 await notify_lobby_room_updated(room_summary)
@@ -238,7 +238,7 @@ elif event_name == "join_room":
                     "room_state": result.get('room_state', {}),
                 }
             })
-            
+
     except Exception as e:
         logger.error(f"Unexpected error in join_room: {e}")
         await registered_ws.send_json({
@@ -256,7 +256,7 @@ Add these queries to monitor the fix effectiveness:
 
 ```sql
 -- Monitor join success rate after fix deployment
-SELECT 
+SELECT
     DATE(datetime(timestamp, 'unixepoch')) as date,
     COUNT(*) as total_attempts,
     SUM(CASE WHEN json_extract(payload, '$.success') = 1 THEN 1 ELSE 0 END) as successful,
@@ -270,7 +270,7 @@ ORDER BY date;
 
 -- Detect any remaining race conditions
 WITH concurrent_joins AS (
-    SELECT 
+    SELECT
         e1.room_id,
         e1.timestamp as t1,
         e2.timestamp as t2,
@@ -279,20 +279,20 @@ WITH concurrent_joins AS (
         json_extract(e1.payload, '$.error_type') as p1_error,
         json_extract(e2.payload, '$.error_type') as p2_error
     FROM game_events_v2 e1
-    JOIN game_events_v2 e2 
-      ON e1.room_id = e2.room_id 
+    JOIN game_events_v2 e2
+      ON e1.room_id = e2.room_id
       AND e1.id < e2.id
       AND ABS(e1.timestamp - e2.timestamp) < 0.5
     WHERE e1.event_type = 'join_attempt'
       AND e2.event_type = 'join_attempt'
       AND e1.timestamp > unixepoch('DEPLOYMENT_DATE')
 )
-SELECT 
+SELECT
     room_id,
     COUNT(*) as concurrent_pairs,
     -- This should be 0 after fix
-    SUM(CASE WHEN p1_success = 1 AND p2_success = 1 
-             AND p1_error IS NULL AND p2_error IS NULL 
+    SUM(CASE WHEN p1_success = 1 AND p2_success = 1
+             AND p1_error IS NULL AND p2_error IS NULL
         THEN 1 ELSE 0 END) as both_succeeded_same_slot
 FROM concurrent_joins
 GROUP BY room_id
@@ -311,14 +311,14 @@ HAVING concurrent_pairs > 0;
 async def test_join_logging_integration():
     """Verify join attempts are logged correctly"""
     room = AsyncRoom("test_room", "host")
-    
+
     # Join and verify event stored
     result = await room.join_room("Player1")
     assert result['success']
-    
+
     # Check event was stored
     events = await event_store.get_events_by_type(
-        "test_room", 
+        "test_room",
         "join_attempt"
     )
     assert len(events) == 1
@@ -332,25 +332,25 @@ async def load_test_with_monitoring():
     """Simulate high concurrent load and verify no race conditions"""
     room_id = "load_test_room"
     room = AsyncRoom(room_id, "host")
-    
+
     # 100 concurrent join attempts
     players = [f"Player{i}" for i in range(100)]
     results = await asyncio.gather(*[
         room.join_room(p) for p in players
     ])
-    
+
     # Verify correctness
     successful = sum(1 for r in results if r['success'])
     assert successful == 4  # Room capacity
-    
+
     # Check for race conditions in logs
     events = await event_store.get_events_by_type(room_id, "join_attempt")
-    
+
     # No two successful joins should happen within 1ms
     # (indicating they bypassed the lock)
     for i, e1 in enumerate(events):
         for e2 in events[i+1:]:
-            if (e1['payload']['success'] and 
+            if (e1['payload']['success'] and
                 e2['payload']['success'] and
                 abs(e1['timestamp'] - e2['timestamp']) < 0.001):
                 assert False, "Race condition detected!"

@@ -50,16 +50,16 @@ check_aws_config() {
 main() {
     print_message "INFO" "Starting Old EC2 Shutdown Process" "$BLUE"
     echo "================================================"
-    
+
     # Check AWS CLI
     check_aws_config
-    
+
     # Show current account info
     ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
     print_message "INFO" "AWS Account: $ACCOUNT_ID" "$BLUE"
     print_message "INFO" "Region: $AWS_REGION" "$BLUE"
     echo ""
-    
+
     # Warning
     print_message "WARNING" "This will shut down your OLD EC2 server!" "$YELLOW"
     print_message "WARNING" "Instance ID: $INSTANCE_ID" "$YELLOW"
@@ -69,15 +69,15 @@ main() {
     print_message "INFO" "Make sure you've migrated everything to Tokyo (54.250.35.226)" "$BLUE"
     echo -n "Are you sure you want to continue? (yes/no): "
     read CONFIRM
-    
+
     if [ "$CONFIRM" != "yes" ]; then
         print_message "INFO" "Shutdown cancelled" "$BLUE"
         exit 0
     fi
-    
+
     echo ""
     print_message "INFO" "Starting shutdown..." "$BLUE"
-    
+
     # Step 1: Check instance status
     print_message "INFO" "Checking EC2 instance status..." "$BLUE"
     INSTANCE_STATE=$(aws ec2 describe-instances \
@@ -85,12 +85,12 @@ main() {
         --region $AWS_REGION \
         --query 'Reservations[0].Instances[0].State.Name' \
         --output text 2>/dev/null || echo "not-found")
-    
+
     if [ "$INSTANCE_STATE" = "not-found" ] || [ "$INSTANCE_STATE" = "None" ]; then
         print_message "INFO" "Instance not found or already terminated" "$BLUE"
     else
         print_message "INFO" "Instance state: $INSTANCE_STATE" "$BLUE"
-        
+
         # Stop instance if running
         if [ "$INSTANCE_STATE" = "running" ]; then
             print_message "INFO" "Stopping EC2 instance..." "$YELLOW"
@@ -98,16 +98,16 @@ main() {
                 --instance-ids $INSTANCE_ID \
                 --region $AWS_REGION \
                 --output text >/dev/null
-            
+
             # Wait for instance to stop
             print_message "INFO" "Waiting for instance to stop..." "$YELLOW"
             aws ec2 wait instance-stopped \
                 --instance-ids $INSTANCE_ID \
                 --region $AWS_REGION
-            
+
             print_message "SUCCESS" "Instance stopped" "$GREEN"
         fi
-        
+
         # Terminate instance
         if [ "$INSTANCE_STATE" != "terminated" ]; then
             print_message "INFO" "Terminating EC2 instance..." "$YELLOW"
@@ -115,17 +115,17 @@ main() {
                 --instance-ids $INSTANCE_ID \
                 --region $AWS_REGION \
                 --output text >/dev/null
-            
+
             # Wait for termination
             print_message "INFO" "Waiting for instance termination..." "$YELLOW"
             aws ec2 wait instance-terminated \
                 --instance-ids $INSTANCE_ID \
                 --region $AWS_REGION
-            
+
             print_message "SUCCESS" "Instance terminated" "$GREEN"
         fi
     fi
-    
+
     # Step 2: Release Elastic IP
     print_message "INFO" "Checking Elastic IP..." "$BLUE"
     ALLOCATION_ID=$(aws ec2 describe-addresses \
@@ -133,18 +133,18 @@ main() {
         --region $AWS_REGION \
         --query 'Addresses[0].AllocationId' \
         --output text 2>/dev/null || echo "not-found")
-    
+
     if [ "$ALLOCATION_ID" != "not-found" ] && [ "$ALLOCATION_ID" != "None" ]; then
         print_message "INFO" "Releasing Elastic IP..." "$YELLOW"
         aws ec2 release-address \
             --allocation-id $ALLOCATION_ID \
             --region $AWS_REGION
-        
+
         print_message "SUCCESS" "Elastic IP released" "$GREEN"
     else
         print_message "INFO" "Elastic IP not found or already released" "$BLUE"
     fi
-    
+
     # Step 3: Check for orphaned EBS volumes
     print_message "INFO" "Checking for orphaned EBS volumes..." "$BLUE"
     ORPHANED_VOLUMES=$(aws ec2 describe-volumes \
@@ -152,7 +152,7 @@ main() {
         --filters "Name=status,Values=available" \
         --query 'Volumes[?Tags[?Key==`Name` && contains(Value, `liap-tui`)]].[VolumeId,Size,State]' \
         --output text 2>/dev/null || echo "")
-    
+
     if [ -n "$ORPHANED_VOLUMES" ]; then
         print_message "WARNING" "Found orphaned volumes:" "$YELLOW"
         echo "$ORPHANED_VOLUMES"
@@ -160,7 +160,7 @@ main() {
     else
         print_message "SUCCESS" "No orphaned volumes found" "$GREEN"
     fi
-    
+
     # Step 4: Check for snapshots
     print_message "INFO" "Checking for snapshots..." "$BLUE"
     SNAPSHOT_COUNT=$(aws ec2 describe-snapshots \
@@ -168,20 +168,20 @@ main() {
         --region $AWS_REGION \
         --query 'length(Snapshots[?Description && contains(Description, `liap-tui`)])' \
         --output text 2>/dev/null || echo "0")
-    
+
     if [ "$SNAPSHOT_COUNT" != "0" ]; then
         print_message "WARNING" "Found $SNAPSHOT_COUNT snapshot(s) related to liap-tui" "$YELLOW"
         print_message "INFO" "Review with: aws ec2 describe-snapshots --owner-ids self --region $AWS_REGION" "$BLUE"
     else
         print_message "SUCCESS" "No related snapshots found" "$GREEN"
     fi
-    
+
     # Step 5: Try to delete security group
     print_message "INFO" "Checking security group..." "$BLUE"
-    
+
     # Wait a bit for AWS to update dependencies
     sleep 5
-    
+
     if aws ec2 delete-security-group \
         --group-id $SECURITY_GROUP_ID \
         --region $AWS_REGION 2>/dev/null; then
@@ -189,7 +189,7 @@ main() {
     else
         print_message "INFO" "Security group could not be deleted (may still be in use or default)" "$BLUE"
     fi
-    
+
     # Summary
     echo ""
     echo "================================================"
@@ -200,19 +200,19 @@ main() {
     echo "  ✓ EC2 Instance: $INSTANCE_ID"
     echo "  ✓ Elastic IP: $ELASTIC_IP"
     echo ""
-    
+
     # Cost savings
     print_message "INFO" "Estimated monthly savings:" "$BLUE"
     echo "  - EC2 t2.micro: ~$8.40"
     echo "  - Elastic IP: ~$3.60"
     echo "  - Total: ~$12.00/month"
     echo ""
-    
+
     # Next steps
     print_message "INFO" "Your application is now only running on:" "$BLUE"
     echo "  Tokyo server: 54.250.35.226"
     echo ""
-    
+
     # Check for any remaining resources
     print_message "INFO" "To verify all resources are cleaned up:" "$YELLOW"
     echo "  aws ec2 describe-instances --region $AWS_REGION"
@@ -220,7 +220,7 @@ main() {
     echo "  aws ec2 describe-volumes --region $AWS_REGION"
     echo "  aws ec2 describe-security-groups --region $AWS_REGION"
     echo ""
-    
+
     print_message "SUCCESS" "Old infrastructure successfully removed! 💰" "$GREEN"
 }
 
