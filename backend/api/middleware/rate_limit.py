@@ -155,6 +155,24 @@ class RateLimiter:
                 client_ip = forwarded_for.split(",")[0].strip()
             else:
                 client_ip = request.client.host if request.client else "unknown"
+
+            # For Docker development, use a combination of IP and User-Agent
+            # to differentiate between browser tabs/sessions
+            import os
+
+            if os.getenv("DEBUG") == "true" and client_ip.startswith("172."):
+                # In Docker dev mode, append a session identifier
+                user_agent = request.headers.get("User-Agent", "")
+                # Use port from client connection as a differentiator
+                if request.client and hasattr(request.client, "port"):
+                    return f"ip:{client_ip}:port:{request.client.port}"
+                else:
+                    # Fallback to user agent hash for differentiation
+                    import hashlib
+
+                    ua_hash = hashlib.md5(user_agent.encode()).hexdigest()[:8]
+                    return f"ip:{client_ip}:ua:{ua_hash}"
+
             return f"ip:{client_ip}"
         else:
             return "ip:unknown"
@@ -437,6 +455,11 @@ class RateLimitMiddleware(BaseHTTPMiddleware):
         # Check rate limit
         allowed, rate_info = await self.rate_limiter.check_rate_limit(
             identifier, rule, path
+        )
+
+        # Debug logging
+        logger.info(
+            f"Rate limit check - Path: {path}, Identifier: {identifier}, Allowed: {allowed}"
         )
 
         if not allowed:

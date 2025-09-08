@@ -46,6 +46,8 @@ dist/
 *.map
 backend/static/bundle.*
 backend/static/*.map
+backend/static/chunks/
+backend/static/index.html
 
 # Frontend temp/dev/test files
 frontend/test.js

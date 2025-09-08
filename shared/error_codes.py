@@ -46,6 +46,7 @@ class ErrorCode(IntEnum):
     NETWORK_MESSAGE_QUEUE_FULL = 4004
     NETWORK_INVALID_MESSAGE = 4005
     NETWORK_RECONNECTION_FAILED = 4006
+    NETWORK_RATE_LIMITED = 4007
 
     # System Errors (5000-5999)
     SYSTEM_INTERNAL_ERROR = 5001
@@ -170,6 +171,11 @@ ERROR_METADATA = {
         "retryable": True,
         "severity": ErrorSeverity.MEDIUM,
         "user_message": "Request timed out, please try again"
+    },
+    ErrorCode.NETWORK_RATE_LIMITED: {
+        "retryable": True,
+        "severity": ErrorSeverity.MEDIUM,
+        "user_message": "Too many requests, please slow down"
     },
 
     # System errors - retryable for transient issues, critical severity
