@@ -1,197 +1,132 @@
-# 🀄 Castellan - Multiplayer Board Game
+# Castellan - Multiplayer Board Game
 
 <div align="center">
   <img src="docs/assets/gameplay.gif" alt="Castellan Game" width="300">
-
-  [![Build Status](https://img.shields.io/github/actions/workflow/status/andynenth/castellan/ci.yml?branch=main)](https://github.com/andynenth/castellan/actions)
-  [![Discord](https://img.shields.io/discord/1234567890?color=7289da&logo=discord&logoColor=white)](https://discord.gg/castellan)
-  [![Good First Issues](https://img.shields.io/github/issues/andynenth/castellan/good%20first%20issue)](https://github.com/andynenth/castellan/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22)
 </div>
 
-> **Real-time multiplayer board game** inspired by Liap Tui, a traditional Chinese-Thai game.
-> Built with **FastAPI** (Python) + **React 19** (TypeScript) + **WebSockets**.
+> A real-time multiplayer board game inspired by Liap Tui, a traditional Chinese-Thai game.
+> Built with FastAPI (Python) + React 19 (TypeScript) + WebSockets.
 
----
+## Overview
 
-## 🚀 Quick Start (< 2 minutes)
+Castellan is a web-based implementation of Liap Tui featuring real-time multiplayer gameplay, AI opponents, and a modern responsive interface. The game supports 4 players per room with automatic matchmaking and configurable AI difficulty levels.
 
+## Technical Architecture
+
+- **Backend**: FastAPI with WebSocket support for real-time communication
+- **Frontend**: React 19 with TypeScript and ESBuild for fast compilation
+- **Game Engine**: Enterprise state machine pattern with event sourcing
+- **Deployment**: Docker containerization with production-ready configuration
+
+## Getting Started
+
+### Docker Development (Recommended)
 ```bash
-# Clone and enter the project
 git clone https://github.com/andynenth/castellan.git
 cd castellan
-
-# Start development environment (Docker-based)
 ./dev.sh
-
 # Open http://localhost:5050
 ```
 
-That's it! 🎉 Hot reload is enabled for both frontend and backend.
-
-### Alternative: Local Development (no Docker)
+### Local Development
 ```bash
 # Install dependencies
 cd frontend && npm install && cd ..
 pip install -r requirements.txt
 
-# Start everything
+# Start development server
 ./start.sh
 ```
 
----
+Both methods include hot reload for frontend and backend development.
 
-## 🤝 How to Contribute
-
-We welcome all contributions! Here are great ways to get started:
-
-### 🐛 Fix a Bug
-Browse [open issues](https://github.com/andynenth/castellan/issues) or check `TODO.md`
-
-### ✨ Add a Feature
-- **Frontend**: New game animations, better mobile experience, UI improvements
-- **Backend**: API enhancements, performance optimizations, new game modes
-- **AI**: Improve bot strategies (`backend/ai/strategies/`)
-- **Testing**: Increase coverage (currently 82% frontend, 78% backend)
-
-### 📝 Improve Documentation
-Help others by improving guides in `/docs` or code comments
-
-### 🎯 Good First Issues
-Perfect for your first contribution: [Good First Issues](https://github.com/andynenth/castellan/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22)
-
-**Quick Contribution Checklist:**
-1. Fork the repo
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Make your changes
-4. Run tests (`npm test` and `pytest`)
-5. Submit a Pull Request
-
----
-
-## 🏗 Project Structure
+## Project Structure
 
 ```
 castellan/
-├── frontend/          # React 19 + TypeScript + ESBuild
-│   ├── src/          # React components and game logic
-│   └── network/      # WebSocket client
+├── frontend/          # React 19 + TypeScript
+│   ├── src/          # Components and game logic
+│   └── network/      # WebSocket client implementation
 ├── backend/          # FastAPI + Python 3.11
-│   ├── engine/       # Core game logic & state machine
-│   ├── api/          # WebSocket handlers & REST endpoints
-│   └── ai/           # Bot players and strategies
-└── docs/             # Comprehensive documentation
+│   ├── engine/       # Core game logic and state machine
+│   ├── api/          # WebSocket and REST endpoints
+│   └── ai/           # AI player implementation
+└── docs/             # Technical documentation
 ```
 
----
+## Development Workflow
 
-## 🛠 Development Workflow
-
-### Common Commands
-
+### Code Quality
 ```bash
-# Code quality checks
-cd frontend && npm run lint        # Frontend linting
-source venv/bin/activate && cd backend && black .  # Python formatting
+# Frontend linting and type checking
+cd frontend && npm run lint
+cd frontend && npm run type-check
 
-# Run tests
-cd frontend && npm test            # Frontend tests
-pytest                            # Backend tests
-
-# Type checking
-cd frontend && npm run type-check  # TypeScript validation
+# Python formatting and linting
+source venv/bin/activate && cd backend && black .
 ```
 
-### Key Development Features
-
-- **Hot Reload**: Both frontend and backend auto-reload on changes
-- **WebSocket Testing**: Use `/docs` for interactive API testing
-- **AI Debug Mode**: `python backend/ai_debug_simple.py` for AI-only games
-- **Comprehensive Logging**: Check console for detailed game events
-
----
-
-## 🎮 Architecture Overview
-
-### Tech Stack
-- **Frontend**: React 19, TypeScript, ESBuild, React Router
-- **Backend**: FastAPI, Python 3.11, WebSockets, Pydantic
-- **Game Engine**: Enterprise state machine with automatic event broadcasting
-- **Communication**: WebSocket-first (all game operations), REST (monitoring only)
-
-### Key Concepts
-1. **4 Game Phases**: Preparation → Declaration → Turn → Scoring
-2. **Real-time Sync**: All state changes auto-broadcast via WebSocket
-3. **AI Players**: Configurable difficulty levels with different strategies
-4. **Event Sourcing**: Complete game history for debugging/replay
-
-### Quick Architecture Facts
-- Single WebSocket endpoint: `/ws/{room_id}` handles all game operations
-- Backend serves both API and static frontend files (no separate frontend server)
-- State machine pattern ensures consistent game state across all clients
-- Docker container includes everything needed to run
-
----
-
-## 🧪 Testing
-
+### Testing
 ```bash
-# Run all tests with coverage
+# Frontend tests with coverage
 cd frontend && npm test -- --coverage
-pytest --cov=backend
 
-# Run specific test suites
-pytest tests/test_game_engine.py    # Game logic tests
-npm test Button.test.tsx            # Component tests
+# Backend tests with coverage
+pytest --cov=backend
 ```
 
-**Current Coverage**: Frontend 82%, Backend 78%
-**Goal**: Maintain >80% coverage
+Current test coverage: Frontend 82%, Backend 78%
 
----
+### AI Development
+```bash
+# Run AI-only games for debugging
+python backend/ai_debug_simple.py
+```
 
-## 📚 Documentation
+## Key Features
 
-- **Game Rules**: [RULES.md](RULES.md) - How to play Castellan
-- **Development Setup**: [docs/06-tutorials/LOCAL_DEVELOPMENT.md](docs/06-tutorials/LOCAL_DEVELOPMENT.md)
-- **WebSocket API**: [docs/WEBSOCKET_API.md](docs/WEBSOCKET_API.md)
-- **Adding Features**: [docs/06-tutorials/ADDING_NEW_FEATURES.md](docs/06-tutorials/ADDING_NEW_FEATURES.md)
-- **AI System**: [docs/05-ai-system/](docs/05-ai-system/)
-- **All Docs**: [/docs](docs/) - 30+ comprehensive guides
+### Game Implementation
+- 4-player real-time gameplay with WebSocket synchronization
+- State machine architecture ensuring consistent game state
+- Complete game history with event sourcing for debugging
+- Configurable AI players with multiple difficulty levels
 
----
+### Technical Highlights
+- Single WebSocket endpoint (`/ws/{room_id}`) for all game operations
+- Automatic state broadcasting on all game events
+- Docker-based deployment with integrated frontend serving
+- Comprehensive error handling and recovery mechanisms
 
-## 💬 Getting Help
+## API Documentation
 
-- **Discord**: [Join our community](https://discord.gg/castellan) for real-time help
-- **Issues**: [GitHub Issues](https://github.com/andynenth/castellan/issues) for bugs/features
-- **Discussions**: [GitHub Discussions](https://github.com/andynenth/castellan/discussions) for ideas
+- **WebSocket Protocol**: See [docs/WEBSOCKET_API.md](docs/WEBSOCKET_API.md)
+- **REST Endpoints**: Used for monitoring and debugging only
+- **Game Events**: All game operations use WebSocket messages
 
-### Quick Tips
-- Check existing issues before creating new ones
-- Include error messages and steps to reproduce bugs
-- Join Discord for quick questions and community chat
+## Performance Considerations
 
----
+- WebSocket connection pooling for efficient resource usage
+- State machine optimization for sub-100ms response times
+- Frontend bundle optimization with ESBuild
+- Rate limiting and connection management for production use
 
-## 🎯 Current Focus Areas
+## Contributing
 
-Help needed with:
-1. **Mobile Experience**: Improve touch controls and responsive design
-2. **Game Animations**: Add smooth transitions for piece movements
-3. **AI Strategies**: Create more challenging bot personalities
-4. **Performance**: Optimize for 100+ concurrent games
-5. **Internationalization**: Add language support beyond English
+This is an independent project. For bug reports or feature suggestions, please use GitHub Issues.
 
----
+### Development Guidelines
+1. Maintain test coverage above 80%
+2. Follow existing code patterns and conventions
+3. Run linting before committing changes
+4. Include tests for new features
 
-## 📄 License
+## Documentation
 
-MIT © [Andy Nenthong](https://github.com/andynenth). See [LICENSE](LICENSE).
+- [Game Rules](RULES.md) - Detailed game mechanics
+- [Local Development](docs/06-tutorials/LOCAL_DEVELOPMENT.md) - Setup guide
+- [WebSocket API](docs/WEBSOCKET_API.md) - Protocol documentation
+- [AI System](docs/05-ai-system/) - AI implementation details
 
----
+## License
 
-<div align="center">
-  <strong>Ready to contribute? Let's build something awesome together! 🚀</strong>
-
-  [Get Started](#-quick-start-2-minutes) • [Browse Issues](https://github.com/andynenth/castellan/issues) • [Join Discord](https://discord.gg/castellan)
-</div>
+MIT © [Andy Nenthong](https://github.com/andynenth). See [LICENSE](LICENSE) for details.
