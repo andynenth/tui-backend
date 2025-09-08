@@ -38,6 +38,7 @@ graph TB
     subgraph "Game States"
         W[WaitingState]
         P[PreparationState]
+        RS[RoundStartState]
         D[DeclarationState]
         T[TurnState]
         TR[TurnResultsState]
@@ -57,6 +58,7 @@ graph TB
 
     States --> W
     States --> P
+    States --> RS
     States --> D
     States --> T
     States --> TR
@@ -88,6 +90,7 @@ class GameStateMachine:
         self.states = {
             GamePhase.WAITING: WaitingState(self),
             GamePhase.PREPARATION: PreparationState(self),
+            GamePhase.ROUND_START: RoundStartState(self),
             GamePhase.DECLARATION: DeclarationState(self),
             GamePhase.TURN: TurnState(self),
             GamePhase.TURN_RESULTS: TurnResultsState(self),
@@ -106,7 +109,8 @@ class GameStateMachine:
 | Phase | Purpose | Duration | Next Phase |
 |-------|---------|----------|------------|
 | WAITING | Players joining | Until start | PREPARATION |
-| PREPARATION | Deal cards, check weak hands | ~10s | DECLARATION |
+| PREPARATION | Deal cards, check weak hands | ~10s | ROUND_START |
+| ROUND_START | Initialize round, set starter | Instant | DECLARATION |
 | DECLARATION | Players declare pile targets | 30s timeout | TURN |
 | TURN | Active player plays pieces | No limit | TURN_RESULTS |
 | TURN_RESULTS | Show turn outcome | 3s | TURN or SCORING |
@@ -148,10 +152,38 @@ class PreparationState(GameState):
         if weak_players:
             await self.handle_weak_hand_scenario(weak_players)
         else:
-            await self.transition_to_phase(GamePhase.DECLARATION)
+            await self.transition_to_phase(GamePhase.ROUND_START)
 ```
 
 **Valid Actions**: `accept_redeal`, `decline_redeal`
+
+#### ROUND_START Phase
+```python
+class RoundStartState(GameState):
+    """Initialize round and set starting player."""
+
+    async def enter_phase(self):
+        # Initialize round number
+        self.game.round_number += 1
+
+        # Set starting player (round winner or rotation)
+        if self.game.last_round_winner:
+            self.game.current_player = self.game.last_round_winner
+        else:
+            # First round or fallback
+            self.game.current_player = self.game.players[0].name
+
+        # Update phase data
+        await self.update_phase_data({
+            'round_number': self.game.round_number,
+            'starting_player': self.game.current_player
+        }, f"Round {self.game.round_number} started")
+
+        # Immediate transition to DECLARATION
+        await self.transition_to_phase(GamePhase.DECLARATION)
+```
+
+**Valid Actions**: None (automatic transition)
 
 #### DECLARATION Phase
 ```python
@@ -211,7 +243,9 @@ stateDiagram-v2
     WAITING --> WAITING: join/leave
 
     PREPARATION --> PREPARATION: Redeal Loop
-    PREPARATION --> DECLARATION: No Weak/Resolved
+    PREPARATION --> ROUND_START: No Weak/Resolved
+
+    ROUND_START --> DECLARATION: Automatic
 
     DECLARATION --> DECLARATION: declare
     DECLARATION --> TURN: All Declared
@@ -227,6 +261,7 @@ stateDiagram-v2
     GAME_OVER --> [*]: End
 
     note right of PREPARATION: Max 3 redeals
+    note right of ROUND_START: Set starter
     note right of DECLARATION: 30s timeout
     note right of TURN_RESULTS: 3s display
     note right of SCORING: Check win conditions
@@ -241,7 +276,8 @@ class TransitionValidator:
     # Valid transition map
     VALID_TRANSITIONS = {
         GamePhase.WAITING: [GamePhase.PREPARATION],
-        GamePhase.PREPARATION: [GamePhase.DECLARATION],
+        GamePhase.PREPARATION: [GamePhase.ROUND_START],
+        GamePhase.ROUND_START: [GamePhase.DECLARATION],
         GamePhase.DECLARATION: [GamePhase.TURN],
         GamePhase.TURN: [GamePhase.TURN_RESULTS],
         GamePhase.TURN_RESULTS: [GamePhase.TURN, GamePhase.SCORING],
@@ -260,6 +296,15 @@ class TransitionValidator:
 Some transitions happen automatically:
 
 ```python
+# ROUND_START → DECLARATION (immediate)
+async def enter_phase(self):
+    # Set round data
+    self.game.round_number += 1
+    self.game.current_player = self.game.last_round_winner or self.game.players[0].name
+
+    # Automatic transition
+    await self.transition_to_phase(GamePhase.DECLARATION)
+
 # TURN → TURN_RESULTS (always after play)
 async def handle_play_action(self, action: GameAction):
     # Process play

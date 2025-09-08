@@ -2,7 +2,7 @@
 
 ## Overview
 
-This document provides a comprehensive technical reference for the Liap Tui game implementation, tracing the complete game lifecycle from room creation to game completion. It covers all 7 game phases with detailed information about API endpoints, WebSocket events, state management, UI components, and data structures.
+This document provides a comprehensive technical reference for the Liap Tui game implementation, tracing the complete game lifecycle from room creation to game completion. It covers all 8 game phases with detailed information about WebSocket events (game operations are WebSocket-only, no REST endpoints), state management, UI components, and data structures.
 
 ## Table of Contents
 
@@ -10,25 +10,26 @@ This document provides a comprehensive technical reference for the Liap Tui game
 2. [WebSocket Protocol](#websocket-protocol)
 3. [Phase 1: WAITING](#phase-1-waiting)
 4. [Phase 2: PREPARATION](#phase-2-preparation)
-5. [Phase 3: DECLARATION](#phase-3-declaration)
-6. [Phase 4: TURN](#phase-4-turn)
-7. [Phase 5: TURN_RESULTS](#phase-5-turn_results)
-8. [Phase 6: SCORING](#phase-6-scoring)
-9. [Phase 7: GAME_OVER](#phase-7-game_over)
-10. [State Management Patterns](#state-management-patterns)
-11. [Data Structures Reference](#data-structures-reference)
+5. [Phase 3: ROUND_START](#phase-3-round_start)
+6. [Phase 4: DECLARATION](#phase-4-declaration)
+7. [Phase 5: TURN](#phase-5-turn)
+8. [Phase 6: TURN_RESULTS](#phase-6-turn_results)
+9. [Phase 7: SCORING](#phase-7-scoring)
+10. [Phase 8: GAME_OVER](#phase-8-game_over)
+11. [State Management Patterns](#state-management-patterns)
+12. [Data Structures Reference](#data-structures-reference)
 
 ---
 
 ## Game Phases Overview
 
-The game flows through 7 distinct phases:
+The game flows through 8 distinct phases:
 
 ```
-WAITING → PREPARATION → DECLARATION → TURN ↔ TURN_RESULTS → SCORING → GAME_OVER
-                ↑                                                 ↓
-                └─────────────────────────────────────────────────┘
-                            (New Round)
+WAITING → PREPARATION → ROUND_START → DECLARATION → TURN ↔ TURN_RESULTS → SCORING → GAME_OVER
+                ↑                                                                ↓
+                └────────────────────────────────────────────────────────────────┘
+                                        (New Round)
 ```
 
 Each phase has specific:
@@ -102,14 +103,12 @@ Room setup phase where players join and prepare to start the game.
 - **Room Page**: `/frontend/src/pages/RoomPage.jsx`
 - **Waiting UI**: `/frontend/src/components/game/WaitingUI.jsx`
 
-### API Endpoints
+### Room Operations
 
-| Method | Endpoint | Purpose | Request Body | Response |
-|--------|----------|---------|--------------|----------|
-| POST | `/create-room` | Create new room | `{"host_name": "string"}` | `{"room_id": "string", "success": bool}` |
-| POST | `/join-room` | Join existing room | `{"room_id": "string", "player_name": "string"}` | `{"success": bool, "room": {...}}` |
-| GET | `/list-rooms` | Get available rooms | - | `{"rooms": [{"room_id": "...", "host_name": "...", "occupied_slots": n}]}` |
-| POST | `/start-game` | Start game (host only) | `{"room_id": "string"}` | `{"success": bool}` |
+All room operations use WebSocket events. There are no REST endpoints for game operations:
+- Room creation, joining, and management all happen through WebSocket
+- Use the special `lobby` WebSocket connection for room listing
+- Game state is managed entirely through WebSocket events
 
 ### WebSocket Events
 
@@ -245,11 +244,72 @@ Cards are dealt, weak hands are checked, and redeal decisions are made.
 ### Transition Conditions
 - No weak hands detected, OR
 - All weak players have made decisions
-- Transitions to DECLARATION phase
+- Transitions to ROUND_START phase
 
 ---
 
-## Phase 3: DECLARATION
+## Phase 3: ROUND_START
+
+### Overview
+Brief transitional phase that marks the beginning of a new round, determines round starter, and prepares for declarations.
+
+### Backend Handler
+- **File**: `/backend/engine/state_machine/states/round_start_state.py`
+- **Class**: `RoundStartState`
+
+### Frontend Component
+- This is a transitional phase with no dedicated UI component
+- The phase_change event updates the game state
+
+### WebSocket Events
+
+#### Incoming (Client → Server)
+- No player actions in this phase (automatic transition)
+
+#### Outgoing (Server → Client)
+- `phase_change` - Automatic broadcast with:
+  ```json
+  {
+    "phase": "round_start",
+    "phase_data": {
+      "round_number": 1,
+      "round_starter": "Player1",
+      "dealer": "Player4",
+      "auto_transition": true,
+      "next_phase": "declaration"
+    },
+    "players": {
+      // Player data with updated round information
+    }
+  }
+  ```
+
+### Game Logic
+- Determines who starts this round (winner of redeal or default order)
+- Updates round number
+- Resets round-specific data
+- Prepares declaration order
+
+### State Structure
+
+**Phase Data:**
+```python
+{
+  "round_number": 1,
+  "round_starter": "Player1",
+  "dealer": "Player4",
+  "auto_transition": true,
+  "next_phase": "declaration"
+}
+```
+
+### Transition Conditions
+- Automatic transition after state setup
+- Immediately transitions to DECLARATION phase
+
+---
+
+## Phase 4: DECLARATION
 
 ### Overview
 Players declare their target pile count (0-8) in turn order.
@@ -341,7 +401,7 @@ Players declare their target pile count (0-8) in turn order.
 
 ---
 
-## Phase 4: TURN
+## Phase 5: TURN
 
 ### Overview
 Players play pieces in turns, following the starter's piece count.
@@ -462,7 +522,7 @@ Players play pieces in turns, following the starter's piece count.
 
 ---
 
-## Phase 5: TURN_RESULTS
+## Phase 6: TURN_RESULTS
 
 ### Overview
 Display turn results for 7 seconds before continuing.
@@ -549,7 +609,7 @@ Display turn results for 7 seconds before continuing.
 
 ---
 
-## Phase 6: SCORING
+## Phase 7: SCORING
 
 ### Overview
 Calculate round scores and check for game winner.
@@ -637,11 +697,11 @@ Calculate round scores and check for game winner.
 ### Transition Conditions
 - 7-second display delay complete
 - If game_complete → GAME_OVER
-- Otherwise → PREPARATION (next round)
+- Otherwise → PREPARATION (next round, which then goes to ROUND_START)
 
 ---
 
-## Phase 7: GAME_OVER
+## Phase 8: GAME_OVER
 
 ### Overview
 Display final results and provide options to return to lobby.

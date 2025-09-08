@@ -71,6 +71,9 @@ The game uses 32 traditional Chinese chess pieces:
 🎯 PREPARATION (Deal Cards)
     ↓ Cards dealt, weak hands checked
 
+🔄 ROUND_START (Begin Round)
+    ↓ Set round starter, prepare for declarations
+
 📋 DECLARATION (Declare Targets)
     ↓ All players declare pile counts
 
@@ -124,7 +127,21 @@ The game uses 32 traditional Chinese chess pieces:
 - Score multiplier increases by 1 for each redeal (affects final scoring)
 - First player to accept becomes the round starter
 
-### 3. DECLARATION Phase
+### 3. ROUND_START Phase
+**Round Initialization**
+
+**What Happens:**
+- Automatic transitional phase (no player input needed)
+- Determines who starts this round
+- Updates round number
+- Prepares declaration order
+
+**Round Starter Rules:**
+- First round: Default player order
+- Subsequent rounds: Winner of previous round's redeal, or previous round starter
+- Sets the order for declarations and initial turn
+
+### 4. DECLARATION Phase
 **Target Setting**
 
 **What Happens:**
@@ -142,7 +159,7 @@ The game uses 32 traditional Chinese chess pieces:
 - Continues clockwise around table
 - Order is maintained throughout the round
 
-### 4. TURN Phase
+### 5. TURN Phase
 **Strategic Piece Playing**
 
 **What Happens:**
@@ -175,7 +192,7 @@ The game uses 32 traditional Chinese chess pieces:
 - Winner collects all played pieces as "piles"
 - Winner becomes starter of next turn
 
-### 5. TURN_RESULTS Phase
+### 6. TURN_RESULTS Phase
 **Results Display**
 
 **What Happens:**
@@ -190,7 +207,7 @@ The game uses 32 traditional Chinese chess pieces:
 - Current pile standings
 - Next turn starter
 
-### 6. SCORING Phase
+### 7. SCORING Phase
 **Point Calculation**
 
 **What Happens:**
@@ -221,7 +238,7 @@ Player declares 0, captures 2 piles:
 Base score = -2 points (failed zero penalty)
 ```
 
-### 7. GAME_OVER Phase
+### 8. GAME_OVER Phase
 **Final Results**
 
 **What Happens:**

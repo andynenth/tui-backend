@@ -8,16 +8,16 @@ flowchart TD
     CheckDeclared -->|Yes| CheckActual{Got 0 piles?}
     CheckDeclared -->|No| CheckPerfect{Declared = Actual?}
 
-    CheckActual -->|Yes| BonusScore[+3 bonus points<br/>Perfect zero prediction]
+    CheckActual -->|Yes| BonusScore[+3 bonus points<br/>Perfect zero prediction<br/>NO MULTIPLIER APPLIED]
     CheckActual -->|No| PenaltyScore[-actual piles<br/>Broke zero declaration]
 
     CheckPerfect -->|Yes| PerfectScore[Declared + 5 bonus points<br/>Perfect prediction]
     CheckPerfect -->|No| MissScore[-abs difference<br/>Missed target penalty]
 
-    BonusScore --> ApplyMultiplier
-    PenaltyScore --> ApplyMultiplier
+    BonusScore --> UpdateTotals[Update total scores<br/>for each player]
+    PenaltyScore --> ApplyMultiplier{Redeal occurred<br/>this round?}
     PerfectScore --> ApplyMultiplier
-    MissScore --> ApplyMultiplier{Redeal occurred<br/>this round?}
+    MissScore --> ApplyMultiplier
 
     ApplyMultiplier -->|Yes| MultiplyScore[Multiply by redeal multiplier<br/>×2, ×3, ×4, etc.]
     ApplyMultiplier -->|No| UpdateTotals[Update total scores<br/>for each player]

@@ -4,131 +4,99 @@
 1. [Overview](#overview)
 2. [Architecture](#architecture)
 3. [Room Lifecycle](#room-lifecycle)
-4. [Player Management](#player-management)
-5. [Connection Management](#connection-management)
-6. [Game Integration](#game-integration)
-7. [Bot Management](#bot-management)
-8. [Error Handling](#error-handling)
-9. [Code Examples](#code-examples)
-10. [Testing & Debugging](#testing--debugging)
+4. [AsyncRoom Integration](#asyncroom-integration)
+5. [Migration Strategy](#migration-strategy)
+6. [Lock Management](#lock-management)
+7. [Statistics & Monitoring](#statistics--monitoring)
+8. [Code Examples](#code-examples)
+9. [Testing & Debugging](#testing--debugging)
 
 ## Overview
 
-The AsyncRoomManager is the central orchestrator for multiplayer gameplay in Liap Tui. It manages game rooms, player connections, and coordinates between WebSocket connections and game state machines.
+The AsyncRoomManager is an async implementation designed for Phase 2 migration. It manages game rooms asynchronously, preparing for future database integration while maintaining compatibility with the current system.
 
 ### Core Responsibilities
 
-1. **Room Lifecycle**: Create, join, leave, destroy rooms
-2. **Player Management**: Track players, handle disconnections
-3. **Connection Tracking**: Map WebSockets to players and rooms
-4. **Game Coordination**: Start games, route messages
-5. **Bot Integration**: Activate bots for disconnected players
-6. **Broadcasting**: Distribute messages to room participants
+1. **Room Lifecycle**: Create, retrieve, and delete rooms asynchronously
+2. **Unique ID Generation**: Generate unique 6-character room IDs
+3. **Lock Management**: Thread-safe operations with async locks
+4. **Statistics Tracking**: Monitor room operations and active games
+5. **Empty Room Cleanup**: Remove rooms with no human players
+6. **Migration Support**: Sync wrappers for compatibility during transition
 
 ## Architecture
 
-### System Architecture
+### Simple Architecture
 
 ```mermaid
 graph TB
-    subgraph "WebSocket Layer"
-        WS1[WebSocket 1]
-        WS2[WebSocket 2]
-        WS3[WebSocket 3]
-        WS4[WebSocket 4]
+    subgraph "AsyncRoomManager"
+        RM[AsyncRoomManager]
+        ROOMS[rooms: Dict[str, AsyncRoom]]
+        ML[_manager_lock]
+        CL[_room_creation_lock]
+        STATS[Statistics]
     end
 
-    subgraph "Room Manager Core"
-        ARM[AsyncRoomManager]
-        CM[ConnectionManager]
-        RM[RoomRegistry]
-        PM[PlayerManager]
+    subgraph "AsyncRoom Layer"
+        R1[AsyncRoom 1]
+        R2[AsyncRoom 2]
+        R3[AsyncRoom N]
     end
 
-    subgraph "Game Layer"
-        R1[Room ABCD]
-        R2[Room EFGH]
-        SM1[StateMachine 1]
-        SM2[StateMachine 2]
-    end
+    RM --> ROOMS
+    ROOMS --> R1
+    ROOMS --> R2
+    ROOMS --> R3
 
-    subgraph "Support Systems"
-        BM[BotManager]
-        LM[LobbyManager]
-        BC[Broadcaster]
-    end
+    RM --> ML
+    RM --> CL
+    RM --> STATS
 
-    WS1 --> CM
-    WS2 --> CM
-    WS3 --> CM
-    WS4 --> CM
-
-    CM --> ARM
-    ARM --> RM
-    ARM --> PM
-
-    RM --> R1
-    RM --> R2
-
-    R1 --> SM1
-    R2 --> SM2
-
-    ARM --> BM
-    ARM --> LM
-    ARM --> BC
-
-    style ARM fill:#4CAF50
-    style CM fill:#2196F3
-    style BC fill:#FF9800
+    style RM fill:#4CAF50
+    style ROOMS fill:#2196F3
 ```
 
-### Core Classes
+### Core Implementation
 
 ```python
 # backend/engine/async_room_manager.py
+import asyncio
+import uuid
+import logging
+from typing import Dict, Optional, List
+from dataclasses import dataclass
+from datetime import datetime
+
+from .async_room import AsyncRoom
+
+logger = logging.getLogger(__name__)
+
+@dataclass
+class RoomCreationResult:
+    """Result of room creation operation."""
+    room_id: str
+    room: AsyncRoom
+    created_at: datetime
+    host_name: str
+
 class AsyncRoomManager:
-    """Central manager for all game rooms and connections."""
+    """
+    Async version of RoomManager.
+    Manages all active game rooms with async operations for future database integration.
+    """
 
     def __init__(self):
-        # Room storage
-        self.rooms: Dict[str, Room] = {}
-        self.games: Dict[str, GameStateMachine] = {}
-
-        # Connection tracking
-        self.connection_manager = ConnectionManager()
-
-        # Player tracking
-        self.player_to_room: Dict[str, str] = {}
-        self.player_to_websocket: Dict[str, WebSocket] = {}
-
-        # Support systems
-        self.bot_manager: Optional[BotManager] = None
-
-        # Lobby special handling
-        self.lobby_connections: Set[WebSocket] = set()
-
-        # Thread safety
-        self._lock = asyncio.Lock()
-
-# backend/engine/models.py
-@dataclass
-class Room:
-    """Game room data structure."""
-    room_id: str
-    host: str
-    players: List[str]
-    settings: RoomSettings
-    state: RoomState
-    created_at: datetime
-    game_started: bool = False
-
-@dataclass
-class RoomSettings:
-    """Room configuration."""
-    max_players: int = 4
-    is_public: bool = True
-    allow_bots: bool = True
-    game_mode: str = "classic"
+        """Initialize the AsyncRoomManager."""
+        self.rooms: Dict[str, AsyncRoom] = {}
+        self._manager_lock = asyncio.Lock()  # For operations that modify rooms dict
+        self._room_creation_lock = asyncio.Lock()  # For room ID generation
+        self._stats = {
+            "rooms_created": 0,
+            "rooms_deleted": 0,
+            "total_operations": 0
+        }
+        logger.info("AsyncRoomManager initialized")
 ```
 
 ## Room Lifecycle
@@ -136,750 +104,387 @@ class RoomSettings:
 ### Room Creation
 
 ```python
-async def create_room(
-    self,
-    room_id: str,
-    host_name: str,
-    settings: Dict[str, Any]
-) -> Room:
-    """Create a new game room."""
-    async with self._lock:
-        # Validate room doesn't exist
-        if room_id in self.rooms:
-            raise RoomError("ROOM_EXISTS", f"Room {room_id} already exists")
+async def create_room(self, host_name: str) -> str:
+    """
+    Create a new game room asynchronously.
 
-        # Create room settings
-        room_settings = RoomSettings(
-            max_players=settings.get('max_players', 4),
-            is_public=settings.get('is_public', True),
-            allow_bots=settings.get('allow_bots', True)
-        )
+    Args:
+        host_name: The name of the player who will be the host
 
-        # Create room
-        room = Room(
-            room_id=room_id,
-            host=host_name,
-            players=[host_name],
-            settings=room_settings,
-            state=RoomState.WAITING,
-            created_at=datetime.now()
-        )
+    Returns:
+        str: The ID of the newly created room
 
-        # Store room
-        self.rooms[room_id] = room
-        self.player_to_room[host_name] = room_id
+    Future: Will persist room creation to database
+    """
+    async with self._room_creation_lock:
+        # Generate unique room ID
+        room_id = await self._generate_unique_room_id()
 
-        # Log creation
-        logger.info(f"Room {room_id} created by {host_name}")
+        # Create async room
+        room = AsyncRoom(room_id, host_name)
 
-        # Notify lobby if public
-        if room_settings.is_public:
-            await self._update_lobby_room_list()
+        # Add to rooms dict with lock
+        async with self._manager_lock:
+            self.rooms[room_id] = room
+            self._stats["rooms_created"] += 1
+            self._stats["total_operations"] += 1
 
-        return room
+        logger.info(f"Created async room {room_id} with host {host_name}")
+        logger.info(f"Current rooms in manager: {list(self.rooms.keys())}")
+
+        # Future: await self._persist_room_creation(room_id, host_name)
+
+        return room_id
 ```
 
-### Room States
-
-```mermaid
-stateDiagram-v2
-    [*] --> WAITING: create_room
-    WAITING --> WAITING: join/leave
-    WAITING --> STARTING: start_game
-    STARTING --> IN_GAME: game initialized
-    IN_GAME --> IN_GAME: gameplay
-    IN_GAME --> FINISHED: game over
-    FINISHED --> WAITING: play again
-    FINISHED --> [*]: destroy room
-
-    note right of WAITING: Players can join/leave
-    note right of STARTING: Initializing game
-    note right of IN_GAME: Active gameplay
-    note right of FINISHED: Showing results
-```
-
-### Joining a Room
+### Room Retrieval
 
 ```python
-async def join_room(
-    self,
-    room_id: str,
-    player_name: str,
-    websocket: WebSocket
-) -> JoinResult:
-    """Player joins an existing room."""
-    async with self._lock:
-        # Get room
-        room = self.rooms.get(room_id)
-        if not room:
-            raise RoomError("ROOM_NOT_FOUND", f"Room {room_id} not found")
+async def get_room(self, room_id: str) -> Optional[AsyncRoom]:
+    """
+    Retrieve a room by its ID asynchronously.
 
-        # Check if full
-        if len(room.players) >= room.settings.max_players:
-            raise RoomError("ROOM_FULL", "Room is full")
+    Args:
+        room_id: The ID of the room to retrieve
 
-        # Check if game in progress
-        if room.game_started and not room.settings.allow_bots:
-            raise RoomError("GAME_IN_PROGRESS", "Cannot join active game")
+    Returns:
+        Optional[AsyncRoom]: The room if found, None otherwise
 
-        # Check if player already in room
-        if player_name in room.players:
-            # Reconnection case
-            return await self._handle_reconnection(
-                room_id, player_name, websocket
-            )
-
-        # Add player
-        room.players.append(player_name)
-        self.player_to_room[player_name] = room_id
-
-        # Add connection
-        self.connection_manager.add_connection(room_id, websocket)
-        self.player_to_websocket[player_name] = websocket
-
-        # Broadcast player joined
-        await self.broadcast(room_id, "player_joined", {
-            "player": player_name,
-            "players": room.players,
-            "total": len(room.players)
-        })
-
-        # Send room state to new player
-        await self._send_room_state(websocket, room)
-
-        return JoinResult(
-            success=True,
-            room=room,
-            is_reconnection=False
-        )
-```
-
-### Leaving a Room
-
-```python
-async def leave_room(
-    self,
-    room_id: str,
-    player_name: str
-) -> LeaveResult:
-    """Player leaves a room."""
-    async with self._lock:
-        room = self.rooms.get(room_id)
-        if not room or player_name not in room.players:
-            return LeaveResult(success=False)
-
-        # Remove player
-        room.players.remove(player_name)
-        del self.player_to_room[player_name]
-
-        # Remove connection
-        websocket = self.player_to_websocket.get(player_name)
-        if websocket:
-            self.connection_manager.remove_connection(room_id, websocket)
-            del self.player_to_websocket[player_name]
-
-        # Handle empty room
-        if not room.players:
-            await self._destroy_room(room_id)
-            return LeaveResult(success=True, room_destroyed=True)
-
-        # Handle host leaving
-        if player_name == room.host and room.players:
-            room.host = room.players[0]  # Promote first player
-            await self.broadcast(room_id, "host_changed", {
-                "new_host": room.host
-            })
-
-        # Handle game in progress
-        if room.game_started:
-            game = self.games.get(room_id)
-            if game and self.bot_manager:
-                # Activate bot for leaving player
-                await self.bot_manager.activate_bot(room_id, player_name)
-                await self.broadcast(room_id, "bot_activated", {
-                    "player": player_name
-                })
-
-        # Notify remaining players
-        await self.broadcast(room_id, "player_left", {
-            "player": player_name,
-            "players": room.players,
-            "total": len(room.players)
-        })
-
-        return LeaveResult(success=True, room_destroyed=False)
-```
-
-### Room Destruction
-
-```python
-async def _destroy_room(self, room_id: str):
-    """Clean up and destroy a room."""
+    Future: May need to fetch from database if not in memory
+    """
+    # No lock needed for read operation
     room = self.rooms.get(room_id)
-    if not room:
-        return
 
-    logger.info(f"Destroying room {room_id}")
+    if room:
+        self._stats["total_operations"] += 1
+        logger.debug(f"Found room {room_id} in AsyncRoomManager")
+        return room
 
-    # Clean up game if exists
-    if room_id in self.games:
-        game = self.games[room_id]
-        # Any game cleanup needed
-        del self.games[room_id]
-
-    # Remove all connections
-    self.connection_manager.remove_room(room_id)
-
-    # Clean up player mappings
-    for player in room.players:
-        if player in self.player_to_room:
-            del self.player_to_room[player]
-        if player in self.player_to_websocket:
-            del self.player_to_websocket[player]
-
-    # Remove room
-    del self.rooms[room_id]
-
-    # Update lobby
-    if room.settings.is_public:
-        await self._update_lobby_room_list()
-```
-
-## Player Management
-
-### Player Tracking
-
-```python
-class PlayerManager:
-    """Manages player state and connections."""
-
-    def __init__(self):
-        # Player state
-        self.players: Dict[str, PlayerInfo] = {}
-
-        # Connection state
-        self.online_players: Set[str] = set()
-        self.disconnected_players: Dict[str, datetime] = {}
-
-    def add_player(self, player_name: str, room_id: str):
-        """Register a new player."""
-        self.players[player_name] = PlayerInfo(
-            name=player_name,
-            room_id=room_id,
-            joined_at=datetime.now(),
-            is_bot=False,
-            connection_state=ConnectionState.CONNECTED
-        )
-        self.online_players.add(player_name)
-
-    def mark_disconnected(self, player_name: str):
-        """Mark player as disconnected."""
-        if player_name in self.players:
-            self.players[player_name].connection_state = ConnectionState.DISCONNECTED
-            self.online_players.discard(player_name)
-            self.disconnected_players[player_name] = datetime.now()
-```
-
-### Reconnection Handling
-
-```python
-async def _handle_reconnection(
-    self,
-    room_id: str,
-    player_name: str,
-    websocket: WebSocket
-) -> JoinResult:
-    """Handle player reconnection to active game."""
-    logger.info(f"Player {player_name} reconnecting to {room_id}")
-
-    # Update connection
-    old_websocket = self.player_to_websocket.get(player_name)
-    if old_websocket:
-        self.connection_manager.remove_connection(room_id, old_websocket)
-
-    self.connection_manager.add_connection(room_id, websocket)
-    self.player_to_websocket[player_name] = websocket
-
-    # Deactivate bot if active
-    if self.bot_manager and self.bot_manager.is_bot_active(room_id, player_name):
-        await self.bot_manager.deactivate_bot(room_id, player_name)
-        await self.broadcast(room_id, "bot_deactivated", {
-            "player": player_name
-        })
-
-    # Send current game state
-    room = self.rooms[room_id]
-    await self._send_room_state(websocket, room)
-
-    if room.game_started:
-        game = self.games.get(room_id)
-        if game:
-            # Send game state
-            await self._send_game_state(websocket, game)
-
-    # Notify others
-    await self.broadcast(room_id, "player_reconnected", {
-        "player": player_name
-    }, exclude=[websocket])
-
-    return JoinResult(
-        success=True,
-        room=room,
-        is_reconnection=True
+    logger.warning(
+        f"Room {room_id} not found in AsyncRoomManager. Current rooms: {list(self.rooms.keys())}"
     )
+    # Future: Check database if not in memory
+    # room = await self._fetch_room_from_db(room_id)
+
+    return None
 ```
 
-## Connection Management
-
-### ConnectionManager Class
+### Room Deletion
 
 ```python
-class ConnectionManager:
-    """Manages WebSocket connections for rooms."""
+async def delete_room(self, room_id: str) -> bool:
+    """
+    Delete a room from the manager asynchronously.
 
-    def __init__(self):
-        # Room -> Set of WebSockets
-        self.room_connections: Dict[str, Set[WebSocket]] = {}
+    Args:
+        room_id: The ID of the room to delete
 
-        # WebSocket -> Room mapping
-        self.websocket_to_room: Dict[WebSocket, str] = {}
+    Returns:
+        bool: True if room was deleted, False if not found
 
-        # Thread safety
+    Future: Will persist deletion to database
+    """
+    async with self._manager_lock:
+        if room_id in self.rooms:
+            room = self.rooms[room_id]
+
+            # Clean up room resources
+            await room.cleanup()
+
+            # Remove from dict
+            del self.rooms[room_id]
+            self._stats["rooms_deleted"] += 1
+            self._stats["total_operations"] += 1
+
+            logger.info(f"Deleted room {room_id}")
+
+            # Future: await self._persist_room_deletion(room_id)
+
+            return True
+
+        logger.warning(f"Attempted to delete non-existent room {room_id}")
+        return False
+```
+
+### Listing Available Rooms
+
+```python
+async def list_rooms(self) -> List[Dict]:
+    """
+    List all available rooms asynchronously.
+
+    Returns:
+        List[Dict]: List of room summaries for available rooms
+
+    Future: May paginate results from database
+    """
+    available_rooms = []
+
+    # Create snapshot to avoid holding lock during summary generation
+    async with self._manager_lock:
+        room_snapshot = list(self.rooms.values())
+
+    # Generate summaries without lock
+    for room in room_snapshot:
+        if not room.started:
+            summary = await room.summary()
+            available_rooms.append(summary)
+
+    self._stats["total_operations"] += 1
+
+    return available_rooms
+```
+
+### Room ID Generation
+
+```python
+async def _generate_unique_room_id(self) -> str:
+    """
+    Generate a unique room ID.
+
+    Returns:
+        str: A unique 6-character room ID
+    """
+    max_attempts = 100
+
+    for _ in range(max_attempts):
+        room_id = uuid.uuid4().hex[:6].upper()
+
+        # Check uniqueness
+        if room_id not in self.rooms:
+            # Future: Also check database
+            # if not await self._room_exists_in_db(room_id):
+            return room_id
+
+    # Fallback to longer ID if needed
+    return uuid.uuid4().hex[:8].upper()
+```
+
+## AsyncRoom Integration
+
+The AsyncRoomManager works with AsyncRoom objects that handle individual room state:
+
+```python
+# backend/engine/async_room.py (simplified view)
+class AsyncRoom:
+    """Represents a single game room."""
+
+    def __init__(self, room_id: str, host_name: str):
+        self.room_id = room_id
+        self.host = host_name
+        self.players = [host_name]
+        self.started = False
+        self.created_at = datetime.now()
         self._lock = asyncio.Lock()
 
-    async def add_connection(self, room_id: str, websocket: WebSocket):
-        """Add connection to room."""
+    async def summary(self) -> Dict:
+        """Get room summary for listing."""
         async with self._lock:
-            if room_id not in self.room_connections:
-                self.room_connections[room_id] = set()
+            return {
+                "room_id": self.room_id,
+                "host": self.host,
+                "players": len(self.players),
+                "max_players": 4,
+                "started": self.started,
+                "created_at": self.created_at.isoformat()
+            }
 
-            self.room_connections[room_id].add(websocket)
-            self.websocket_to_room[websocket] = room_id
+    async def is_empty(self) -> bool:
+        """Check if room has no human players."""
+        # Implementation depends on player tracking
+        return len(self.players) == 0
 
-    async def remove_connection(self, room_id: str, websocket: WebSocket):
-        """Remove connection from room."""
-        async with self._lock:
-            if room_id in self.room_connections:
-                self.room_connections[room_id].discard(websocket)
-
-                if not self.room_connections[room_id]:
-                    del self.room_connections[room_id]
-
-            if websocket in self.websocket_to_room:
-                del self.websocket_to_room[websocket]
-
-    def get_connections(self, room_id: str) -> List[WebSocket]:
-        """Get all connections for a room."""
-        return list(self.room_connections.get(room_id, set()))
+    async def cleanup(self):
+        """Clean up room resources."""
+        # Future: Clean up game state, connections, etc.
+        logger.info(f"Cleaning up room {self.room_id}")
 ```
 
-### Broadcasting
+## Migration Strategy
+
+The AsyncRoomManager includes compatibility wrappers for gradual migration:
+
+### Sync Wrappers
 
 ```python
-async def broadcast(
-    self,
-    room_id: str,
-    event: str,
-    data: dict,
-    exclude: List[WebSocket] = None
-):
-    """Broadcast message to all room connections."""
-    if exclude is None:
-        exclude = []
+# Compatibility methods for migration
+def create_room_sync(self, host_name: str) -> str:
+    """Sync wrapper for create_room (for migration compatibility)."""
+    import asyncio
 
-    # Get connections
-    connections = self.connection_manager.get_connections(room_id)
-
-    # Prepare message
-    message = {
-        "event": event,
-        "data": data,
-        "room_id": room_id,
-        "timestamp": time.time()
-    }
-
-    # Send to each connection
-    failed_connections = []
-
-    for websocket in connections:
-        if websocket in exclude:
-            continue
-
-        try:
-            await websocket.send_json(message)
-        except Exception as e:
-            logger.error(f"Broadcast failed: {e}")
-            failed_connections.append(websocket)
-
-    # Clean up failed connections
-    for websocket in failed_connections:
-        await self._handle_failed_connection(room_id, websocket)
-```
-
-## Game Integration
-
-### Starting a Game
-
-```python
-async def start_game(self, room_id: str, player_name: str) -> StartGameResult:
-    """Start a game in the room."""
-    async with self._lock:
-        # Validate room
-        room = self.rooms.get(room_id)
-        if not room:
-            raise RoomError("ROOM_NOT_FOUND", "Room not found")
-
-        # Validate host
-        if player_name != room.host:
-            raise RoomError("NOT_HOST", "Only host can start game")
-
-        # Validate player count
-        if len(room.players) != room.settings.max_players:
-            raise RoomError(
-                "INVALID_PLAYER_COUNT",
-                f"Need exactly {room.settings.max_players} players"
-            )
-
-        # Check if game already started
-        if room.game_started:
-            raise RoomError("GAME_ALREADY_STARTED", "Game already in progress")
-
-        # Create game state machine
-        game = GameStateMachine(room_id, self)
-
-        # Add players to game
-        for player_name in room.players:
-            game.add_player(player_name)
-
-        # Initialize bot manager if needed
-        if self.bot_manager:
-            self.bot_manager.register_game(room_id, game)
-
-        # Store game
-        self.games[room_id] = game
-        room.game_started = True
-        room.state = RoomState.IN_GAME
-
-        # Start the game
-        await game.start_game()
-
-        # Notify all players
-        await self.broadcast(room_id, "game_started", {
-            "room_id": room_id,
-            "players": room.players,
-            "initial_state": game.get_state()
-        })
-
-        logger.info(f"Game started in room {room_id}")
-
-        return StartGameResult(
-            success=True,
-            game=game
-        )
-```
-
-### Message Routing
-
-```python
-async def route_game_message(
-    self,
-    room_id: str,
-    player_name: str,
-    message: dict
-) -> MessageResult:
-    """Route message to appropriate handler."""
-    # Get game
-    game = self.games.get(room_id)
-
-    if not game:
-        # Pre-game messages
-        return await self._handle_room_message(
-            room_id, player_name, message
-        )
-
-    # Game messages
     try:
-        action = GameAction(
-            action_type=ActionType(message['event']),
-            player_name=player_name,
-            data=message.get('data', {})
-        )
+        # Try to get the running loop
+        loop = asyncio.get_running_loop()
+        # We're in an async context, can't use run_until_complete
+        import concurrent.futures
 
-        result = await game.process_action(action)
+        with concurrent.futures.ThreadPoolExecutor() as executor:
+            future = executor.submit(asyncio.run, self.create_room(host_name))
+            return future.result()
+    except RuntimeError:
+        # No running loop, safe to create new one
+        return asyncio.run(self.create_room(host_name))
 
-        return MessageResult(
-            success=result.success,
-            error=result.error_message
-        )
+def get_room_sync(self, room_id: str) -> Optional[AsyncRoom]:
+    """Sync wrapper for get_room (for migration compatibility)."""
+    import asyncio
 
-    except ValueError as e:
-        # Invalid action type
-        await self._send_error(
-            self.player_to_websocket.get(player_name),
-            "INVALID_ACTION",
-            str(e)
-        )
-        return MessageResult(success=False, error=str(e))
+    try:
+        loop = asyncio.get_running_loop()
+        import concurrent.futures
+
+        with concurrent.futures.ThreadPoolExecutor() as executor:
+            future = executor.submit(asyncio.run, self.get_room(room_id))
+            return future.result()
+    except RuntimeError:
+        return asyncio.run(self.get_room(room_id))
 ```
 
-## Bot Management
+These wrappers handle the complex case of being called from within an async context (where `asyncio.run()` would fail) by using a thread pool executor.
 
-### Bot Integration
+## Lock Management
+
+The AsyncRoomManager uses two separate locks to prevent deadlocks and optimize performance:
+
+### Lock Strategy
 
 ```python
-# backend/bots/bot_manager.py
-class BotManager:
-    """Manages bot players for disconnected users."""
+class AsyncRoomManager:
+    def __init__(self):
+        # Two separate locks to prevent deadlocks
+        self._manager_lock = asyncio.Lock()  # For operations that modify rooms dict
+        self._room_creation_lock = asyncio.Lock()  # For room ID generation
+```
 
-    def __init__(self, room_manager: AsyncRoomManager):
-        self.room_manager = room_manager
-        self.active_bots: Dict[str, BotPlayer] = {}
-        self.bot_strategies: Dict[str, BotStrategy] = {
-            'easy': EasyBotStrategy(),
-            'medium': MediumBotStrategy(),
-            'hard': HardBotStrategy()
+### Lock Usage Patterns
+
+1. **Room Creation**: Uses `_room_creation_lock` first for ID generation, then `_manager_lock` for dict modification
+2. **Room Retrieval**: No lock needed (read operation)
+3. **Room Deletion**: Uses only `_manager_lock`
+4. **Room Listing**: Uses `_manager_lock` briefly to create snapshot, then releases for summary generation
+
+### Empty Room Cleanup
+
+```python
+async def cleanup_empty_rooms(self) -> int:
+    """
+    Clean up rooms with no human players.
+
+    Returns:
+        int: Number of rooms cleaned up
+    """
+    rooms_to_delete = []
+
+    # Identify empty rooms
+    async with self._manager_lock:
+        for room_id, room in self.rooms.items():
+            if await room.is_empty():
+                rooms_to_delete.append(room_id)
+
+    # Delete empty rooms
+    deleted_count = 0
+    for room_id in rooms_to_delete:
+        if await self.delete_room(room_id):
+            deleted_count += 1
+
+    if deleted_count > 0:
+        logger.info(f"Cleaned up {deleted_count} empty rooms")
+
+    return deleted_count
+```
+
+## Statistics & Monitoring
+
+### Statistics Tracking
+
+```python
+async def get_stats(self) -> Dict:
+    """Get manager statistics."""
+    async with self._manager_lock:
+        return {
+            **self._stats,
+            "active_rooms": len(self.rooms),
+            "started_games": sum(1 for r in self.rooms.values() if r.started),
         }
 
-    async def activate_bot(self, room_id: str, player_name: str):
-        """Activate bot for disconnected player."""
-        # Create bot instance
-        bot_key = f"{room_id}:{player_name}"
-
-        if bot_key in self.active_bots:
-            return  # Already active
-
-        # Get game state
-        game = self.room_manager.games.get(room_id)
-        if not game:
-            return
-
-        # Create bot
-        bot = BotPlayer(
-            player_name=player_name,
-            room_id=room_id,
-            strategy=self.bot_strategies['medium'],
-            game_reference=game
-        )
-
-        self.active_bots[bot_key] = bot
-
-        # If it's bot's turn, make a play
-        if game.get_current_player() == player_name:
-            await self._make_bot_play(bot)
-
-    async def _make_bot_play(self, bot: BotPlayer):
-        """Bot makes a play decision."""
-        # Get bot decision
-        action = await bot.decide_action()
-
-        if action:
-            # Process through game
-            game = bot.game_reference
-            await game.process_action(action)
+async def get_room_count(self) -> int:
+    """Get total number of active rooms."""
+    return len(self.rooms)
 ```
 
-### Bot Decision Making
+### Monitoring Implementation
 
-```python
-class MediumBotStrategy(BotStrategy):
-    """Medium difficulty bot strategy."""
+The AsyncRoomManager tracks:
+- Total rooms created
+- Total rooms deleted
+- Total operations performed
+- Active rooms count
+- Started games count
 
-    async def decide_play(self, game_state: dict, hand: List[Piece]) -> List[str]:
-        """Decide which pieces to play."""
-        current_plays = game_state.get('current_plays', {})
-        required_count = game_state.get('required_piece_count', 1)
-
-        # Group pieces by rank
-        pieces_by_rank = defaultdict(list)
-        for piece in hand:
-            pieces_by_rank[piece.rank].append(piece)
-
-        # Try to find valid play
-        for rank, pieces in sorted(
-            pieces_by_rank.items(),
-            key=lambda x: x[0].value,
-            reverse=True
-        ):
-            if len(pieces) >= required_count:
-                # Can make this play
-                return [p.id for p in pieces[:required_count]]
-
-        # Try mixed color play
-        high_pieces = sorted(hand, key=lambda p: p.point, reverse=True)
-        if len(high_pieces) >= required_count:
-            return [p.id for p in high_pieces[:required_count]]
-
-        # Pass if no valid play
-        return []
-```
-
-## Error Handling
-
-### Error Types
-
-```python
-class RoomError(Exception):
-    """Room-related errors."""
-    def __init__(self, code: str, message: str):
-        self.code = code
-        self.message = message
-        super().__init__(message)
-
-# Common error codes
-ROOM_ERRORS = {
-    "ROOM_NOT_FOUND": "The specified room does not exist",
-    "ROOM_FULL": "The room has reached maximum capacity",
-    "ROOM_EXISTS": "A room with this ID already exists",
-    "NOT_HOST": "Only the host can perform this action",
-    "GAME_IN_PROGRESS": "Cannot modify room with active game",
-    "INVALID_PLAYER_COUNT": "Invalid number of players",
-    "PLAYER_NOT_IN_ROOM": "Player is not in this room",
-    "ALREADY_IN_ROOM": "Player is already in a room"
-}
-```
-
-### Error Recovery
-
-```python
-async def _handle_failed_connection(self, room_id: str, websocket: WebSocket):
-    """Handle a failed WebSocket connection."""
-    # Find player for this websocket
-    player_name = None
-    for name, ws in self.player_to_websocket.items():
-        if ws == websocket:
-            player_name = name
-            break
-
-    if not player_name:
-        # Unknown connection, just remove
-        self.connection_manager.remove_connection(room_id, websocket)
-        return
-
-    logger.warning(f"Connection failed for {player_name} in {room_id}")
-
-    # Remove connection
-    self.connection_manager.remove_connection(room_id, websocket)
-    del self.player_to_websocket[player_name]
-
-    # Check if game is active
-    room = self.rooms.get(room_id)
-    if room and room.game_started:
-        # Activate bot instead of removing player
-        if self.bot_manager:
-            await self.bot_manager.activate_bot(room_id, player_name)
-            await self.broadcast(room_id, "player_disconnected", {
-                "player": player_name,
-                "bot_activated": True
-            })
-    else:
-        # Remove from room if not in game
-        await self.leave_room(room_id, player_name)
-```
+This data can be exposed through monitoring endpoints for observability.
 
 ## Code Examples
 
-### WebSocket Handler Integration
+### Basic Usage
 
 ```python
-# backend/api/websocket/ws.py
-@router.websocket("/ws/{room_id}")
-async def websocket_endpoint(websocket: WebSocket, room_id: str):
-    """Main WebSocket endpoint."""
-    await websocket.accept()
+# Creating the manager
+manager = AsyncRoomManager()
 
-    player_name = None
+# Creating a room
+room_id = await manager.create_room("Alice")
+print(f"Created room: {room_id}")
 
-    try:
-        # Handle initial connection
-        if room_id == "lobby":
-            await handle_lobby_connection(websocket)
-        else:
-            # Get player info from first message
-            message = await websocket.receive_json()
+# Getting a room
+room = await manager.get_room(room_id)
+if room:
+    summary = await room.summary()
+    print(f"Room summary: {summary}")
 
-            if message['event'] == 'join_room':
-                player_name = message['data']['player_name']
+# Listing available rooms
+available = await manager.list_rooms()
+print(f"Available rooms: {len(available)}")
 
-                # Join room
-                result = await room_manager.join_room(
-                    room_id, player_name, websocket
-                )
+# Deleting a room
+deleted = await manager.delete_room(room_id)
+print(f"Room deleted: {deleted}")
 
-                if result.success:
-                    # Handle subsequent messages
-                    await handle_room_connection(
-                        websocket, room_id, player_name
-                    )
-
-    except WebSocketDisconnect:
-        logger.info(f"WebSocket disconnected: {player_name or 'unknown'}")
-
-        if player_name and room_id != "lobby":
-            await handle_player_disconnect(room_id, player_name)
+# Get statistics
+stats = await manager.get_stats()
+print(f"Manager stats: {stats}")
 ```
 
-### Creating a Room Flow
+### Using Sync Wrappers
 
 ```python
-# Complete flow for creating a room
-async def create_room_flow(player_name: str, settings: dict) -> dict:
-    """Complete room creation flow."""
-    # Generate room ID
-    room_id = generate_room_id()
-
-    # Create room
-    room = await room_manager.create_room(
-        room_id, player_name, settings
-    )
-
-    # Return room info
-    return {
-        "room_id": room_id,
-        "host": room.host,
-        "players": room.players,
-        "settings": room.settings.to_dict(),
-        "state": room.state.value
-    }
+# For migration compatibility
+room_id = manager.create_room_sync("Bob")
+room = manager.get_room_sync(room_id)
+rooms = manager.list_rooms_sync()
+deleted = manager.delete_room_sync(room_id)
 ```
 
-### Lobby Updates
+### Integration with WebSocket Layer
+
+The AsyncRoomManager is designed to work with the WebSocket layer, but the actual connection management and player tracking is handled by the WebSocket handler and Game State Machine:
 
 ```python
-async def _update_lobby_room_list(self):
-    """Update lobby with current room list."""
-    # Get public rooms
-    public_rooms = []
+# Example integration pattern (not in AsyncRoomManager)
+# The actual room joining, player management, and game integration
+# is handled by the WebSocket handler and RoomManager (not AsyncRoomManager)
 
-    for room_id, room in self.rooms.items():
-        if room.settings.is_public and not room.game_started:
-            public_rooms.append({
-                "room_id": room_id,
-                "host": room.host,
-                "players": len(room.players),
-                "max_players": room.settings.max_players,
-                "created_at": room.created_at.isoformat()
-            })
+# AsyncRoomManager focuses on:
+# - Room lifecycle (create, get, delete, list)
+# - Unique ID generation
+# - Statistics tracking
+# - Migration compatibility
 
-    # Broadcast to lobby
-    lobby_message = {
-        "event": "room_list",
-        "data": {
-            "rooms": public_rooms,
-            "total": len(public_rooms)
-        }
-    }
-
-    # Send to all lobby connections
-    failed = []
-    for websocket in self.lobby_connections:
-        try:
-            await websocket.send_json(lobby_message)
-        except:
-            failed.append(websocket)
-
-    # Clean up failed
-    for ws in failed:
-        self.lobby_connections.discard(ws)
+# It does NOT handle:
+# - WebSocket connections
+# - Player tracking
+# - Game state management
+# - Broadcasting
+# - Bot management
 ```
 
 ## Testing & Debugging
@@ -893,125 +498,87 @@ async def test_room_creation():
     manager = AsyncRoomManager()
 
     # Create room
-    room = await manager.create_room(
-        "test_room",
-        "Alice",
-        {"max_players": 4}
-    )
+    room_id = await manager.create_room("Alice")
 
     # Verify room
-    assert room.room_id == "test_room"
-    assert room.host == "Alice"
-    assert "Alice" in room.players
-    assert len(room.players) == 1
-    assert not room.game_started
+    assert room_id is not None
+    assert len(room_id) == 6  # Default room ID length
+    assert room_id.isupper()
 
-    # Verify tracking
-    assert "Alice" in manager.player_to_room
-    assert manager.player_to_room["Alice"] == "test_room"
+    # Get room
+    room = await manager.get_room(room_id)
+    assert room is not None
+    assert room.host == "Alice"
+    assert room.room_id == room_id
+
+    # Check stats
+    stats = await manager.get_stats()
+    assert stats["rooms_created"] == 1
+    assert stats["active_rooms"] == 1
 ```
 
-### Integration Testing
+### Testing Empty Room Cleanup
 
 ```python
 @pytest.mark.asyncio
-async def test_full_game_flow():
-    """Test complete multiplayer flow."""
+async def test_empty_room_cleanup():
+    """Test cleanup of empty rooms."""
     manager = AsyncRoomManager()
-    manager.bot_manager = BotManager(manager)
 
-    # Create room
-    room = await manager.create_room(
-        "test", "Alice", {}
-    )
+    # Create multiple rooms
+    room_ids = []
+    for i in range(3):
+        room_id = await manager.create_room(f"Host{i}")
+        room_ids.append(room_id)
 
-    # Add players with mock websockets
-    websockets = {}
-    for player in ["Bob", "Carol", "David"]:
-        ws = MockWebSocket()
-        websockets[player] = ws
-        await manager.join_room("test", player, ws)
+    # Mock some rooms as empty
+    # (In real implementation, this would be based on player count)
 
-    # Verify all joined
-    assert len(room.players) == 4
+    # Run cleanup
+    cleaned = await manager.cleanup_empty_rooms()
 
-    # Start game
-    result = await manager.start_game("test", "Alice")
-    assert result.success
-    assert "test" in manager.games
-
-    # Simulate disconnection
-    await manager._handle_failed_connection(
-        "test", websockets["Bob"]
-    )
-
-    # Verify bot activated
-    assert manager.bot_manager.is_bot_active("test", "Bob")
+    # Verify cleanup
+    remaining = await manager.get_room_count()
+    assert remaining == 3 - cleaned
 ```
 
-### Debug Endpoints
+### Migration Testing
 
 ```python
-@router.get("/api/debug/rooms")
-async def debug_rooms():
-    """Get all room information."""
-    rooms_data = []
+def test_sync_wrappers():
+    """Test sync wrapper compatibility."""
+    manager = AsyncRoomManager()
 
-    for room_id, room in room_manager.rooms.items():
-        rooms_data.append({
-            "room_id": room_id,
-            "host": room.host,
-            "players": room.players,
-            "game_started": room.game_started,
-            "state": room.state.value,
-            "connections": len(
-                room_manager.connection_manager.get_connections(room_id)
-            ),
-            "has_bots": any(
-                room_manager.bot_manager.is_bot_active(room_id, p)
-                for p in room.players
-            ) if room_manager.bot_manager else False
-        })
+    # Test sync creation
+    room_id = manager.create_room_sync("TestHost")
+    assert room_id is not None
 
-    return {
-        "total_rooms": len(rooms_data),
-        "rooms": rooms_data,
-        "player_mappings": dict(room_manager.player_to_room),
-        "lobby_connections": len(room_manager.lobby_connections)
-    }
-```
+    # Test sync retrieval
+    room = manager.get_room_sync(room_id)
+    assert room is not None
+    assert room.host == "TestHost"
 
-### Monitoring
+    # Test sync deletion
+    deleted = manager.delete_room_sync(room_id)
+    assert deleted is True
 
-```python
-# Metrics tracking
-class RoomMetrics:
-    def __init__(self):
-        self.rooms_created = 0
-        self.rooms_destroyed = 0
-        self.games_started = 0
-        self.player_connections = 0
-        self.player_disconnections = 0
-        self.bot_activations = 0
-
-    def to_dict(self):
-        return {
-            "rooms_active": self.rooms_created - self.rooms_destroyed,
-            "total_games": self.games_started,
-            "connection_events": self.player_connections,
-            "disconnection_events": self.player_disconnections,
-            "bot_activations": self.bot_activations
-        }
+    # Verify deletion
+    room = manager.get_room_sync(room_id)
+    assert room is None
 ```
 
 ## Summary
 
 The AsyncRoomManager provides:
 
-1. **Robust Room Management**: Complete lifecycle from creation to destruction
-2. **Connection Tracking**: Reliable WebSocket-to-player mapping
-3. **Game Integration**: Seamless game state machine creation
-4. **Bot Support**: Automatic bot activation for disconnected players
-5. **Error Recovery**: Graceful handling of disconnections and errors
+1. **Async Room Management**: Complete async lifecycle for room operations
+2. **Unique ID Generation**: Generates unique 6-character room IDs
+3. **Thread-Safe Operations**: Dual-lock system prevents deadlocks
+4. **Migration Support**: Sync wrappers for gradual migration
+5. **Future Database Ready**: Prepared for database persistence
 
-This architecture enables smooth multiplayer gameplay with automatic failover, ensuring games can continue even when players disconnect.
+Key differences from sync RoomManager:
+- Focuses on room lifecycle only (no player/connection management)
+- All operations are async with future database hooks
+- Simplified architecture without complex subsystems
+- Migration-friendly with sync wrapper methods

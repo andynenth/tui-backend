@@ -6,23 +6,23 @@
 3. [Connection Manager](#connection-manager)
 4. [WebSocket Endpoints](#websocket-endpoints)
 5. [Message Routing](#message-routing)
-6. [Error Handling](#error-handling)
-7. [Connection Lifecycle](#connection-lifecycle)
+6. [Disconnection Handling](#disconnection-handling)
+7. [Message Queuing](#message-queuing)
 8. [Broadcasting System](#broadcasting-system)
-9. [Performance & Scaling](#performance--scaling)
+9. [Rate Limiting](#rate-limiting)
 10. [Testing WebSockets](#testing-websockets)
 
 ## Overview
 
-The WebSocket Handler is the backend component responsible for managing real-time bidirectional communication between the server and clients. It handles connection lifecycle, message routing, error recovery, and broadcasting to multiple clients.
+The WebSocket Handler manages real-time bidirectional communication between the server and clients. It uses a combination of connection tracking, message queuing for disconnected players, and integration with the room manager and state machine.
 
 ### Design Principles
 
-1. **Connection Reliability**: Robust handling of disconnections and reconnections
-2. **Message Integrity**: Guaranteed delivery and ordering
-3. **Scalability**: Efficient handling of multiple concurrent connections
-4. **Error Recovery**: Graceful handling of failures
-5. **Type Safety**: Strong typing for all messages
+1. **Connection Tracking**: Track player connections with WebSocket IDs
+2. **Graceful Disconnection**: 5-second grace period before bot takeover
+3. **Message Queuing**: Queue messages for disconnected players
+4. **Rate Limiting**: Prevent spam and abuse
+5. **Event Store Integration**: Log all events for debugging
 
 ## Architecture
 
@@ -71,14 +71,19 @@ graph TB
 
 ```
 backend/api/
-├── ws.py               # WebSocket endpoints
-├── connection_manager.py   # Connection management
-├── message_router.py   # Message routing logic
-└── broadcast.py        # Broadcasting utilities
+├── routes/
+│   └── ws.py                    # Main WebSocket endpoint
+├── websocket/
+│   ├── connection_manager.py    # Player connection tracking
+│   ├── message_queue.py         # Message queuing for disconnected players
+│   └── migration_example.py     # Migration examples
+├── middleware/
+│   └── websocket_rate_limit.py # Rate limiting
+└── validation.py                # Message validation
 
-backend/models/
-├── websocket_models.py # Message type definitions
-└── connection_models.py # Connection state models
+backend/
+├── socket_manager.py            # Core WebSocket registry and broadcasting
+└── shared_instances.py          # Shared room manager instance
 ```
 
 ## Connection Manager
@@ -86,161 +91,119 @@ backend/models/
 ### Core Implementation
 
 ```python
-# backend/api/connection_manager.py
-from typing import Dict, Set, Optional
-from fastapi import WebSocket
+# backend/api/websocket/connection_manager.py
+"""
+Player Connection Tracking System
+
+Manages player connection states, disconnection tracking, and reconnection windows.
+Works alongside the existing SocketManager for WebSocket management.
+"""
+
 import asyncio
-import time
-import uuid
+from datetime import datetime, timedelta
+from typing import Dict, Optional, Set
+from dataclasses import dataclass, field
+from enum import Enum
+import logging
+
+logger = logging.getLogger(__name__)
+
+class ConnectionStatus(Enum):
+    """Player connection states"""
+    CONNECTED = "connected"
+    DISCONNECTED = "disconnected"
+    RECONNECTING = "reconnecting"
+
+@dataclass
+class PlayerConnection:
+    """Represents a player's connection state"""
+    player_name: str
+    room_id: str
+    connection_status: ConnectionStatus = ConnectionStatus.CONNECTED
+    disconnect_time: Optional[datetime] = None
+    original_is_bot: bool = False
+    websocket_id: Optional[str] = None  # To track specific connections
 
 class ConnectionManager:
-    """Manages WebSocket connections for all rooms."""
+    """Manages player connections and disconnection tracking"""
 
     def __init__(self):
-        # Room -> Set of connections
-        self.room_connections: Dict[str, Set[WebSocket]] = {}
-
-        # Connection -> metadata
-        self.connection_metadata: Dict[WebSocket, ConnectionMetadata] = {}
-
-        # Player -> connection mapping
-        self.player_connections: Dict[str, WebSocket] = {}
-
-        # Active connections
-        self.active_connections: Set[WebSocket] = set()
-
-        # Connection statistics
-        self.connection_stats: Dict[str, ConnectionStats] = {}
-
-    async def connect(
-        self,
-        websocket: WebSocket,
-        room_id: str,
-        player_name: Optional[str] = None
-    ) -> str:
-        """Accept and register a new connection."""
-        # Accept WebSocket connection
-        await websocket.accept()
-
-        # Generate connection ID
-        connection_id = str(uuid.uuid4())
-
-        # Create metadata
-        metadata = ConnectionMetadata(
-            connection_id=connection_id,
-            room_id=room_id,
-            player_name=player_name,
-            connected_at=time.time(),
-            last_activity=time.time(),
-            message_count=0
-        )
-
-        # Register connection
-        self.connection_metadata[websocket] = metadata
-        self.active_connections.add(websocket)
-
-        # Add to room
-        if room_id not in self.room_connections:
-            self.room_connections[room_id] = set()
-        self.room_connections[room_id].add(websocket)
-
-        # Map player if authenticated
-        if player_name:
-            self.player_connections[player_name] = websocket
-
-        # Update stats
-        self._update_connection_stats(room_id, 'connect')
-
-        # Log connection
-        logger.info(f"Connection {connection_id} joined room {room_id}")
-
-        return connection_id
+        # Track connections by room_id -> player_name -> PlayerConnection
+        self.connections: Dict[str, Dict[str, PlayerConnection]] = {}
+        # Track websocket to player mapping
+        self.websocket_to_player: Dict[str, tuple[str, str]] = {}  # ws_id -> (room_id, player_name)
+        # Lock for thread-safe operations
+        self.lock = asyncio.Lock()
 ```
 
-### Connection Metadata
+### Player Registration
 
 ```python
-from dataclasses import dataclass
-from typing import Optional
+async def register_player(
+    self, room_id: str, player_name: str, websocket_id: str
+) -> None:
+    """Register a player connection"""
+    async with self.lock:
+        if room_id not in self.connections:
+            self.connections[room_id] = {}
 
-@dataclass
-class ConnectionMetadata:
-    """Metadata for each WebSocket connection."""
-    connection_id: str
-    room_id: str
-    player_name: Optional[str]
-    connected_at: float
-    last_activity: float
-    message_count: int
+        # Check if player was disconnected and reconnecting
+        if player_name in self.connections[room_id]:
+            connection = self.connections[room_id][player_name]
+            if connection.connection_status == ConnectionStatus.DISCONNECTED:
+                # Always allow reconnection (unlimited reconnection time)
+                connection.connection_status = ConnectionStatus.CONNECTED
+                connection.disconnect_time = None
+                connection.websocket_id = websocket_id
+                logger.info(f"Player {player_name} reconnected to room {room_id}")
+        else:
+            # New connection
+            self.connections[room_id][player_name] = PlayerConnection(
+                player_name=player_name,
+                room_id=room_id,
+                connection_status=ConnectionStatus.CONNECTED,
+                websocket_id=websocket_id,
+            )
+            logger.info(f"Player {player_name} connected to room {room_id}")
 
-    # Performance metrics
-    avg_latency: float = 0.0
-    messages_sent: int = 0
-    messages_received: int = 0
-    bytes_sent: int = 0
-    bytes_received: int = 0
-
-    # Connection state
-    is_authenticated: bool = False
-    is_active: bool = True
-    reconnect_count: int = 0
-
-@dataclass
-class ConnectionStats:
-    """Statistics for room connections."""
-    total_connections: int = 0
-    active_connections: int = 0
-    total_messages: int = 0
-    total_bytes: int = 0
-    peak_connections: int = 0
-    avg_connection_duration: float = 0.0
+        # Update websocket mapping
+        self.websocket_to_player[websocket_id] = (room_id, player_name)
 ```
 
 ### Disconnection Handling
 
 ```python
-async def disconnect(self, websocket: WebSocket):
-    """Handle connection disconnection."""
-    if websocket not in self.connection_metadata:
-        return
+async def handle_disconnect(self, websocket_id: str) -> Optional[PlayerConnection]:
+    """Handle player disconnection"""
+    async with self.lock:
+        # Find player from websocket ID
+        if websocket_id not in self.websocket_to_player:
+            logger.warning(
+                f"WebSocket ID {websocket_id} not found in mapping. "
+                f"Current mappings: {list(self.websocket_to_player.keys())}"
+            )
+            return None
 
-    metadata = self.connection_metadata[websocket]
-    room_id = metadata.room_id
-    player_name = metadata.player_name
+        room_id, player_name = self.websocket_to_player[websocket_id]
 
-    # Remove from active connections
-    self.active_connections.discard(websocket)
+        # Remove websocket mapping
+        del self.websocket_to_player[websocket_id]
 
-    # Remove from room
-    if room_id in self.room_connections:
-        self.room_connections[room_id].discard(websocket)
+        # Update connection state
+        if room_id in self.connections and player_name in self.connections[room_id]:
+            connection = self.connections[room_id][player_name]
+            connection.connection_status = ConnectionStatus.DISCONNECTED
+            connection.disconnect_time = datetime.now()
+            connection.websocket_id = None
 
-        # Clean up empty rooms
-        if not self.room_connections[room_id]:
-            del self.room_connections[room_id]
+            logger.info(
+                f"Player {player_name} disconnected from room {room_id} "
+                f"at {connection.disconnect_time}"
+            )
 
-    # Remove player mapping
-    if player_name and self.player_connections.get(player_name) == websocket:
-        del self.player_connections[player_name]
+            return connection
 
-    # Calculate connection duration
-    duration = time.time() - metadata.connected_at
-
-    # Update stats
-    self._update_connection_stats(room_id, 'disconnect', duration)
-
-    # Clean up metadata
-    del self.connection_metadata[websocket]
-
-    # Log disconnection
-    logger.info(
-        f"Connection {metadata.connection_id} disconnected from room {room_id} "
-        f"after {duration:.1f}s"
-    )
-
-    # Notify room of disconnection
-    if player_name:
-        await self.notify_player_disconnection(room_id, player_name)
+        return None
 ```
 
 ## WebSocket Endpoints
@@ -248,1013 +211,610 @@ async def disconnect(self, websocket: WebSocket):
 ### Main WebSocket Endpoint
 
 ```python
-# backend/api/ws.py
-from fastapi import WebSocket, WebSocketDisconnect, Depends
+# backend/api/routes/ws.py
+import asyncio
+import logging
+import uuid
+import time
 from typing import Optional
-import json
+
+import backend.socket_manager
+from backend.shared_instances import shared_room_manager
+from backend.socket_manager import broadcast, register, unregister
+from fastapi import APIRouter, WebSocket, WebSocketDisconnect
+
+from backend.api.validation import validate_websocket_message
+from backend.api.middleware.websocket_rate_limit import (
+    check_websocket_rate_limit,
+    send_rate_limit_error,
+)
+from backend.api.websocket.connection_manager import connection_manager
+from backend.api.websocket.message_queue import message_queue_manager
+from backend.shared_event_store import event_store
+
+logger = logging.getLogger(__name__)
+router = APIRouter()
+room_manager = shared_room_manager
 
 @router.websocket("/ws/{room_id}")
-async def websocket_endpoint(
-    websocket: WebSocket,
-    room_id: str,
-    token: Optional[str] = None
-):
-    """Main WebSocket endpoint for game rooms."""
-    connection_id = None
-    player_name = None
+async def websocket_endpoint(websocket: WebSocket, room_id: str):
+    """WebSocket endpoint for real-time game communication."""
+    await websocket.accept()
 
-    try:
-        # Authenticate if token provided
-        if token:
-            player_name = await authenticate_token(token)
+    # Generate a unique ID for this websocket connection
+    websocket_id = str(uuid.uuid4())
+    setattr(websocket, "_ws_id", websocket_id)
 
-        # Connect to room
-        connection_id = await connection_manager.connect(
-            websocket,
-            room_id,
-            player_name
-        )
+    logger.info(f"WebSocket connected - room: {room_id}, ws_id: {websocket_id}")
 
-        # Send connection confirmation
-        await websocket.send_json({
-            "event": "connected",
-            "data": {
-                "connection_id": connection_id,
-                "room_id": room_id,
-                "player_name": player_name
-            }
-        })
-
-        # Handle messages
-        while True:
-            # Receive message
-            data = await websocket.receive_text()
-
-            # Parse message
-            try:
-                message = json.loads(data)
-            except json.JSONDecodeError:
-                await send_error(websocket, "INVALID_JSON", "Invalid message format")
-                continue
-
-            # Route message
-            await message_router.route_message(
-                websocket=websocket,
-                room_id=room_id,
-                message=message,
-                player_name=player_name
-            )
-
-    except WebSocketDisconnect:
-        # Clean disconnection
-        logger.info(f"WebSocket {connection_id} disconnected normally")
-
-    except Exception as e:
-        # Unexpected error
-        logger.error(f"WebSocket error: {str(e)}", exc_info=True)
-        await send_error(websocket, "SERVER_ERROR", str(e))
-
-    finally:
-        # Always disconnect
-        await connection_manager.disconnect(websocket)
-```
-
-### Lobby WebSocket
-
-```python
-@router.websocket("/ws/lobby")
-async def lobby_websocket(websocket: WebSocket):
-    """WebSocket endpoint for lobby operations."""
-    connection_id = None
-
-    try:
-        # Connect to lobby
-        connection_id = await connection_manager.connect(
-            websocket,
-            "lobby",
-            None
-        )
-
-        # Send initial room list
-        rooms = await room_manager.get_public_rooms()
-        await websocket.send_json({
-            "event": "room_list",
-            "data": {"rooms": rooms}
-        })
-
-        # Handle lobby messages
-        while True:
-            data = await websocket.receive_text()
-            message = json.loads(data)
-
-            # Route lobby-specific messages
-            await handle_lobby_message(websocket, message)
-
-    except WebSocketDisconnect:
+    # Register websocket with SocketManager
+    if room_id == "lobby":
+        register(websocket, room_id)
+    else:
+        # For game rooms, registration happens after join_room
         pass
 
+    try:
+        while True:
+            # Receive and validate message
+            try:
+                data = await websocket.receive_json()
+
+                # Validate message structure
+                if not validate_websocket_message(data):
+                    await websocket.send_json({
+                        "event": "error",
+                        "data": {"error": "INVALID_MESSAGE_FORMAT"}
+                    })
+                    continue
+
+                # Check rate limit
+                if not await check_websocket_rate_limit(websocket_id):
+                    await send_rate_limit_error(websocket)
+                    continue
+
+                # Route message based on event type
+                await handle_websocket_message(
+                    websocket, room_id, data, websocket_id
+                )
+
+            except ValueError as e:
+                logger.error(f"Invalid message format: {e}")
+                await websocket.send_json({
+                    "event": "error",
+                    "data": {"error": "INVALID_JSON"}
+                })
+
+    except WebSocketDisconnect:
+        logger.info(f"WebSocket disconnected - room: {room_id}, ws_id: {websocket_id}")
+    except Exception as e:
+        logger.error(f"WebSocket error: {str(e)}", exc_info=True)
     finally:
-        await connection_manager.disconnect(websocket)
+        # Handle disconnect
+        unregister(websocket, room_id)
+        await handle_disconnect(room_id, websocket)
+```
 
-async def handle_lobby_message(websocket: WebSocket, message: dict):
-    """Handle lobby-specific messages."""
-    event = message.get("event")
-    data = message.get("data", {})
+### Disconnect Handler
 
-    if event == "create_room":
-        # Create new room
-        room_info = await room_manager.create_room(
-            room_name=data.get("room_name"),
-            creator_name=data.get("player_name"),
-            is_public=data.get("is_public", True)
+```python
+async def handle_disconnect(room_id: str, websocket: WebSocket):
+    """Handle player disconnection with bot activation"""
+    try:
+        # Generate a unique websocket ID for tracking
+        websocket_id = getattr(websocket, "_ws_id", None)
+        disconnect_time = time.time()
+
+        logger.info(
+            f"🔌 [ROOM_DEBUG] Handling disconnect for room '{room_id}', "
+            f"websocket_id: {websocket_id} at {disconnect_time}"
         )
 
-        await websocket.send_json({
-            "event": "room_created",
-            "data": room_info
-        })
+        # Get connection info
+        connection = None
+        if websocket_id:
+            connection = await connection_manager.handle_disconnect(websocket_id)
 
-        # Broadcast to all lobby connections
-        await broadcast_room_update("room_created", room_info)
+        if connection and room_id != "lobby":
+            room = await room_manager.get_room(room_id)
+            if room and room.started:  # Only treat as in-game if game started!
+                # This is an in-game disconnect
+                logger.info(
+                    f"🎮 [ROOM_DEBUG] In-game disconnect detected for player "
+                    f"'{connection.player_name}' in room '{room_id}'"
+                )
+                if room.game:
+                    # Find the player in the game
+                    player = next(
+                        (p for p in room.game.players if p.name == connection.player_name),
+                        None,
+                    )
 
-    elif event == "refresh_rooms":
-        # Send updated room list
-        rooms = await room_manager.get_public_rooms()
-        await websocket.send_json({
-            "event": "room_list",
-            "data": {"rooms": rooms}
-        })
+                    if player and not player.is_bot:
+                        # Store original state
+                        player.original_is_bot = player.is_bot
+                        player.original_avatar_color = getattr(player, "avatar_color", None)
+
+                        # Mark as disconnected
+                        player.is_connected = False
+                        player.disconnect_time = connection.disconnect_time
+
+                        # Schedule bot takeover after grace period (5 seconds)
+                        from datetime import datetime, timedelta
+                        player.pending_bot_takeover = datetime.now() + timedelta(seconds=5)
+                        player.bot_takeover_scheduled = True
+
+                        logger.info(
+                            f"🕐 [GRACE_PERIOD] Player {connection.player_name} disconnected. "
+                            f"Bot takeover scheduled in 5 seconds at {player.pending_bot_takeover}"
+                        )
+
+                        # Store disconnection event
+                        await event_store.log_player_disconnected(
+                            room_id=room_id,
+                            player_name=connection.player_name,
+                            disconnect_time=disconnect_time,
+                            game_context={
+                                "current_phase": room.game_state_machine.get_current_phase()
+                                if room.game_state_machine else None,
+                                "current_player": room.game_state_machine.get_phase_data().get(
+                                    "current_player"
+                                ) if room.game_state_machine else None,
+                                "round_number": room.game.round_number if room.game else None,
+                                "turn_number": room.game.turn_number if room.game else None,
+                            }
+                        )
+
+                        # Notify other players
+                        await broadcast_with_queue(
+                            room_id,
+                            "player_disconnected",
+                            {
+                                "player_name": connection.player_name,
+                                "grace_period_seconds": 5,
+                                "bot_takeover_at": player.pending_bot_takeover.isoformat(),
+                            },
+                        )
+
+    except Exception as e:
+        logger.error(f"Error handling disconnect: {e}", exc_info=True)
 ```
 
 ## Message Routing
 
-### Message Router Implementation
+The message routing is handled directly in the WebSocket endpoint rather than a separate router class:
 
 ```python
-# backend/api/message_router.py
-from typing import Dict, Callable, Optional
-from fastapi import WebSocket
+async def handle_websocket_message(
+    websocket: WebSocket,
+    room_id: str,
+    message: dict,
+    websocket_id: str
+):
+    """Route WebSocket message to appropriate handler"""
+    event = message.get("event")
+    data = message.get("data", {})
 
-class MessageRouter:
-    """Routes WebSocket messages to appropriate handlers."""
+    # Get current player name from connection
+    player_name = await get_current_player_name(websocket_id)
 
-    def __init__(self):
-        # Event -> handler mapping
-        self.handlers: Dict[str, Callable] = {}
-
-        # Register handlers
-        self.register_handlers()
-
-    def register_handlers(self):
-        """Register all message handlers."""
-        # Game actions
-        self.handlers["join_room"] = self.handle_join_room
-        self.handlers["leave_room"] = self.handle_leave_room
-        self.handlers["start_game"] = self.handle_start_game
-        self.handlers["declare"] = self.handle_declare
-        self.handlers["play"] = self.handle_play
-        self.handlers["accept_redeal"] = self.handle_accept_redeal
-        self.handlers["decline_redeal"] = self.handle_decline_redeal
-
-        # Utility
-        self.handlers["ping"] = self.handle_ping
-        self.handlers["chat"] = self.handle_chat
-        self.handlers["get_state"] = self.handle_get_state
-
-    async def route_message(
-        self,
-        websocket: WebSocket,
-        room_id: str,
-        message: dict,
-        player_name: Optional[str]
-    ):
-        """Route message to appropriate handler."""
-        event = message.get("event")
-        data = message.get("data", {})
-
-        # Validate message
-        if not event:
-            await send_error(websocket, "MISSING_EVENT", "Event type required")
-            return
-
-        # Find handler
-        handler = self.handlers.get(event)
-        if not handler:
-            await send_error(
-                websocket,
-                "UNKNOWN_EVENT",
-                f"Unknown event: {event}"
-            )
-            return
-
-        # Create context
-        context = MessageContext(
-            websocket=websocket,
-            room_id=room_id,
-            player_name=player_name,
-            event=event,
-            data=data,
-            timestamp=time.time()
-        )
-
-        try:
-            # Execute handler
-            await handler(context)
-
-            # Update activity
-            connection_manager.update_activity(websocket)
-
-        except GameError as e:
-            # Game-specific errors
-            await send_error(websocket, e.code, e.message)
-
-        except Exception as e:
-            # Unexpected errors
-            logger.error(f"Handler error for {event}: {str(e)}", exc_info=True)
-            await send_error(websocket, "HANDLER_ERROR", "Internal error")
+    # Route based on event type
+    if room_id == "lobby":
+        # Lobby-specific events
+        if event == "create_room":
+            await handle_create_room(websocket, data)
+        elif event == "refresh_rooms":
+            await handle_refresh_rooms(websocket)
+        elif event == "join_room":
+            await handle_join_room_from_lobby(websocket, data)
+    else:
+        # Game room events
+        if event == "join_room":
+            await handle_join_room(websocket, websocket_id, room_id, data)
+        elif event == "start_game":
+            await handle_start_game(room_id, player_name)
+        elif event == "declare":
+            await handle_declare(room_id, player_name, data)
+        elif event == "play":
+            await handle_play(room_id, player_name, data)
+        elif event == "accept_redeal":
+            await handle_accept_redeal(room_id, player_name)
+        elif event == "decline_redeal":
+            await handle_decline_redeal(room_id, player_name)
+        elif event == "leave_room":
+            await handle_leave_room(room_id, player_name)
 ```
 
 ### Message Handlers
 
 ```python
-async def handle_join_room(self, context: MessageContext):
-    """Handle player joining room."""
-    player_name = context.data.get("player_name")
-
+async def handle_join_room(
+    websocket: WebSocket,
+    websocket_id: str,
+    room_id: str,
+    data: dict
+):
+    """Handle player joining a room"""
+    player_name = data.get("player_name")
     if not player_name:
-        raise GameError("MISSING_NAME", "Player name required")
+        await websocket.send_json({
+            "event": "error",
+            "data": {"error": "MISSING_PLAYER_NAME"}
+        })
+        return
 
-    # Join room
-    success = await room_manager.add_player_to_room(
-        context.room_id,
-        player_name
-    )
+    # Register with connection manager
+    await connection_manager.register_player(room_id, player_name, websocket_id)
 
+    # Register with socket manager for broadcasting
+    register(websocket, room_id)
+
+    # Join room through room manager
+    room = await room_manager.get_room(room_id)
+    if not room:
+        await websocket.send_json({
+            "event": "error",
+            "data": {"error": "ROOM_NOT_FOUND"}
+        })
+        return
+
+    # Add player to room
+    success = await room.add_player(player_name)
     if not success:
-        raise GameError("JOIN_FAILED", "Failed to join room")
+        await websocket.send_json({
+            "event": "error",
+            "data": {"error": "ROOM_FULL"}
+        })
+        return
 
-    # Update connection
-    connection_manager.authenticate_connection(
-        context.websocket,
-        player_name
-    )
-
-    # Send success response
-    await context.websocket.send_json({
-        "event": "joined_room",
+    # Send room state to joining player
+    await websocket.send_json({
+        "event": "room_joined",
         "data": {
-            "room_id": context.room_id,
-            "player_name": player_name
+            "room_id": room_id,
+            "players": await room.get_player_list(),
+            "host": room.host,
+            "started": room.started
         }
     })
 
-    # Broadcast to room
-    await broadcast_to_room(
-        context.room_id,
+    # Broadcast to other players
+    await broadcast(
+        room_id,
         "player_joined",
         {
             "player_name": player_name,
-            "timestamp": context.timestamp
-        },
-        exclude=[context.websocket]
-    )
-
-async def handle_play(self, context: MessageContext):
-    """Handle play action."""
-    if not context.player_name:
-        raise GameError("NOT_AUTHENTICATED", "Must be authenticated to play")
-
-    # Get game state machine
-    state_machine = room_manager.get_game_state_machine(context.room_id)
-    if not state_machine:
-        raise GameError("NO_GAME", "No active game in room")
-
-    # Create game action
-    action = GameAction(
-        action_type=ActionType.PLAY,
-        player_name=context.player_name,
-        data=context.data
-    )
-
-    # Process action
-    result = await state_machine.process_action(action)
-
-    if not result.success:
-        raise GameError("PLAY_FAILED", result.error or "Invalid play")
-
-    # Success response
-    await context.websocket.send_json({
-        "event": "play_accepted",
-        "data": {
-            "player": context.player_name,
-            "pieces_played": context.data.get("piece_ids", [])
+            "players": await room.get_player_list()
         }
-    })
+    )
+```
 ```
 
-## Error Handling
+## Disconnection Handling
 
-### Error Types and Handlers
+The WebSocket handler implements a sophisticated disconnection handling system with grace periods and bot takeover:
+
+### Grace Period System
 
 ```python
-# backend/api/errors.py
-from enum import Enum
+# 5-second grace period before bot takeover
+GRACE_PERIOD_SECONDS = 5
 
-class ErrorCode(Enum):
-    """WebSocket error codes."""
-    # Connection errors
-    CONNECTION_FAILED = "CONNECTION_FAILED"
-    AUTHENTICATION_FAILED = "AUTHENTICATION_FAILED"
-    ROOM_NOT_FOUND = "ROOM_NOT_FOUND"
-
-    # Message errors
-    INVALID_JSON = "INVALID_JSON"
-    MISSING_EVENT = "MISSING_EVENT"
-    UNKNOWN_EVENT = "UNKNOWN_EVENT"
-    INVALID_DATA = "INVALID_DATA"
-
-    # Game errors
-    NOT_YOUR_TURN = "NOT_YOUR_TURN"
-    INVALID_PLAY = "INVALID_PLAY"
-    GAME_NOT_STARTED = "GAME_NOT_STARTED"
-    ALREADY_IN_GAME = "ALREADY_IN_GAME"
-
-    # Rate limiting
-    RATE_LIMITED = "RATE_LIMITED"
-    MESSAGE_TOO_LARGE = "MESSAGE_TOO_LARGE"
-
-async def send_error(
-    websocket: WebSocket,
-    code: str,
-    message: str,
-    details: Optional[dict] = None
-):
-    """Send error message to client."""
-    error_data = {
-        "event": "error",
-        "error": {
-            "code": code,
-            "message": message,
-            "timestamp": time.time()
-        }
-    }
-
-    if details:
-        error_data["error"]["details"] = details
-
-    try:
-        await websocket.send_json(error_data)
-    except Exception:
-        # Connection might be closed
-        pass
+# Player disconnect tracking in Game class
+class Player:
+    def __init__(self, name, is_bot=False):
+        self.name = name
+        self.is_bot = is_bot
+        self.is_connected = True
+        self.disconnect_time = None
+        self.pending_bot_takeover = None
+        self.bot_takeover_scheduled = False
+        self.original_is_bot = is_bot
+        self.original_avatar_color = None
 ```
 
-### Error Recovery
+### Bot Takeover Process
+
+1. **Disconnect Detection**: When a player disconnects, they're marked as disconnected but remain human
+2. **Grace Period**: 5-second window for reconnection
+3. **Bot Activation**: After grace period, bot takes over if player hasn't reconnected
+4. **Reconnection**: Player can reconnect at any time and resume control
+
+## Message Queuing
+
+The system includes message queuing for disconnected players to ensure they don't miss important game events:
 
 ```python
-class ErrorRecovery:
-    """Handles error recovery strategies."""
+# backend/api/websocket/message_queue.py
+class MessageQueueManager:
+    """Manages message queues for disconnected players"""
 
-    async def handle_connection_error(
-        self,
-        websocket: WebSocket,
-        error: Exception
+    def __init__(self):
+        # room_id -> player_name -> List[QueuedMessage]
+        self.queues: Dict[str, Dict[str, List[QueuedMessage]]] = {}
+        self.lock = asyncio.Lock()
+        self.max_queue_size = 100  # Per player
+        self.max_queue_age = 300  # 5 minutes
+
+    async def queue_message(
+        self, room_id: str, player_name: str, event: str, data: dict
     ):
-        """Handle connection-level errors."""
-        if isinstance(error, ConnectionResetError):
-            # Client disconnected abruptly
-            logger.warning("Client disconnected without closing handshake")
+        """Queue a message for a disconnected player"""
+        async with self.lock:
+            if room_id not in self.queues:
+                self.queues[room_id] = {}
 
-        elif isinstance(error, WebSocketDisconnect):
-            # Normal disconnection
-            logger.info("Client disconnected normally")
+            if player_name not in self.queues[room_id]:
+                self.queues[room_id][player_name] = []
 
-        else:
-            # Unexpected error
-            logger.error(f"Connection error: {str(error)}", exc_info=True)
+            queue = self.queues[room_id][player_name]
 
-            # Try to send error before closing
-            try:
-                await send_error(
-                    websocket,
-                    "CONNECTION_ERROR",
-                    "Connection error occurred"
-                )
-            except:
-                pass
-
-    async def handle_message_error(
-        self,
-        websocket: WebSocket,
-        message: str,
-        error: Exception
-    ):
-        """Handle message-level errors."""
-        if isinstance(error, json.JSONDecodeError):
-            await send_error(
-                websocket,
-                "INVALID_JSON",
-                "Message is not valid JSON"
+            # Add message to queue
+            queued_message = QueuedMessage(
+                event=event,
+                data=data,
+                timestamp=datetime.now(),
+                sequence=len(queue)
             )
 
-        elif isinstance(error, ValidationError):
-            await send_error(
-                websocket,
-                "INVALID_DATA",
-                "Message validation failed",
-                {"validation_errors": error.errors()}
-            )
+            queue.append(queued_message)
 
-        else:
-            logger.error(f"Message processing error: {str(error)}")
-            await send_error(
-                websocket,
-                "PROCESSING_ERROR",
-                "Failed to process message"
-            )
+            # Trim queue if too large
+            if len(queue) > self.max_queue_size:
+                queue.pop(0)  # Remove oldest
+
+    async def get_queued_messages(
+        self, room_id: str, player_name: str
+    ) -> List[dict]:
+        """Get all queued messages for a player"""
+        async with self.lock:
+            if room_id in self.queues and player_name in self.queues[room_id]:
+                messages = self.queues[room_id][player_name]
+                # Clear the queue
+                self.queues[room_id][player_name] = []
+
+                # Convert to dict format
+                return [
+                    {
+                        "event": msg.event,
+                        "data": msg.data,
+                        "timestamp": msg.timestamp.isoformat(),
+                        "sequence": msg.sequence
+                    }
+                    for msg in messages
+                ]
+
+            return []
 ```
 
-## Connection Lifecycle
-
-### State Diagram
-
-```mermaid
-stateDiagram-v2
-    [*] --> Connecting: WebSocket handshake
-    Connecting --> Connected: Handshake success
-    Connecting --> Failed: Handshake failed
-
-    Connected --> Authenticated: Player joins room
-    Connected --> Disconnected: Client disconnects
-
-    Authenticated --> Active: In game room
-    Authenticated --> Disconnected: Client disconnects
-
-    Active --> Inactive: No activity timeout
-    Active --> Disconnected: Client disconnects
-
-    Inactive --> Active: Activity resumed
-    Inactive --> Disconnected: Timeout exceeded
-
-    Disconnected --> [*]
-    Failed --> [*]
-```
-
-### Lifecycle Management
+### Broadcasting with Queue Support
 
 ```python
-class ConnectionLifecycle:
-    """Manages connection lifecycle events."""
+async def broadcast_with_queue(room_id: str, event: str, data: dict):
+    """Broadcast to room and queue messages for disconnected players"""
+    # Get list of disconnected players in the room
+    room = await room_manager.get_room(room_id)
+    if room and room.game:
+        disconnected_players = []
+        for player in room.game.players:
+            if player and hasattr(player, "is_connected") and not player.is_connected:
+                disconnected_players.append(player.name)
 
-    def __init__(self, connection_manager: ConnectionManager):
-        self.connection_manager = connection_manager
-        self.activity_timeout = 60  # seconds
-        self.ping_interval = 30  # seconds
+        # Queue messages for disconnected players
+        for player_name in disconnected_players:
+            await message_queue_manager.queue_message(room_id, player_name, event, data)
 
-    async def monitor_connections(self):
-        """Monitor all connections for health."""
-        while True:
-            try:
-                await self._check_inactive_connections()
-                await self._send_heartbeats()
-                await asyncio.sleep(self.ping_interval)
-
-            except Exception as e:
-                logger.error(f"Connection monitor error: {str(e)}")
-                await asyncio.sleep(5)
-
-    async def _check_inactive_connections(self):
-        """Check for inactive connections."""
-        current_time = time.time()
-        timeout_threshold = current_time - self.activity_timeout
-
-        for websocket, metadata in list(
-            self.connection_manager.connection_metadata.items()
-        ):
-            if metadata.last_activity < timeout_threshold:
-                # Connection inactive
-                logger.warning(
-                    f"Connection {metadata.connection_id} inactive, closing"
-                )
-
-                # Send timeout warning
-                try:
-                    await websocket.send_json({
-                        "event": "timeout_warning",
-                        "data": {"message": "Connection will close due to inactivity"}
-                    })
-                except:
-                    pass
-
-                # Close connection
-                await websocket.close()
-                await self.connection_manager.disconnect(websocket)
-
-    async def _send_heartbeats(self):
-        """Send heartbeat to all connections."""
-        tasks = []
-
-        for websocket in self.connection_manager.active_connections:
-            task = asyncio.create_task(self._send_ping(websocket))
-            tasks.append(task)
-
-        # Wait for all pings
-        if tasks:
-            await asyncio.gather(*tasks, return_exceptions=True)
-
-    async def _send_ping(self, websocket: WebSocket):
-        """Send ping to single connection."""
-        try:
-            await websocket.send_json({
-                "event": "ping",
-                "data": {"timestamp": time.time()}
-            })
-        except:
-            # Connection might be closed
-            pass
+    # Broadcast to connected players
+    await broadcast(room_id, event, data)
 ```
 
 ## Broadcasting System
 
-### Broadcast Implementation
+The broadcasting system uses the socket_manager module to handle room-based message distribution:
+
+### Core Broadcasting
 
 ```python
-# backend/api/broadcast.py
-from typing import Set, Optional, List
+# backend/socket_manager.py
+import asyncio
+from typing import Dict, List, Optional, Set
+from fastapi import WebSocket
+import logging
 
-async def broadcast_to_room(
-    room_id: str,
-    event: str,
-    data: dict,
-    exclude: Optional[List[WebSocket]] = None
-):
-    """Broadcast message to all connections in a room."""
-    connections = connection_manager.get_room_connections(room_id)
+logger = logging.getLogger(__name__)
 
-    if not connections:
+# Global registry of WebSocket connections by room
+_connections: Dict[str, Set[WebSocket]] = {}
+_lock = asyncio.Lock()
+
+def register(websocket: WebSocket, room_id: str):
+    """Register a WebSocket connection to a room."""
+    if room_id not in _connections:
+        _connections[room_id] = set()
+    _connections[room_id].add(websocket)
+    logger.info(f"WebSocket registered to room {room_id}. Total connections: {len(_connections[room_id])}")
+
+def unregister(websocket: WebSocket, room_id: str):
+    """Remove a WebSocket connection from a room."""
+    if room_id in _connections:
+        _connections[room_id].discard(websocket)
+        if not _connections[room_id]:
+            del _connections[room_id]
+        logger.info(f"WebSocket unregistered from room {room_id}")
+
+async def broadcast(room_id: str, event: str, data: dict, exclude: Optional[List[WebSocket]] = None):
+    """Broadcast a message to all connections in a room."""
+    if room_id not in _connections:
+        logger.warning(f"No connections for room {room_id}")
         return
 
-    # Prepare message
+    exclude_set = set(exclude or [])
     message = {
         "event": event,
-        "data": data,
-        "room_id": room_id,
-        "timestamp": time.time()
+        "data": data
     }
 
-    # Create broadcast tasks
-    tasks = []
-    exclude_set = set(exclude or [])
+    # Send to all connections in the room
+    disconnected = []
+    for websocket in _connections[room_id]:
+        if websocket in exclude_set:
+            continue
 
-    for websocket in connections:
-        if websocket not in exclude_set:
-            task = asyncio.create_task(
-                send_to_websocket(websocket, message)
-            )
-            tasks.append(task)
+        try:
+            await websocket.send_json(message)
+        except Exception as e:
+            logger.error(f"Error broadcasting to websocket: {e}")
+            disconnected.append(websocket)
 
-    # Execute broadcasts concurrently
-    if tasks:
-        results = await asyncio.gather(*tasks, return_exceptions=True)
-
-        # Log failures
-        for i, result in enumerate(results):
-            if isinstance(result, Exception):
-                logger.error(f"Broadcast failed: {str(result)}")
-
-async def send_to_websocket(websocket: WebSocket, message: dict):
-    """Send message to single WebSocket."""
-    try:
-        await websocket.send_json(message)
-
-        # Update statistics
-        metadata = connection_manager.get_metadata(websocket)
-        if metadata:
-            metadata.messages_sent += 1
-            metadata.bytes_sent += len(json.dumps(message))
-
-    except ConnectionClosedError:
-        # Connection closed, will be cleaned up
-        logger.debug("Attempted to send to closed connection")
-
-    except Exception as e:
-        logger.error(f"Failed to send message: {str(e)}")
-        raise
+    # Clean up disconnected sockets
+    for ws in disconnected:
+        unregister(ws, room_id)
 ```
 
-### Broadcast Patterns
+## Rate Limiting
+
+The WebSocket handler includes rate limiting to prevent spam and abuse:
 
 ```python
-class BroadcastPatterns:
-    """Common broadcast patterns."""
+# backend/api/middleware/websocket_rate_limit.py
+import time
+from typing import Dict
+import asyncio
 
-    @staticmethod
-    async def broadcast_game_state(room_id: str, game_state: dict):
-        """Broadcast complete game state."""
-        await broadcast_to_room(
-            room_id,
-            "game_state_update",
-            {
-                "state": game_state,
-                "full_update": True
-            }
-        )
+class WebSocketRateLimiter:
+    """Rate limiting for WebSocket connections."""
 
-    @staticmethod
-    async def broadcast_player_action(
-        room_id: str,
-        player_name: str,
-        action: str,
-        details: dict
-    ):
-        """Broadcast player action to room."""
-        await broadcast_to_room(
-            room_id,
-            "player_action",
-            {
-                "player": player_name,
-                "action": action,
-                "details": details,
-                "timestamp": time.time()
-            }
-        )
+    def __init__(self, max_messages_per_minute: int = 60):
+        self.max_messages_per_minute = max_messages_per_minute
+        self.connection_buckets: Dict[str, list] = {}
+        self.lock = asyncio.Lock()
 
-    @staticmethod
-    async def broadcast_to_player(
-        player_name: str,
-        event: str,
-        data: dict
-    ):
-        """Send message to specific player."""
-        websocket = connection_manager.get_player_connection(player_name)
+    async def check_rate_limit(self, websocket_id: str) -> bool:
+        """Check if connection is within rate limit."""
+        async with self.lock:
+            current_time = time.time()
 
-        if websocket:
-            await send_to_websocket(
-                websocket,
-                {
-                    "event": event,
-                    "data": data,
-                    "private": True
-                }
-            )
+            # Initialize bucket if needed
+            if websocket_id not in self.connection_buckets:
+                self.connection_buckets[websocket_id] = []
 
-    @staticmethod
-    async def broadcast_to_team(
-        room_id: str,
-        team: List[str],
-        event: str,
-        data: dict
-    ):
-        """Broadcast to subset of players."""
-        connections = []
+            bucket = self.connection_buckets[websocket_id]
 
-        for player_name in team:
-            ws = connection_manager.get_player_connection(player_name)
-            if ws:
-                connections.append(ws)
+            # Remove old entries (older than 1 minute)
+            bucket = [t for t in bucket if current_time - t < 60]
 
-        # Send to team members
-        tasks = [
-            send_to_websocket(ws, {"event": event, "data": data})
-            for ws in connections
-        ]
+            # Check if within limit
+            if len(bucket) >= self.max_messages_per_minute:
+                return False
 
-        if tasks:
-            await asyncio.gather(*tasks, return_exceptions=True)
-```
+            # Add current request
+            bucket.append(current_time)
+            self.connection_buckets[websocket_id] = bucket
 
-## Performance & Scaling
+            return True
 
-### Performance Optimizations
+# Global rate limiter instance
+rate_limiter = WebSocketRateLimiter()
 
-```python
-class PerformanceOptimizer:
-    """WebSocket performance optimizations."""
+async def check_websocket_rate_limit(websocket_id: str) -> bool:
+    """Check if WebSocket connection is within rate limits."""
+    return await rate_limiter.check_rate_limit(websocket_id)
 
-    def __init__(self):
-        self.message_cache = {}
-        self.compression_enabled = True
-        self.batch_interval = 0.1  # seconds
-        self.pending_broadcasts = defaultdict(list)
-
-    async def optimized_broadcast(
-        self,
-        room_id: str,
-        messages: List[dict]
-    ):
-        """Batch multiple messages for efficiency."""
-        if len(messages) == 1:
-            # Single message, send immediately
-            await broadcast_to_room(room_id, messages[0]["event"], messages[0]["data"])
-            return
-
-        # Batch multiple messages
-        batch_message = {
-            "event": "message_batch",
-            "data": {
-                "messages": messages,
-                "count": len(messages)
-            }
+async def send_rate_limit_error(websocket: WebSocket):
+    """Send rate limit error to client."""
+    await websocket.send_json({
+        "event": "error",
+        "data": {
+            "error": "RATE_LIMITED",
+            "message": "Too many messages. Please slow down."
         }
-
-        await broadcast_to_room(room_id, "message_batch", batch_message["data"])
-
-    def should_compress(self, message: dict) -> bool:
-        """Determine if message should be compressed."""
-        if not self.compression_enabled:
-            return False
-
-        # Compress large messages
-        message_size = len(json.dumps(message))
-        return message_size > 1024  # 1KB threshold
-
-    async def cache_repeated_message(
-        self,
-        event: str,
-        data: dict,
-        ttl: int = 60
-    ) -> str:
-        """Cache frequently sent messages."""
-        # Generate cache key
-        cache_key = f"{event}:{hash(json.dumps(data, sort_keys=True))}"
-
-        if cache_key in self.message_cache:
-            # Return cached version
-            return cache_key
-
-        # Cache new message
-        self.message_cache[cache_key] = {
-            "event": event,
-            "data": data,
-            "timestamp": time.time(),
-            "ttl": ttl
-        }
-
-        # Schedule cleanup
-        asyncio.create_task(self._cleanup_cache(cache_key, ttl))
-
-        return cache_key
-```
-
-### Connection Pooling
-
-```python
-class ConnectionPool:
-    """Manage WebSocket connections efficiently."""
-
-    def __init__(self, max_connections_per_room: int = 100):
-        self.max_connections_per_room = max_connections_per_room
-        self.connection_queues: Dict[str, asyncio.Queue] = {}
-
-    async def can_accept_connection(self, room_id: str) -> bool:
-        """Check if room can accept more connections."""
-        current_connections = len(
-            connection_manager.get_room_connections(room_id)
-        )
-        return current_connections < self.max_connections_per_room
-
-    async def queue_connection(
-        self,
-        websocket: WebSocket,
-        room_id: str
-    ):
-        """Queue connection if room is full."""
-        if room_id not in self.connection_queues:
-            self.connection_queues[room_id] = asyncio.Queue()
-
-        # Add to queue
-        await self.connection_queues[room_id].put(websocket)
-
-        # Notify client
-        await websocket.send_json({
-            "event": "queued",
-            "data": {
-                "message": "Room is full, you are in queue",
-                "position": self.connection_queues[room_id].qsize()
-            }
-        })
-
-    async def process_queued_connections(self, room_id: str):
-        """Process queued connections when space available."""
-        if room_id not in self.connection_queues:
-            return
-
-        queue = self.connection_queues[room_id]
-
-        while not queue.empty() and await self.can_accept_connection(room_id):
-            websocket = await queue.get()
-
-            try:
-                # Try to add connection
-                await connection_manager.connect(websocket, room_id)
-
-                # Notify client
-                await websocket.send_json({
-                    "event": "queue_processed",
-                    "data": {"message": "You have been added to the room"}
-                })
-
-            except Exception as e:
-                logger.error(f"Failed to process queued connection: {str(e)}")
+    })
 ```
 
 ## Testing WebSockets
 
-### Unit Tests
+### Testing with FastAPI TestClient
 
 ```python
-# tests/test_websocket_handler.py
 import pytest
 from fastapi.testclient import TestClient
-from unittest.mock import Mock, AsyncMock
+from backend.main import app
 
-@pytest.fixture
-def mock_websocket():
-    """Create mock WebSocket."""
-    ws = Mock()
-    ws.accept = AsyncMock()
-    ws.send_json = AsyncMock()
-    ws.receive_text = AsyncMock()
-    ws.close = AsyncMock()
-    return ws
-
-@pytest.mark.asyncio
-async def test_connection_lifecycle(mock_websocket):
-    """Test connection lifecycle."""
-    manager = ConnectionManager()
-
-    # Test connection
-    connection_id = await manager.connect(mock_websocket, "test-room", "Alice")
-    assert connection_id is not None
-    assert mock_websocket in manager.active_connections
-    assert "test-room" in manager.room_connections
-
-    # Test metadata
-    metadata = manager.get_metadata(mock_websocket)
-    assert metadata.room_id == "test-room"
-    assert metadata.player_name == "Alice"
-
-    # Test disconnection
-    await manager.disconnect(mock_websocket)
-    assert mock_websocket not in manager.active_connections
-    assert mock_websocket not in manager.connection_metadata
-```
-
-### Integration Tests
-
-```python
-@pytest.mark.asyncio
-async def test_message_routing():
-    """Test message routing."""
-    router = MessageRouter()
-    context = Mock()
-    context.data = {"player_name": "Alice"}
-    context.room_id = "test-room"
-
-    # Mock handlers
-    router.handlers["test_event"] = AsyncMock()
-
-    # Route message
-    await router.route_message(
-        websocket=Mock(),
-        room_id="test-room",
-        message={"event": "test_event", "data": {}},
-        player_name="Alice"
-    )
-
-    # Verify handler called
-    assert router.handlers["test_event"].called
-
-@pytest.mark.asyncio
-async def test_broadcasting():
-    """Test broadcasting system."""
-    manager = ConnectionManager()
-
-    # Create multiple connections
-    ws1, ws2, ws3 = Mock(), Mock(), Mock()
-    for ws in [ws1, ws2, ws3]:
-        ws.send_json = AsyncMock()
-
-    await manager.connect(ws1, "room1", "Alice")
-    await manager.connect(ws2, "room1", "Bob")
-    await manager.connect(ws3, "room2", "Carol")
-
-    # Broadcast to room1
-    await broadcast_to_room("room1", "test_event", {"data": "test"})
-
-    # Verify only room1 connections received message
-    ws1.send_json.assert_called_once()
-    ws2.send_json.assert_called_once()
-    ws3.send_json.assert_not_called()
-```
-
-### WebSocket Client Testing
-
-```python
 def test_websocket_connection():
-    """Test WebSocket connection with test client."""
+    """Test basic WebSocket connection."""
     client = TestClient(app)
 
     with client.websocket_connect("/ws/test-room") as websocket:
-        # Test connection
-        data = websocket.receive_json()
-        assert data["event"] == "connected"
-
-        # Send message
+        # Send join room message
         websocket.send_json({
-            "event": "ping",
-            "data": {}
-        })
-
-        # Receive response
-        response = websocket.receive_json()
-        assert response["event"] == "pong"
-
-def test_websocket_game_flow():
-    """Test complete game flow over WebSocket."""
-    client = TestClient(app)
-
-    with client.websocket_connect("/ws/game-room") as ws:
-        # Join room
-        ws.send_json({
             "event": "join_room",
             "data": {"player_name": "TestPlayer"}
         })
 
-        response = ws.receive_json()
-        assert response["event"] == "joined_room"
+        # Should receive room_joined response
+        data = websocket.receive_json()
+        assert data["event"] == "room_joined"
+        assert data["data"]["room_id"] == "test-room"
 
-        # Start game (assuming 4 players)
-        ws.send_json({
-            "event": "start_game",
-            "data": {}
-        })
+def test_rate_limiting():
+    """Test rate limiting functionality."""
+    client = TestClient(app)
 
-        # Receive game started
-        response = ws.receive_json()
-        assert response["event"] == "phase_change"
-        assert response["data"]["phase"] == "PREPARATION"
+    with client.websocket_connect("/ws/test-room") as websocket:
+        # Send many messages rapidly
+        for i in range(100):
+            websocket.send_json({
+                "event": "test_event",
+                "data": {"count": i}
+            })
+
+        # Eventually should receive rate limit error
+        rate_limit_received = False
+        for _ in range(100):
+            data = websocket.receive_json()
+            if data.get("event") == "error" and data["data"].get("error") == "RATE_LIMITED":
+                rate_limit_received = True
+                break
+
+        assert rate_limit_received
 ```
 
-### Load Testing
+### Testing Disconnection Handling
 
 ```python
-import asyncio
-import websockets
-import time
+@pytest.mark.asyncio
+async def test_disconnection_grace_period():
+    """Test the 5-second grace period before bot takeover."""
+    # Create a room and start a game
+    room_id = "test-room"
+    player_name = "TestPlayer"
 
-async def load_test_client(client_id: int, room_id: str):
-    """Simulate a client for load testing."""
-    uri = f"ws://localhost:8000/ws/{room_id}"
+    # Simulate disconnect
+    disconnect_time = time.time()
 
-    async with websockets.connect(uri) as websocket:
-        # Join room
-        await websocket.send(json.dumps({
-            "event": "join_room",
-            "data": {"player_name": f"Player{client_id}"}
-        }))
+    # Player should remain human for 5 seconds
+    await asyncio.sleep(3)
+    # Check player is still human (not bot)
 
-        # Simulate activity
-        for i in range(100):
-            await websocket.send(json.dumps({
-                "event": "ping",
-                "data": {"seq": i}
-            }))
-
-            response = await websocket.recv()
-
-            # Small delay
-            await asyncio.sleep(0.1)
-
-async def run_load_test(num_clients: int = 50):
-    """Run load test with multiple clients."""
-    start_time = time.time()
-
-    # Create client tasks
-    tasks = [
-        load_test_client(i, f"room{i % 10}")
-        for i in range(num_clients)
-    ]
-
-    # Run concurrently
-    await asyncio.gather(*tasks)
-
-    duration = time.time() - start_time
-    print(f"Load test completed: {num_clients} clients in {duration:.2f}s")
-
-# Run load test
-asyncio.run(run_load_test(100))
+    # After 5 seconds, bot should take over
+    await asyncio.sleep(3)
+    # Check player is now bot
 ```
 
 ## Summary
 
 The WebSocket Handler provides:
 
-1. **Reliable Connections**: Robust connection management with lifecycle tracking
-2. **Efficient Routing**: Fast message routing to appropriate handlers
-3. **Scalable Broadcasting**: Optimized broadcasting to multiple clients
-4. **Error Recovery**: Comprehensive error handling and recovery
-5. **Performance**: Optimizations for high-throughput scenarios
-6. **Testability**: Complete test coverage for all components
+1. **Connection Tracking**: WebSocket ID-based player connection tracking
+2. **Grace Period System**: 5-second grace period before bot takeover
+3. **Message Queuing**: Queue messages for disconnected players
+4. **Rate Limiting**: Prevent spam with configurable rate limits
+5. **Event Store Integration**: All events logged for debugging
+6. **Simple Broadcasting**: Room-based message distribution
 
-This architecture ensures smooth real-time gameplay with minimal latency and maximum reliability.
+Key implementation details:
+- Uses socket_manager for WebSocket registry and broadcasting
+- ConnectionManager tracks player connections and disconnection state
+- Message queuing ensures disconnected players don't miss events
+- Rate limiting prevents abuse
+- Bot takeover after 5-second grace period for disconnected players

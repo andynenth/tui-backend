@@ -138,7 +138,7 @@ DISCONNECTED -> CONNECTING -> CONNECTED
 // Client sends ping every 30 seconds
 setInterval(() => {
   if (connection.readyState === WebSocket.OPEN) {
-    this.send(roomId, 'ping', {});
+    networkService.send(roomId, 'ping', {});
   }
 }, TIMING.HEARTBEAT_INTERVAL);
 
@@ -171,11 +171,11 @@ async def handle_disconnect(websocket: WebSocket, room_id: str):
 
 ```typescript
 interface NetworkMessage {
-  event: string;        // Event type (e.g., 'play', 'declare')
-  data: any;           // Event-specific payload
-  room_id: string;     // Target room
-  sequence?: number;   // Client sequence number
-  timestamp?: number;  // Client timestamp
+  event: string;                  // Event type (e.g., 'play', 'declare')
+  data: Record<string, any>;      // Event-specific payload
+  sequence: number;               // Client sequence number
+  timestamp: number;              // Client timestamp
+  id: string;                     // Unique message ID
 }
 ```
 
@@ -361,13 +361,14 @@ send(roomId: string, event: string, data: any) {
 
   if (connection?.readyState === WebSocket.OPEN) {
     // Send immediately
-    connection.send(JSON.stringify({
+    const message: NetworkMessage = {
       event,
       data,
-      room_id: roomId,
       sequence: this.getNextSequence(roomId),
-      timestamp: Date.now()
-    }));
+      timestamp: Date.now(),
+      id: crypto.randomUUID()
+    };
+    connection.send(JSON.stringify(message));
   } else {
     // Queue for later
     this.queueMessage(roomId, { event, data });
@@ -408,7 +409,7 @@ networkService.on('error', (error) => {
 #### 1. Creating and Joining a Room
 
 ```javascript
-// Client: Create room
+// Client: Create room (NetworkService.send('lobby', 'create_room', data))
 → {
   "event": "create_room",
   "data": {
@@ -418,8 +419,9 @@ networkService.on('error', (error) => {
       "is_public": true
     }
   },
-  "room_id": "lobby",
-  "sequence": 1
+  "sequence": 1,
+  "timestamp": 1703123456789,
+  "id": "550e8400-e29b-41d4-a716-446655440000"
 }
 
 // Server: Room created
@@ -436,15 +438,16 @@ networkService.on('error', (error) => {
   }
 }
 
-// Another client: Join room
+// Another client: Join room (NetworkService.send('lobby', 'join_room', data))
 → {
   "event": "join_room",
   "data": {
     "player_name": "Bob",
     "room_code": "ABCD1234"
   },
-  "room_id": "lobby",
-  "sequence": 1
+  "sequence": 1,
+  "timestamp": 1703123456890,
+  "id": "550e8400-e29b-41d4-a716-446655440001"
 }
 
 // Server: Broadcast to all in room
@@ -504,15 +507,16 @@ networkService.on('error', (error) => {
 #### 3. Game Actions
 
 ```javascript
-// Client: Make declaration
+// Client: Make declaration (NetworkService.send('ABCD1234', 'declare', data))
 → {
   "event": "declare",
   "data": {
     "player_name": "Alice",
     "declaration": 3
   },
-  "room_id": "ABCD1234",
-  "sequence": 5
+  "sequence": 5,
+  "timestamp": 1703123457000,
+  "id": "550e8400-e29b-41d4-a716-446655440002"
 }
 
 // Server: Update declaration status
@@ -532,15 +536,16 @@ networkService.on('error', (error) => {
   }
 }
 
-// Client: Play pieces
+// Client: Play pieces (NetworkService.send('ABCD1234', 'play', data))
 → {
   "event": "play",
   "data": {
     "player_name": "Alice",
     "piece_ids": ["p1", "p2"]
   },
-  "room_id": "ABCD1234",
-  "sequence": 12
+  "sequence": 12,
+  "timestamp": 1703123458000,
+  "id": "550e8400-e29b-41d4-a716-446655440003"
 }
 
 // Server: Turn results
@@ -565,15 +570,16 @@ networkService.on('error', (error) => {
 #### 4. Error Scenarios
 
 ```javascript
-// Client: Invalid play attempt
+// Client: Invalid play attempt (NetworkService.send('ABCD1234', 'play', data))
 → {
   "event": "play",
   "data": {
     "player_name": "Alice",
     "piece_ids": ["p1", "p5"]  // Different colors
   },
-  "room_id": "ABCD1234",
-  "sequence": 15
+  "sequence": 15,
+  "timestamp": 1703123459000,
+  "id": "550e8400-e29b-41d4-a716-446655440004"
 }
 
 // Server: Error response

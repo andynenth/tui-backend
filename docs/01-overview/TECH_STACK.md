@@ -147,7 +147,7 @@ const buildOptions = {
 
 ## Backend Technologies
 
-### Python 3.11
+### Python >=3.10
 **What**: High-level programming language
 
 **Why Python?**
@@ -156,11 +156,11 @@ const buildOptions = {
 - **Readability**: Clean, maintainable code
 - **Libraries**: Rich ecosystem for game logic
 
-**Python 3.11 Specific Benefits**:
-- 10-60% faster than Python 3.10
+**Python 3.10+ Benefits**:
+- Match statements for pattern matching
 - Better error messages
-- Exception groups for better error handling
-- Task groups for async coordination
+- Improved type hints
+- Performance improvements over earlier versions
 
 ### FastAPI
 **What**: Modern Python web framework
@@ -233,7 +233,7 @@ async def process_game_action(action: GameAction):
 FROM node:18-alpine as frontend-builder
 # Build frontend with all optimizations
 
-FROM python:3.11-slim
+FROM python:3.10-slim
 # Copy built frontend
 # Install Python dependencies
 # Single process serves everything
@@ -319,7 +319,7 @@ pip install -r requirements.txt  # Backend deps
 |------------|------------------|-------------|-----------------|
 | Frontend Framework | React 19.1.0 | Vue, Angular | Maturity, ecosystem, team experience |
 | Build Tool | ESBuild | Webpack, Vite | Speed, simplicity |
-| Backend Language | Python 3.11 | Node.js, Go | FastAPI, readability, async support |
+| Backend Language | Python >=3.10 | Node.js, Go | FastAPI, readability, async support |
 | Web Framework | FastAPI | Django, Flask | WebSocket support, performance |
 | Container | Docker | Direct deployment | Consistency, portability |
 | Cloud Platform | AWS EC2 | ECS, Kubernetes | Control, cost, simplicity |

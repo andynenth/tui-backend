@@ -8,8 +8,8 @@
 5. [Player Management](#player-management)
 6. [Game Rules](#game-rules)
 7. [Scoring System](#scoring-system)
-8. [Special Mechanics](#special-mechanics)
-9. [Game Flow](#game-flow)
+8. [Turn Resolution](#turn-resolution)
+9. [Win Conditions](#win-conditions)
 10. [Testing Game Logic](#testing-game-logic)
 
 ## Overview
@@ -69,13 +69,19 @@ graph TB
 
 ```
 backend/engine/
-├── game.py          # Main Game class
-├── player.py        # Player entity
-├── piece.py         # Piece entity and enums
-├── rules.py         # Game rules and validation
-├── scoring.py       # Scoring calculations
-├── play.py          # Play combinations
-└── exceptions.py    # Custom exceptions
+├── game.py              # Main Game class
+├── player.py            # Player entity
+├── piece.py             # Piece entity and deck creation
+├── constants.py         # Piece point values
+├── rules.py             # Game rules and validation
+├── scoring.py           # Scoring calculations
+├── turn_resolution.py   # Turn winner determination
+├── win_conditions.py    # Win condition checking
+├── ai.py                # AI bot logic
+└── state_machine/       # State machine implementation
+    ├── core.py          # GamePhase and ActionType enums
+    ├── game_state_machine.py
+    └── states/          # Individual state implementations
 ```
 
 ## Game Class
@@ -84,101 +90,109 @@ backend/engine/
 
 ```python
 # backend/engine/game.py
-from typing import List, Dict, Optional, Tuple
-from dataclasses import dataclass
-from .player import Player
-from .piece import Piece, Rank, Color
-from .rules import Rules
-from .scoring import ScoringSystem
+from typing import List, Dict, Optional
+from backend.engine.piece import Piece
+from backend.engine.player import Player
+from backend.engine.rules import get_play_type, get_valid_declares, is_valid_play
+from backend.engine.scoring import calculate_round_scores
+from backend.engine.turn_resolution import TurnPlay, resolve_turn
+from backend.engine.win_conditions import WinConditionType, get_winners, is_game_over
 
 class Game:
     """Main game engine managing game state and rules."""
 
-    def __init__(self, player_names: List[str]):
-        """Initialize a new game with player names."""
-        if len(player_names) != 4:
-            raise ValueError("Game requires exactly 4 players")
-
-        # Initialize players
-        self.players = [
-            Player(name, position)
-            for position, name in enumerate(player_names)
-        ]
-
-        # Game state
-        self.round_number = 0
-        self.turn_number = 0
-        self.current_player_index = 0
-        self.phase = GamePhase.NOT_STARTED
-
-        # Round state
-        self.deck: List[Piece] = []
-        self.pile_counts: Dict[str, int] = {}
-        self.current_pile: List[Piece] = []
-        self.last_winner: Optional[str] = None
-
-        # Rules and scoring
-        self.rules = Rules()
-        self.scoring = ScoringSystem()
-
-        # Game settings
-        self.winning_score = 50
+    def __init__(self, players, interface=None,
+                 win_condition_type=WinConditionType.FIRST_TO_REACH_50):
+        """Initialize a new game with players."""
+        # Core game state
+        self.players = players
+        self.interface = interface  # Adapter for CLI, GUI, or API
+        self.current_order = []  # Player order for each round
+        self.round_number = 1
+        self.max_score = 50
         self.max_rounds = 20
-        self.redeal_multiplier = 1
+        self.win_condition_type = win_condition_type
 
-    def start_new_round(self):
-        """Start a new round of the game."""
-        self.round_number += 1
-        self.turn_number = 0
+        # Round-specific state
+        self.last_round_winner = None  # Player who won the last round
+        self.redeal_multiplier = 1  # Score multiplier increases with each redeal
+        self.current_turn_plays = []  # Stores TurnPlay objects for current turn
+        self.required_piece_count = None  # Number of pieces required this turn
+        self.turn_order = []  # Player order for current turn
+        self.last_turn_winner = None  # Player who won the last turn
+        self.turn_number = 0  # Current turn number within the round
+        self.turn_history_this_round = []  # Track all turns for AI strategy
+        self.turn_results = []  # For scoring_state to read turn data
 
-        # Reset round state
-        self._reset_round_state()
+        # Player tracking for state machine
+        self.current_player = None  # Current player (for round start/declarations)
+        self.round_starter = None  # Player who starts the round
+        self.player_declarations = {}  # Track player declarations
+        self.pile_counts = {}  # Track piles won per player per round
+        self.round_scores = {}  # Track round scores for each player
 
-        # Create and shuffle deck
-        self.deck = self._create_deck()
+    def deal_pieces(self):
+        """Deal pieces and prepare for the round."""
+        # Create deck
+        deck = Piece.build_deck()
 
-        # Deal pieces
-        self.deal_pieces()
+        # Shuffle deck
+        import random
+        random.shuffle(deck)
+
+        # Deal 8 pieces to each player
+        for i in range(8):
+            for player in self.players:
+                player.hand.append(deck.pop())
 ```
 
-### Round Management
+### Weak Hand Detection
 
 ```python
-def deal_pieces(self):
-    """Deal 8 pieces to each player."""
-    # Validate deck
-    if len(self.deck) != 32:
-        raise GameError("Invalid deck size")
+def get_weak_hand_players(self, include_details=False):
+    """
+    Find players with weak hand (no card > 9 points)
 
-    # Clear hands
-    for player in self.players:
-        player.hand.clear()
+    Args:
+        include_details (bool): If True, return detailed information
+                               If False, return only names
 
-    # Deal pieces
-    for i in range(8):
-        for player in self.players:
-            piece = self.deck.pop()
-            player.add_piece(piece)
-
-    # Sort hands
-    for player in self.players:
-        player.sort_hand()
-
-    # Check for weak hands
-    weak_players = self.check_weak_hands()
-    return weak_players
-
-def check_weak_hands(self) -> List[Player]:
-    """Check which players have weak hands (no piece > 9 points)."""
+    Returns:
+        List: Player names or detailed dictionaries
+    """
     weak_players = []
 
     for player in self.players:
-        max_value = max(piece.point for piece in player.hand)
-        if max_value <= 9:
-            weak_players.append(player)
-            player.has_weak_hand = True
+        # Check if player has any piece with point > 9
+        has_strong = any(p.point > 9 for p in player.hand)
+
+        if not has_strong:
+            if include_details:
+                # Return rich data for controllers
+                hand_strength = sum(p.point for p in player.hand)
+                weak_players.append({
+                    "name": player.name,
+                    "is_bot": player.is_bot,
+                    "hand_strength": hand_strength,
+                    "hand": [str(piece) for piece in player.hand]
+                })
+            else:
+                # Return only names (backward compatible)
+                weak_players.append(player.name)
 
     return weak_players
+
+def handle_redeal_request(self, accept=True):
+    """Handle redeal decision for weak hands."""
+    if accept:
+        self.redeal_multiplier += 1
+        # Clear all hands
+        for player in self.players:
+            player.hand.clear()
+        # Deal new pieces
+        self.deal_pieces()
+        return True
+    return False
 ```
 
 ## Piece System
@@ -187,92 +201,96 @@ def check_weak_hands(self) -> List[Player]:
 
 ```python
 # backend/engine/piece.py
-from enum import Enum
-from dataclasses import dataclass
+from backend.engine.constants import PIECE_POINTS
 
-class Rank(Enum):
-    """Piece ranks in descending order of value."""
-    GENERAL = "GENERAL"      # 将/帥
-    ADVISOR = "ADVISOR"      # 士/仕
-    ELEPHANT = "ELEPHANT"    # 象/相
-    HORSE = "HORSE"         # 馬/马
-    CHARIOT = "CHARIOT"     # 車/车
-    CANNON = "CANNON"       # 砲/炮
-    SOLDIER = "SOLDIER"     # 卒/兵
-
-class Color(Enum):
-    """Piece colors."""
-    RED = "RED"
-    BLACK = "BLACK"
-
-@dataclass(frozen=True)
 class Piece:
-    """Immutable game piece."""
-    id: str
-    rank: Rank
-    color: Color
-    point: int
+    def __init__(self, kind):
+        """
+        Create a piece from a kind string, e.g. "GENERAL_RED", "CANNON_BLACK"
+        """
+        self.kind = kind  # Combined string identifier
+        self.point = PIECE_POINTS[kind]  # Point value from constants
 
-    def __str__(self):
-        return f"{self.rank.value}_{self.color.value}"
-
-    def to_dict(self):
-        return {
-            'id': self.id,
-            'rank': self.rank.value,
-            'color': self.color.value,
-            'point': self.point
-        }
+    def __repr__(self):
+        # Display format, e.g., GENERAL_RED(14)
+        return f"{self.kind}({self.point})"
 
     @property
-    def display_name(self):
-        """Get display name for UI."""
-        symbols = {
-            (Rank.GENERAL, Color.RED): "帥",
-            (Rank.GENERAL, Color.BLACK): "將",
-            (Rank.ADVISOR, Color.RED): "仕",
-            (Rank.ADVISOR, Color.BLACK): "士",
-            # ... other pieces
+    def name(self):
+        """Get the piece type name (e.g., "GENERAL", "SOLDIER")."""
+        return self.kind.split("_")[0]
+
+    @property
+    def color(self):
+        """Get the piece color ("RED" or "BLACK")."""
+        return self.kind.split("_")[1]
+
+    def to_dict(self):
+        """Convert to JSON-serializable dictionary."""
+        return {
+            "kind": self.kind,
+            "point": self.point,
+            "name": self.name,
+            "color": self.color
         }
-        return symbols.get((self.rank, self.color), str(self))
 ```
 
-### Piece Creation
+### Piece Point Values
 
 ```python
-def _create_deck(self) -> List[Piece]:
-    """Create a standard deck of 32 pieces."""
-    pieces = []
-    piece_id = 0
+# backend/engine/constants.py
+# Higher numbers = stronger pieces
+# RED pieces are stronger than BLACK pieces of the same type
 
-    # Define piece counts and points
-    piece_data = [
-        (Rank.GENERAL, 1, 10),   # 1 of each color
-        (Rank.ADVISOR, 2, 10),   # 2 of each color
-        (Rank.ELEPHANT, 2, 9),   # 2 of each color
-        (Rank.HORSE, 2, 7),      # 2 of each color
-        (Rank.CHARIOT, 2, 6),    # 2 of each color
-        (Rank.CANNON, 2, 5),     # 2 of each color
-        (Rank.SOLDIER, 5, 1),    # 5 of each color
-    ]
+PIECE_POINTS = {
+    "GENERAL_RED": 14,
+    "GENERAL_BLACK": 13,
+    "ADVISOR_RED": 12,
+    "ADVISOR_BLACK": 11,
+    "ELEPHANT_RED": 10,
+    "ELEPHANT_BLACK": 9,
+    "CHARIOT_RED": 8,
+    "CHARIOT_BLACK": 7,
+    "HORSE_RED": 6,
+    "HORSE_BLACK": 5,
+    "CANNON_RED": 4,
+    "CANNON_BLACK": 3,
+    "SOLDIER_RED": 2,
+    "SOLDIER_BLACK": 1,
+}
+```
 
-    for rank, count, point in piece_data:
-        for color in [Color.RED, Color.BLACK]:
-            for _ in range(count):
-                piece = Piece(
-                    id=f"p{piece_id}",
-                    rank=rank,
-                    color=color,
-                    point=point
-                )
-                pieces.append(piece)
-                piece_id += 1
+### Deck Creation
 
-    # Shuffle deck
-    import random
-    random.shuffle(pieces)
+```python
+@staticmethod
+def build_deck():
+    """
+    Create the full deck of 32 pieces.
 
-    return pieces
+    Returns:
+        List[Piece]: Shuffled deck ready for dealing
+    """
+    # How many copies of each piece type
+    counts = {
+        "GENERAL": 1,   # Only one of each GENERAL (RED and BLACK)
+        "SOLDIER": 5,   # Five of each SOLDIER (RED and BLACK)
+        # All others default to 2 (ADVISOR, ELEPHANT, CHARIOT, HORSE, CANNON)
+    }
+
+    deck = []
+    for kind in PIECE_POINTS:
+        name = kind.split("_")[0]
+        count = counts.get(name, 2)  # Default count is 2
+        for _ in range(count):
+            deck.append(Piece(kind))
+
+    # Total deck size: 32 pieces
+    # RED: 1 General + 2 Advisors + 2 Elephants + 2 Chariots +
+    #      2 Horses + 2 Cannons + 5 Soldiers = 16
+    # BLACK: Same distribution = 16
+
+    return deck
 ```
 
 ## Player Management
@@ -281,210 +299,207 @@ def _create_deck(self) -> List[Piece]:
 
 ```python
 # backend/engine/player.py
-from typing import List, Optional
-from dataclasses import dataclass, field
-from .piece import Piece
-
-@dataclass
 class Player:
-    """Represents a game player."""
-    name: str
-    position: int  # 0-3
-    hand: List[Piece] = field(default_factory=list)
+    def __init__(self, name, is_bot=False, available_colors=None):
+        self.name = name  # Player's name
+        self.hand = []  # List of pieces (max 8 at start of round)
+        self.score = 0  # Total score throughout game
+        self.declared = 0  # Piles declared this round
+        self.captured_piles = 0  # Piles won this round
+        self.is_bot = is_bot  # AI-controlled player
+        self.zero_declares_in_a_row = 0  # Track consecutive zero declares
 
-    # Round state
-    declared: int = 0
-    captured_piles: int = 0
-    has_weak_hand: bool = False
+        # Avatar color for human players
+        self.avatar_color = self._assign_avatar_color(available_colors)
 
-    # Game state
-    score: int = 0
-    is_active: bool = True
-    is_bot: bool = False
+        # Game statistics
+        self.turns_won = 0  # Total turns won
+        self.perfect_rounds = 0  # Rounds where declared == actual
 
-    def add_piece(self, piece: Piece):
-        """Add a piece to player's hand."""
-        self.hand.append(piece)
+        # Connection tracking (for disconnect handling)
+        self.is_connected = True
+        self.disconnect_time = None
+        self.original_is_bot = is_bot  # Store for reconnection
 
-    def remove_pieces(self, piece_ids: List[str]):
-        """Remove pieces from hand by ID."""
-        self.hand = [p for p in self.hand if p.id not in piece_ids]
+        # Bot takeover management
+        self.pending_bot_takeover = None
+        self.bot_takeover_scheduled = False
 
-    def sort_hand(self):
-        """Sort hand by rank and color."""
-        self.hand.sort(key=lambda p: (
-            -p.point,  # Higher points first
-            p.rank.value,
-            p.color.value
-        ))
+    def to_dict(self):
+        """Convert player to dictionary for JSON serialization."""
+        return {
+            "name": self.name,
+            "score": self.score,
+            "is_bot": self.is_bot,
+            "avatar_color": self.avatar_color,
+            "hand_size": len(self.hand),
+            "declared": self.declared,
+            "captured_piles": self.captured_piles,
+            "is_connected": self.is_connected
+        }
 
-    def get_pieces_by_ids(self, piece_ids: List[str]) -> List[Piece]:
-        """Get pieces from hand by IDs."""
-        pieces = []
-        for piece_id in piece_ids:
-            piece = next((p for p in self.hand if p.id == piece_id), None)
-            if piece:
-                pieces.append(piece)
-        return pieces
-
-    def can_play_count(self, count: int) -> bool:
-        """Check if player can play the required number of pieces."""
-        if count > len(self.hand):
-            return False
-
-        # Check if player has enough pieces of same rank
-        rank_counts = {}
-        for piece in self.hand:
-            rank_counts[piece.rank] = rank_counts.get(piece.rank, 0) + 1
-
-        return any(c >= count for c in rank_counts.values())
+    def reset_for_round(self):
+        """Reset round-specific values."""
+        self.hand = []
+        self.declared = 0
+        self.captured_piles = 0
 ```
 
-### Player Actions
+### Declaration Management
 
 ```python
-def declare_piles(self, player_name: str, declaration: int) -> bool:
-    """Player declares how many piles they'll capture."""
-    player = self.get_player(player_name)
+def set_declaration(self, player_name: str, declaration: int):
+    """Record player's pile declaration."""
+    # Find player
+    player = next((p for p in self.players if p.name == player_name), None)
     if not player:
-        raise GameError(f"Player {player_name} not found")
-
-    # Validate declaration
-    if not self.rules.is_valid_declaration(declaration):
-        raise GameError(f"Invalid declaration: {declaration}")
-
-    # Check if already declared
-    if player.declared > 0:
-        raise GameError(f"Player {player_name} already declared")
+        return False
 
     # Set declaration
     player.declared = declaration
+    self.player_declarations[player_name] = declaration
 
-    # Check if all players declared
-    all_declared = all(p.declared > 0 for p in self.players)
+    # Track zero declares in a row
+    if declaration == 0:
+        player.zero_declares_in_a_row += 1
+    else:
+        player.zero_declares_in_a_row = 0
 
-    # Validate total if all declared
-    if all_declared:
-        total = sum(p.declared for p in self.players)
-        if total == 8:
-            raise GameError("Total declarations cannot equal 8")
+    return True
 
-    return all_declared
+def all_players_declared(self) -> bool:
+    """Check if all players have declared."""
+    return len(self.player_declarations) == 4
+
+def get_valid_declarations(self, player_name: str) -> List[int]:
+    """Get valid declaration options for a player."""
+    # Use the rules module function
+    from backend.engine.rules import get_valid_declares
+    return get_valid_declares(
+        player_name,
+        self.player_declarations,
+        [p.name for p in self.players]
+    )
 ```
 
 ## Game Rules
 
-### Rules Engine
+### Play Type System
 
 ```python
 # backend/engine/rules.py
-from typing import List, Optional, Tuple
-from .piece import Piece, Rank, Color
-from .play import Play, PlayType
+# Available play types in order of strength
+PLAY_TYPE_PRIORITY = [
+    "SINGLE",              # 1 piece
+    "PAIR",                # 2 of same name and color
+    "THREE_OF_A_KIND",     # 3 SOLDIERs of same color
+    "STRAIGHT",            # 3 of valid group, same color
+    "FOUR_OF_A_KIND",      # 4 SOLDIERs of same color
+    "EXTENDED_STRAIGHT",   # 4 of valid group with 1 duplicate
+    "EXTENDED_STRAIGHT_5", # 5 of valid group with 2 duplicates
+    "FIVE_OF_A_KIND",      # 5 SOLDIERs of same color
+    "DOUBLE_STRAIGHT",     # 6 pieces: 2 CHARIOT, 2 HORSE, 2 CANNON
+]
 
-class Rules:
-    """Enforces game rules and validates plays."""
+def get_play_type(pieces):
+    """
+    Determine the type of play from pieces.
+    Returns play type string or 'INVALID'.
+    """
+    if len(pieces) == 1:
+        return "SINGLE"
+    if len(pieces) == 2 and is_pair(pieces):
+        return "PAIR"
+    if len(pieces) == 3:
+        if is_three_of_a_kind(pieces):
+            return "THREE_OF_A_KIND"
+        elif is_straight(pieces):
+            return "STRAIGHT"
+    if len(pieces) == 4:
+        if is_four_of_a_kind(pieces):
+            return "FOUR_OF_A_KIND"
+        elif is_extended_straight(pieces):
+            return "EXTENDED_STRAIGHT"
+    if len(pieces) == 5:
+        if is_five_of_a_kind(pieces):
+            return "FIVE_OF_A_KIND"
+        elif is_extended_straight_5(pieces):
+            return "EXTENDED_STRAIGHT_5"
+    if len(pieces) == 6 and is_double_straight(pieces):
+        return "DOUBLE_STRAIGHT"
 
-    def is_valid_play(
-        self,
-        pieces: List[Piece],
-        required_count: Optional[int] = None,
-        leading_play_type: Optional[PlayType] = None
-    ) -> Tuple[bool, Optional[str], Optional[Play]]:
-        """Validate if a play is legal."""
+    return "INVALID"
 
-        # Empty play (pass) is always valid
-        if not pieces:
-            return True, None, Play(pieces, PlayType.PASS)
-
-        # Check piece count requirement
-        if required_count and len(pieces) != required_count:
-            return False, f"Must play exactly {required_count} pieces", None
-
-        # Identify play type
-        play = self._identify_play(pieces)
-        if not play:
-            return False, "Invalid piece combination", None
-
-        # Check if play type matches requirement
-        if leading_play_type and play.play_type != leading_play_type:
-            if play.play_type != PlayType.MIXED_COLOR:
-                return False, f"Must play {leading_play_type.value}", None
-
-        return True, None, play
-
-    def _identify_play(self, pieces: List[Piece]) -> Optional[Play]:
-        """Identify the type of play from pieces."""
-        if not pieces:
-            return Play([], PlayType.PASS)
-
-        # Single piece
-        if len(pieces) == 1:
-            return Play(pieces, PlayType.SINGLE)
-
-        # Check if all same rank
-        ranks = {p.rank for p in pieces}
-        if len(ranks) == 1:
-            # Same rank play
-            if len(pieces) == 2:
-                return Play(pieces, PlayType.PAIR)
-            elif len(pieces) == 3:
-                return Play(pieces, PlayType.TRIPLE)
-            elif len(pieces) == 4:
-                return Play(pieces, PlayType.QUAD)
-
-        # Check for mixed color play (high value pieces)
-        if all(p.point >= 5 for p in pieces):
-            colors = {p.color for p in pieces}
-            if len(colors) == 2:  # Both colors present
-                return Play(pieces, PlayType.MIXED_COLOR)
-
-        return None
+def is_valid_play(pieces):
+    """Check if pieces form a valid play."""
+    return get_play_type(pieces) != "INVALID"
 ```
 
-### Play Comparison
+### Valid Play Combinations
 
 ```python
-def compare_plays(self, play1: Play, play2: Play) -> int:
-    """Compare two plays. Returns 1 if play1 wins, -1 if play2 wins, 0 if tie."""
-    # Pass always loses
-    if play1.play_type == PlayType.PASS:
-        return -1
-    if play2.play_type == PlayType.PASS:
-        return 1
+# Straight combinations (3 pieces, same color)
+STRAIGHT_3 = [
+    {"GENERAL", "ADVISOR", "ELEPHANT"},  # Top generals
+    {"CHARIOT", "HORSE", "CANNON"},      # Mobile forces
+]
 
-    # Mixed color beats same color plays
-    if play1.play_type == PlayType.MIXED_COLOR and play2.play_type != PlayType.MIXED_COLOR:
-        return 1
-    if play2.play_type == PlayType.MIXED_COLOR and play1.play_type != PlayType.MIXED_COLOR:
-        return -1
+# Extended straight groups (4-5 pieces, same color)
+EXTENDED_STRAIGHT_GROUPS = [
+    {"GENERAL", "ADVISOR", "ELEPHANT"},
+    {"ADVISOR", "ELEPHANT", "CHARIOT"},
+    {"ELEPHANT", "CHARIOT", "HORSE"},
+    {"CHARIOT", "HORSE", "CANNON"},
+]
 
-    # Both mixed color - compare total points
-    if play1.play_type == PlayType.MIXED_COLOR and play2.play_type == PlayType.MIXED_COLOR:
-        total1 = sum(p.point for p in play1.pieces)
-        total2 = sum(p.point for p in play2.pieces)
-        return 1 if total1 > total2 else (-1 if total2 > total1 else 0)
+def is_straight(pieces):
+    """Check if 3 pieces form a valid straight."""
+    if len(pieces) != 3:
+        return False
+    if not all_same_color(pieces):
+        return False
+    names = {p.name for p in pieces}
+    return names in STRAIGHT_3
 
-    # Same type plays - compare by rank
-    if play1.pieces and play2.pieces:
-        rank1_value = self._get_rank_value(play1.pieces[0].rank)
-        rank2_value = self._get_rank_value(play2.pieces[0].rank)
-        return 1 if rank1_value > rank2_value else (-1 if rank2_value > rank1_value else 0)
+def is_double_straight(pieces):
+    """Check if 6 pieces form double straight (2-2-2)."""
+    if len(pieces) != 6:
+        return False
+    if not all_same_color(pieces):
+        return False
 
-    return 0
+    counts = Counter(p.name for p in pieces)
+    required_names = {"CHARIOT", "HORSE", "CANNON"}
 
-def _get_rank_value(self, rank: Rank) -> int:
-    """Get numeric value for rank comparison."""
-    rank_values = {
-        Rank.GENERAL: 7,
-        Rank.ADVISOR: 6,
-        Rank.ELEPHANT: 5,
-        Rank.HORSE: 4,
-        Rank.CHARIOT: 3,
-        Rank.CANNON: 2,
-        Rank.SOLDIER: 1
-    }
-    return rank_values.get(rank, 0)
+    return (set(counts.keys()) == required_names and
+            all(count == 2 for count in counts.values()))
+```
+
+### Declaration Rules
+
+```python
+def get_valid_declares(player_name, declarations_so_far, all_player_names):
+    """
+    Get valid declaration options for a player.
+
+    Rules:
+    - Each player can declare 0-8 piles
+    - Total of all 4 declarations cannot equal 8
+    - Last player has restricted options
+    """
+    # If less than 3 players have declared, allow any value 0-8
+    if len(declarations_so_far) < 3:
+        return list(range(9))  # [0, 1, 2, ..., 8]
+
+    # Last player: calculate restrictions
+    current_total = sum(declarations_so_far.values())
+
+    valid_options = []
+    for value in range(9):  # 0 through 8
+        if current_total + value != 8:  # Total cannot equal 8
+            valid_options.append(value)
+
+    return valid_options
 ```
 
 ## Scoring System
@@ -493,474 +508,261 @@ def _get_rank_value(self, rank: Rank) -> int:
 
 ```python
 # backend/engine/scoring.py
-from typing import Dict, List, Tuple
+# Scoring Rules:
+# - If declared = 0 and actual = 0 → +3 bonus (NO MULTIPLIER)
+# - If declared = 0 but actual > 0 → penalty = -actual × multiplier
+# - If declared == actual (non-zero) → score = (declared × multiplier) + 5
+# - Otherwise → penalty = -abs(declared - actual) × multiplier
 
-class ScoringSystem:
-    """Handles score calculation for the game."""
-
-    def calculate_round_scores(
-        self,
-        players: List['Player'],
-        multiplier: int = 1
-    ) -> Dict[str, int]:
-        """Calculate scores for all players after a round."""
-        scores = {}
-
-        for player in players:
-            base_score = self._calculate_base_score(
-                player.declared,
-                player.captured_piles
-            )
-
-            # Apply multiplier
-            final_score = base_score * multiplier
-
-            # Update player score
-            player.score += final_score
-            scores[player.name] = final_score
-
-        return scores
-
-    def _calculate_base_score(self, declared: int, captured: int) -> int:
-        """Calculate base score for a player."""
-        difference = abs(declared - captured)
-
-        if declared == captured:
-            # Perfect prediction
-            return 3 * declared
-        elif difference == 1:
-            # Off by one
-            return captured
+def calculate_score_components(declared: int, actual: int) -> dict:
+    """
+    Calculate scoring components.
+    Multipliers only apply to base points, not bonuses.
+    """
+    if declared == 0:
+        if actual == 0:
+            # Perfect zero prediction - +3 bonus, no multiplier
+            return {
+                "base_points": 0,
+                "bonus": 3,
+                "is_perfect": True,
+                "hit_type": "perfect_zero"
+            }
         else:
-            # Off by more than one
-            return -difference
+            # Failed zero - penalty
+            return {
+                "base_points": -actual,
+                "bonus": 0,
+                "is_perfect": False,
+                "hit_type": "failed_zero"
+            }
+    else:
+        if actual == declared:
+            # Perfect prediction - base points + 5 bonus
+            return {
+                "base_points": declared,
+                "bonus": 5,
+                "is_perfect": True,
+                "hit_type": "perfect"
+            }
+        else:
+            # Missed target - penalty
+            return {
+                "base_points": -abs(declared - actual),
+                "bonus": 0,
+                "is_perfect": False,
+                "hit_type": "miss"
+            }
 
-    def check_win_condition(
-        self,
-        players: List['Player'],
-        winning_score: int,
-        max_rounds: int,
-        current_round: int
-    ) -> Tuple[bool, List['Player']]:
-        """Check if any player has won the game."""
-        # Check score-based win
-        winners = [p for p in players if p.score >= winning_score]
-        if winners:
-            # Multiple players might reach winning score
-            max_score = max(p.score for p in winners)
-            winners = [p for p in winners if p.score == max_score]
-            return True, winners
+def calculate_final_score(declared: int, actual: int, multiplier: int = 1) -> int:
+    """Calculate final score with multiplier applied correctly."""
+    components = calculate_score_components(declared, actual)
 
-        # Check round limit
-        if current_round >= max_rounds:
-            # Game ends, highest score wins
-            max_score = max(p.score for p in players)
-            winners = [p for p in players if p.score == max_score]
-            return True, winners
-
-        return False, []
+    # Multiplier applies to base points only, not to bonuses
+    return (components["base_points"] * multiplier) + components["bonus"]
 ```
 
-### Special Scoring Rules
+## Turn Resolution
+
+### Turn Play Structure
 
 ```python
-class SpecialScoring:
-    """Special scoring scenarios."""
+# backend/engine/turn_resolution.py
+class TurnPlay:
+    """Represents a single player's play in a turn."""
 
-    @staticmethod
-    def calculate_sweep_bonus(player: Player, round_piles: int) -> int:
-        """Calculate bonus for capturing all piles in a round."""
-        if player.captured_piles == round_piles:
-            return 10  # Sweep bonus
-        return 0
+    def __init__(self, player_name, pieces, total_score=0):
+        self.player_name = player_name  # Who played
+        self.pieces = pieces            # List of Piece objects
+        self.total_score = total_score  # Combined points of pieces
 
-    @staticmethod
-    def calculate_perfect_round_bonus(players: List[Player]) -> Dict[str, int]:
-        """Calculate bonus if all players predict perfectly."""
-        bonuses = {}
+def resolve_turn(turn_plays):
+    """
+    Determine winner of a turn.
 
-        all_perfect = all(p.declared == p.captured_piles for p in players)
-        if all_perfect:
-            for player in players:
-                bonuses[player.name] = 5  # Perfect round bonus
+    Args:
+        turn_plays: List of TurnPlay objects
 
-        return bonuses
+    Returns:
+        Tuple of (winner_name, pile_count)
+    """
+    # Filter out passes (empty plays)
+    active_plays = [play for play in turn_plays if play.pieces]
 
-    @staticmethod
-    def calculate_underdog_bonus(player: Player, players: List[Player]) -> int:
-        """Calculate bonus for lowest scorer winning piles."""
-        if not players:
-            return 0
+    if not active_plays:
+        return None, 0  # Everyone passed
 
-        # Find lowest scorer
-        min_score = min(p.score for p in players)
+    # Get play types
+    play_types = []
+    for play in active_plays:
+        play_type = get_play_type(play.pieces)
+        play_types.append((play, play_type))
 
-        # If this player is lowest scorer and captured piles
-        if player.score == min_score and player.captured_piles > 0:
-            return player.captured_piles * 2
+    # Find strongest play type
+    strongest_type = None
+    for play, play_type in play_types:
+        if play_type != "INVALID":
+            if strongest_type is None:
+                strongest_type = play_type
+            else:
+                # Compare by PLAY_TYPE_PRIORITY index
+                if PLAY_TYPE_PRIORITY.index(play_type) > PLAY_TYPE_PRIORITY.index(strongest_type):
+                    strongest_type = play_type
 
-        return 0
+    # Get all plays with strongest type
+    contenders = [(play, ptype) for play, ptype in play_types if ptype == strongest_type]
+
+    # Break ties by total points
+    if contenders:
+        winner = max(contenders, key=lambda x: x[0].total_score)[0]
+        pile_count = len(winner.pieces)  # Winner gets piles = pieces played
+        return winner.player_name, pile_count
+
+    return None, 0
 ```
 
-## Special Mechanics
+## Win Conditions
 
-### Weak Hand Handling
-
-```python
-def handle_weak_hand_decision(
-    self,
-    player_name: str,
-    accept_redeal: bool
-) -> Tuple[bool, int]:
-    """Handle player's decision on weak hand redeal."""
-    player = self.get_player(player_name)
-
-    if not player or not player.has_weak_hand:
-        raise GameError(f"Player {player_name} doesn't have weak hand")
-
-    # Track decisions
-    if not hasattr(self, 'weak_hand_decisions'):
-        self.weak_hand_decisions = {}
-
-    self.weak_hand_decisions[player_name] = accept_redeal
-
-    # Check if all weak hand players decided
-    weak_players = [p for p in self.players if p.has_weak_hand]
-    all_decided = all(p.name in self.weak_hand_decisions for p in weak_players)
-
-    if all_decided:
-        # Check if any player accepted
-        any_accepted = any(self.weak_hand_decisions.values())
-
-        if any_accepted:
-            # Increase multiplier and redeal
-            self.redeal_multiplier += 1
-            self.deck = self._create_deck()
-            self.deal_pieces()
-
-            # Reset weak hand flags
-            for player in self.players:
-                player.has_weak_hand = False
-            self.weak_hand_decisions.clear()
-
-            return True, self.redeal_multiplier
-
-    return False, self.redeal_multiplier
-```
-
-### Bot Play Logic
+### Win Condition Types
 
 ```python
-def get_bot_play(self, player: Player, game_state: Dict) -> List[str]:
-    """Determine bot's play based on game state."""
-    required_count = game_state.get('required_piece_count', 1)
-    current_plays = game_state.get('current_plays', {})
+# backend/engine/win_conditions.py
+from enum import Enum
 
-    # Simple bot strategy
-    if not current_plays:
-        # First player - play lowest valid combination
-        return self._get_lowest_valid_play(player, required_count)
+class WinConditionType(Enum):
+    FIRST_TO_REACH_50 = "first_to_reach_50"  # First player to 50+ points wins
+    SCORE_AFTER_20_ROUNDS = "score_after_20_rounds"  # Highest score after 20 rounds
 
-    # Try to beat current best play
-    best_play = self._get_best_current_play(current_plays)
-    if best_play:
-        counter_play = self._find_counter_play(player, best_play, required_count)
-        if counter_play:
-            return counter_play
+def is_game_over(players, round_number, max_score=50, max_rounds=20,
+                 win_condition_type=WinConditionType.FIRST_TO_REACH_50) -> bool:
+    """Check if game should end."""
+    if win_condition_type == WinConditionType.FIRST_TO_REACH_50:
+        return any(player.score >= max_score for player in players)
+    elif win_condition_type == WinConditionType.SCORE_AFTER_20_ROUNDS:
+        return round_number >= max_rounds
+    return False
 
-    # Can't beat - pass
-    return []
+def get_winners(players):
+    """
+    Determine winner(s) based on scores.
+    Returns list of winning players (can be multiple if tied).
+    """
+    if not players:
+        return []
 
-def _get_lowest_valid_play(
-    self,
-    player: Player,
-    count: int
-) -> List[str]:
-    """Get lowest value valid play of required count."""
-    # Group by rank
-    rank_groups = {}
-    for piece in player.hand:
-        if piece.rank not in rank_groups:
-            rank_groups[piece.rank] = []
-        rank_groups[piece.rank].append(piece)
-
-    # Find lowest rank with enough pieces
-    for rank in sorted(rank_groups.keys(), key=lambda r: self._get_rank_value(r)):
-        if len(rank_groups[rank]) >= count:
-            return [p.id for p in rank_groups[rank][:count]]
-
-    # Try mixed color play
-    if count >= 2:
-        high_pieces = [p for p in player.hand if p.point >= 5]
-        if len(high_pieces) >= count:
-            # Get mix of colors
-            red_pieces = [p for p in high_pieces if p.color == Color.RED]
-            black_pieces = [p for p in high_pieces if p.color == Color.BLACK]
-
-            if red_pieces and black_pieces:
-                play_pieces = []
-                for i in range(count):
-                    if i % 2 == 0 and red_pieces:
-                        play_pieces.append(red_pieces.pop(0))
-                    elif black_pieces:
-                        play_pieces.append(black_pieces.pop(0))
-                    elif red_pieces:
-                        play_pieces.append(red_pieces.pop(0))
-
-                if len(play_pieces) == count:
-                    return [p.id for p in play_pieces]
-
-    return []
-```
-
-## Game Flow
-
-### Complete Turn Flow
-
-```python
-def play_turn(
-    self,
-    player_name: str,
-    piece_ids: List[str]
-) -> TurnResult:
-    """Process a player's turn."""
-    # Validate player
-    player = self.get_player(player_name)
-    if not player:
-        raise GameError(f"Player {player_name} not found")
-
-    # Check if it's player's turn
-    current_player = self.players[self.current_player_index]
-    if current_player.name != player_name:
-        raise GameError(f"Not {player_name}'s turn")
-
-    # Get pieces
-    pieces = player.get_pieces_by_ids(piece_ids)
-    if len(pieces) != len(piece_ids):
-        raise GameError("Invalid piece IDs")
-
-    # Validate play
-    required_count = self._get_required_piece_count()
-    leading_type = self._get_leading_play_type()
-
-    is_valid, error_msg, play = self.rules.is_valid_play(
-        pieces, required_count, leading_type
-    )
-
-    if not is_valid:
-        raise GameError(error_msg or "Invalid play")
-
-    # Process play
-    result = self._process_play(player, play)
-
-    # Remove pieces from hand
-    if pieces:
-        player.remove_pieces(piece_ids)
-
-    # Update turn state
-    self._update_turn_state(result)
-
-    return result
-
-def _process_play(self, player: Player, play: Play) -> TurnResult:
-    """Process a play and determine results."""
-    # Add to current pile
-    if play.pieces:
-        self.current_pile.extend(play.pieces)
-
-    # Track play
-    if not hasattr(self, 'current_turn_plays'):
-        self.current_turn_plays = {}
-
-    self.current_turn_plays[player.name] = play
-
-    # Check if turn is complete
-    if len(self.current_turn_plays) == 4:
-        # All players have played
-        winner = self._determine_turn_winner()
-
-        if winner:
-            # Award pile to winner
-            winner_player = self.get_player(winner)
-            winner_player.captured_piles += 1
-            self.pile_counts[winner] = self.pile_counts.get(winner, 0) + 1
-
-            # Clear pile
-            pile_size = len(self.current_pile)
-            self.current_pile.clear()
-
-            # Set last winner
-            self.last_winner = winner
-
-        # Clear turn plays
-        self.current_turn_plays.clear()
-
-        # Increment turn
-        self.turn_number += 1
-
-        return TurnResult(
-            success=True,
-            winner=winner,
-            pile_size=pile_size,
-            turn_complete=True
-        )
-
-    # Turn continues
-    return TurnResult(
-        success=True,
-        turn_complete=False
-    )
+    max_score = max(player.score for player in players)
+    return [player for player in players if player.score == max_score]
 ```
 
 ## Testing Game Logic
 
-### Unit Tests
+### Key Test Areas
 
 ```python
-# tests/test_game_engine.py
+# tests/test_game.py
 import pytest
 from backend.engine.game import Game
-from backend.engine.piece import Piece, Rank, Color
-from backend.engine.exceptions import GameError
+from backend.engine.player import Player
+from backend.engine.piece import Piece
+from backend.engine.rules import is_valid_play, get_play_type
 
-class TestGameEngine:
-    def test_game_initialization(self):
-        """Test game initializes correctly."""
-        players = ["Alice", "Bob", "Carol", "David"]
+class TestGameMechanics:
+    def test_weak_hand_detection(self):
+        """Test weak hand detection (no piece > 9 points)."""
+        # Create players
+        players = [Player(f"P{i}") for i in range(1, 5)]
         game = Game(players)
 
-        assert len(game.players) == 4
-        assert game.round_number == 0
-        assert game.phase == GamePhase.NOT_STARTED
-
-    def test_invalid_player_count(self):
-        """Test game requires exactly 4 players."""
-        with pytest.raises(ValueError):
-            Game(["Alice", "Bob", "Carol"])
-
-    def test_deal_pieces(self):
-        """Test dealing pieces to players."""
-        game = Game(["Alice", "Bob", "Carol", "David"])
-        game.deck = game._create_deck()
-
-        game.deal_pieces()
-
-        # Each player should have 8 pieces
-        for player in game.players:
-            assert len(player.hand) == 8
-
-        # Deck should be empty
-        assert len(game.deck) == 0
-
-    def test_weak_hand_detection(self):
-        """Test weak hand detection."""
-        game = Game(["Alice", "Bob", "Carol", "David"])
-
-        # Give Alice a weak hand
-        alice = game.players[0]
-        alice.hand = [
-            Piece("p1", Rank.SOLDIER, Color.RED, 1),
-            Piece("p2", Rank.SOLDIER, Color.BLACK, 1),
-            Piece("p3", Rank.CANNON, Color.RED, 5),
-            # ... more low pieces
+        # Give P1 a weak hand
+        players[0].hand = [
+            Piece("SOLDIER_RED"),      # 2 points
+            Piece("SOLDIER_BLACK"),    # 1 point
+            Piece("CANNON_RED"),       # 4 points
+            Piece("CANNON_BLACK"),     # 3 points
+            Piece("HORSE_RED"),        # 6 points
+            Piece("HORSE_BLACK"),      # 5 points
+            Piece("CHARIOT_RED"),      # 8 points
+            Piece("CHARIOT_BLACK")     # 7 points
         ]
 
-        weak_players = game.check_weak_hands()
-        assert alice in weak_players
-        assert alice.has_weak_hand
-```
+        weak_players = game.get_weak_hand_players()
+        assert "P1" in weak_players
 
-### Integration Tests
+    def test_declaration_validation(self):
+        """Test declaration rules (total cannot equal 8)."""
+        from backend.engine.rules import get_valid_declares
 
-```python
-class TestGameFlow:
-    def test_complete_round(self):
-        """Test a complete round of play."""
-        game = Game(["Alice", "Bob", "Carol", "David"])
+        # First 3 players can declare anything
+        valid = get_valid_declares("P1", {}, ["P1", "P2", "P3", "P4"])
+        assert valid == [0, 1, 2, 3, 4, 5, 6, 7, 8]
 
-        # Start round
-        game.start_new_round()
-        assert game.round_number == 1
+        # Last player restricted if total would equal 8
+        declarations = {"P1": 2, "P2": 3, "P3": 1}  # Total = 6
+        valid = get_valid_declares("P4", declarations, ["P1", "P2", "P3", "P4"])
+        assert 2 not in valid  # Cannot declare 2 (would make total 8)
 
-        # Deal pieces
-        game.deal_pieces()
+class TestPlayValidation:
+    def test_valid_play_types(self):
+        """Test all valid play combinations."""
+        # Single
+        pieces = [Piece("GENERAL_RED")]
+        assert get_play_type(pieces) == "SINGLE"
 
-        # Make declarations
-        for i, player in enumerate(game.players):
-            game.declare_piles(player.name, i)  # 0, 1, 2, 3
+        # Pair (same name and color)
+        pieces = [Piece("HORSE_RED"), Piece("HORSE_RED")]
+        assert get_play_type(pieces) == "PAIR"
 
-        # Play turns until round ends
-        while not game.is_round_complete():
-            current_player = game.get_current_player()
+        # Three of a Kind (3 soldiers same color)
+        pieces = [Piece("SOLDIER_RED")] * 3
+        assert get_play_type(pieces) == "THREE_OF_A_KIND"
 
-            # Get valid play
-            pieces = self._get_valid_play(current_player)
-            result = game.play_turn(current_player.name, pieces)
+        # Straight (3-piece combination)
+        pieces = [
+            Piece("CHARIOT_RED"),
+            Piece("HORSE_RED"),
+            Piece("CANNON_RED")
+        ]
+        assert get_play_type(pieces) == "STRAIGHT"
 
-            if result.turn_complete:
-                game.advance_turn()
+class TestScoring:
+    def test_scoring_rules(self):
+        """Test all scoring scenarios."""
+        from backend.engine.scoring import calculate_final_score
 
-        # Calculate scores
-        scores = game.calculate_round_scores()
-        assert len(scores) == 4
+        # Perfect zero: +3 bonus (no multiplier)
+        score = calculate_final_score(declared=0, actual=0, multiplier=2)
+        assert score == 3  # Not 6!
 
-    def test_win_condition(self):
-        """Test game win condition."""
-        game = Game(["Alice", "Bob", "Carol", "David"])
+        # Failed zero: penalty with multiplier
+        score = calculate_final_score(declared=0, actual=2, multiplier=2)
+        assert score == -4  # -2 * 2
 
-        # Set Alice's score near winning
-        game.players[0].score = 48
+        # Perfect prediction: base + 5 bonus
+        score = calculate_final_score(declared=3, actual=3, multiplier=2)
+        assert score == 11  # (3 * 2) + 5
 
-        # Alice scores 3 points
-        game.players[0].declared = 1
-        game.players[0].captured_piles = 1
-
-        scores = game.scoring.calculate_round_scores(game.players)
-
-        # Check win
-        has_winner, winners = game.scoring.check_win_condition(
-            game.players, 50, 20, 1
-        )
-
-        assert has_winner
-        assert len(winners) == 1
-        assert winners[0].name == "Alice"
-```
-
-### Performance Tests
-
-```python
-def test_game_performance():
-    """Test game performs well under load."""
-    import time
-
-    game = Game(["Alice", "Bob", "Carol", "David"])
-    game.start_new_round()
-    game.deal_pieces()
-
-    # Time 1000 play validations
-    start = time.time()
-
-    for _ in range(1000):
-        player = game.players[0]
-        pieces = player.hand[:2]
-
-        is_valid, _, _ = game.rules.is_valid_play(pieces)
-
-    elapsed = time.time() - start
-
-    # Should complete in under 100ms
-    assert elapsed < 0.1
+        # Missed target: penalty with multiplier
+        score = calculate_final_score(declared=3, actual=1, multiplier=2)
+        assert score == -4  # -2 * 2
 ```
 
 ## Summary
 
 The Game Engine provides:
 
-1. **Complete Game Logic**: All rules implemented and validated
-2. **Clean Separation**: Pure game logic, no external dependencies
-3. **Extensibility**: Easy to add new rules or game modes
-4. **Testability**: Comprehensive test coverage possible
-5. **Performance**: Efficient algorithms for real-time play
+1. **Complete Game Logic**: All rules, scoring, and win conditions implemented
+2. **String-Based Piece System**: Simple piece representation using "NAME_COLOR" format
+3. **Flexible Play Types**: 9 different valid play combinations from SINGLE to DOUBLE_STRAIGHT
+4. **Accurate Scoring**: Perfect zero gets +3 bonus without multiplier
+5. **Multiple Win Conditions**: First to 50 points or highest after 20 rounds
+6. **Bot Support**: AI players with strategic decision making
+7. **State Machine Integration**: Works seamlessly with the enterprise architecture
 
-This architecture ensures the game logic remains maintainable and bug-free while supporting the complex rules of Liap Tui.
+Key implementation details:
+- Pieces use string identifiers (e.g., "GENERAL_RED") with point values from constants.py
+- RED pieces are always stronger than BLACK pieces of the same type
+- Play type hierarchy determines turn winners
+- Winner captures piles equal to pieces played (e.g., DOUBLE_STRAIGHT = 6 piles)
+- Multipliers apply only to base scoring points, not to bonuses
+
+This architecture ensures the game logic remains maintainable and accurate while supporting the complex rules of Liap Tui.
