@@ -151,20 +151,12 @@ class TurnState(GameState):
 
 ### Step 4: Add Frontend Animation
 
-```tsx
-// frontend/src/components/BonusAnimation.tsx
+```jsx
+// frontend/src/components/BonusAnimation.jsx
 import React, { useEffect, useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
 import './BonusAnimation.css';
 
-interface BonusAnimationProps {
-    player: string;
-    bonusType: string;
-    bonusPoints: number;
-    message: string;
-}
-
-export const BonusAnimation: React.FC<BonusAnimationProps> = ({
+export const BonusAnimation = ({
     player,
     bonusType,
     bonusPoints,
@@ -179,56 +171,38 @@ export const BonusAnimation: React.FC<BonusAnimationProps> = ({
 
     if (bonusType !== 'lucky_seven') return null;
 
-    return (
-        <AnimatePresence>
-            {isVisible && (
-                <motion.div
-                    className="bonus-animation lucky-seven"
-                    initial={{ scale: 0, opacity: 0 }}
-                    animate={{ scale: 1, opacity: 1 }}
-                    exit={{ scale: 0, opacity: 0 }}
-                    transition={{ duration: 0.5, type: "spring" }}
-                >
-                    <div className="bonus-content">
-                        <div className="seven-icon">7️⃣</div>
-                        <h2>{message}</h2>
-                        <p>{player} gains +{bonusPoints} points!</p>
-                        <div className="sparkles">
-                            {[...Array(7)].map((_, i) => (
-                                <motion.span
-                                    key={i}
-                                    className="sparkle"
-                                    animate={{
-                                        y: [-20, -100],
-                                        opacity: [1, 0],
-                                        scale: [1, 0]
-                                    }}
-                                    transition={{
-                                        duration: 1,
-                                        delay: i * 0.1,
-                                        repeat: Infinity,
-                                        repeatDelay: 2
-                                    }}
-                                >
-                                    ✨
-                                </motion.span>
-                            ))}
-                        </div>
-                    </div>
-                </motion.div>
-            )}
-        </AnimatePresence>
-    );
+    return isVisible ? (
+        <div className="bonus-animation lucky-seven animate-in">
+            <div className="bonus-content">
+                <div className="seven-icon">7️⃣</div>
+                <h2>{message}</h2>
+                <p>{player} gains +{bonusPoints} points!</p>
+                <div className="sparkles">
+                    {[...Array(7)].map((_, i) => (
+                        <span
+                            key={i}
+                            className="sparkle"
+                            style={{
+                                animationDelay: `${i * 0.1}s`
+                            }}
+                        >
+                            ✨
+                        </span>
+                    ))}
+                </div>
+            </div>
+        </div>
+    ) : null;
 };
 ```
 
 ### Step 5: Handle WebSocket Event
 
-```tsx
-// frontend/src/phases/TurnPhase.tsx
+```jsx
+// frontend/src/pages/TurnPhase.jsx
 import { BonusAnimation } from '../components/BonusAnimation';
 
-export const TurnPhase: React.FC = () => {
+export const TurnPhase = () => {
     const [bonusAnimation, setBonusAnimation] = useState(null);
 
     useEffect(() => {
@@ -292,32 +266,17 @@ Let's add a player statistics popup showing game history.
 
 ### Step 1: Create Statistics Component
 
-```tsx
-// frontend/src/components/PlayerStats.tsx
+```jsx
+// frontend/src/components/PlayerStats.jsx
 import React, { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
-import { NetworkService } from '../network/NetworkService';
+import { NetworkService } from '../services/NetworkService';
 import './PlayerStats.css';
 
-interface PlayerStatsProps {
-    playerName: string;
-    onClose: () => void;
-}
-
-interface Stats {
-    gamesPlayed: number;
-    gamesWon: number;
-    winRate: number;
-    highestScore: number;
-    perfectDeclarations: number;
-    luckySevenCount: number;
-}
-
-export const PlayerStats: React.FC<PlayerStatsProps> = ({
+export const PlayerStats = ({
     playerName,
     onClose
 }) => {
-    const [stats, setStats] = useState<Stats | null>(null);
+    const [stats, setStats] = useState(null);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
@@ -351,17 +310,12 @@ export const PlayerStats: React.FC<PlayerStatsProps> = ({
     };
 
     return (
-        <motion.div
+        <div
             className="player-stats-overlay"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
             onClick={onClose}
         >
-            <motion.div
+            <div
                 className="player-stats-modal"
-                initial={{ scale: 0.8 }}
-                animate={{ scale: 1 }}
                 onClick={(e) => e.stopPropagation()}
             >
                 <div className="stats-header">
@@ -409,19 +363,19 @@ export const PlayerStats: React.FC<PlayerStatsProps> = ({
 
                         <div className="win-rate-chart">
                             <h3>Win Rate Progress</h3>
-                            <WinRateChart data={stats.winRateHistory} />
+                            <WinRateChart data={stats.winRateHistory || []} />
                         </div>
                     </div>
                 ) : (
                     <div className="no-stats">No statistics available</div>
                 )}
-            </motion.div>
-        </motion.div>
+            </div>
+        </div>
     );
 };
 
 // Sub-component for win rate visualization
-const WinRateChart: React.FC<{ data: number[] }> = ({ data }) => {
+const WinRateChart = ({ data }) => {
     const maxValue = Math.max(...data, 1);
 
     return (
@@ -821,18 +775,14 @@ class Game:
 
 ### Step 5: Add Frontend Replay Viewer
 
-```tsx
-// frontend/src/components/ReplayViewer.tsx
+```jsx
+// frontend/src/components/ReplayViewer.jsx
 import React, { useState, useEffect } from 'react';
 import { fetchReplay } from '../api/replay';
 import { GameBoard } from './GameBoard';
 import './ReplayViewer.css';
 
-interface ReplayViewerProps {
-    gameId: string;
-}
-
-export const ReplayViewer: React.FC<ReplayViewerProps> = ({ gameId }) => {
+export const ReplayViewer = ({ gameId }) => {
     const [replay, setReplay] = useState(null);
     const [currentRound, setCurrentRound] = useState(0);
     const [currentTurn, setCurrentTurn] = useState(0);
@@ -1052,8 +1002,8 @@ async def test_lucky_seven_in_game():
 
 ### Frontend Tests
 
-```tsx
-// frontend/src/components/__tests__/BonusAnimation.test.tsx
+```jsx
+// frontend/src/components/__tests__/BonusAnimation.test.jsx
 import { render, screen } from '@testing-library/react';
 import { BonusAnimation } from '../BonusAnimation';
 
@@ -1085,8 +1035,7 @@ Before deploying your feature:
 - [ ] Feature flag configured
 
 ### Frontend Checklist
-- [ ] TypeScript compilation successful
-- [ ] ESLint passes (`npm run lint`)
+- [ ] JavaScript linting passes (`npm run lint`)
 - [ ] Component tests written
 - [ ] Responsive design verified
 - [ ] Accessibility checked
@@ -1142,7 +1091,7 @@ async def debug_feature():
     logger.debug(f"Game state: {game.get_debug_info()}")
 ```
 
-```tsx
+```jsx
 // Frontend debugging
 console.log('[LuckySeaven] Bonus triggered:', bonusData);
 window.debugGameState = () => {

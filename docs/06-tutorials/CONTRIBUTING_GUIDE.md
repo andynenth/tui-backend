@@ -23,7 +23,7 @@ We're excited that you're interested in contributing to Liap Tui! This guide wil
 ### Prerequisites
 
 Before contributing, ensure you have:
-- **Python 3.9+** for backend development
+- **Python 3.10+** for backend development
 - **Node.js 16+** for frontend development
 - **Git** for version control
 - **Docker** (optional, for containerized development)
@@ -221,27 +221,28 @@ class GameState:
         """
 ```
 
-### JavaScript/TypeScript (Frontend) Standards
+### JavaScript (Frontend) Standards
 
 #### Code Style
-```typescript
+```javascript
 // Use Prettier for formatting
-// Always use TypeScript for services and utilities
+// Use JSDoc comments for type documentation
 
-interface Player {
-  name: string;
-  hand: Piece[];
-  declared: number;
-  score: number;
-  isBot: boolean;
-}
+/**
+ * @typedef {Object} Player
+ * @property {string} name
+ * @property {Piece[]} hand
+ * @property {number} declared
+ * @property {number} score
+ * @property {boolean} isBot
+ */
 
 // Use descriptive function names
 const calculateValidDeclarations = (
-  currentDeclarations: Record<string, number>,
-  totalPlayers: number,
-  isLastPlayer: boolean
-): number[] => {
+  currentDeclarations,
+  totalPlayers,
+  isLastPlayer
+) => {
   const validOptions = [0, 1, 2, 3, 4, 5, 6, 7, 8];
 
   if (isLastPlayer) {
@@ -305,14 +306,16 @@ export default React.memo(DeclarationUI);
 ```
 
 #### State Management
-```typescript
+```javascript
 // Use services for complex state logic
 class GameService {
-  private state: GameState = initialGameState;
-  private listeners: Set<(state: GameState) => void> = new Set();
+  constructor() {
+    this.state = initialGameState;
+    this.listeners = new Set();
+  }
 
   // Immutable state updates
-  private updateState(updates: Partial<GameState>): void {
+  updateState(updates) {
     this.state = {
       ...this.state,
       ...updates,
@@ -323,7 +326,7 @@ class GameService {
   }
 
   // Validate actions before sending
-  public async makeDeclaration(value: number): Promise<void> {
+  async makeDeclaration(value) {
     if (!this.isValidDeclaration(value)) {
       throw new Error(`Invalid declaration: ${value}`);
     }
@@ -564,7 +567,7 @@ describe('GameService', () => {
    # Frontend
    cd frontend
    npm run lint  # Lint code
-   npm run type-check  # TypeScript validation
+   # npm run type-check  # Not needed for JavaScript
    npm test  # Run tests
    npm run build  # Verify build works
    ```

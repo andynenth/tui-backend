@@ -2,7 +2,7 @@
 
 This document has been consolidated into a comprehensive guide.
 
-Please see: [AI Debug Mode - Comprehensive Guide](../ai-debug-mode/AI_DEBUG_MODE_COMPREHENSIVE.md)
+Please see: [AI Debug Mode - Comprehensive Guide](/docs/ai-debug-mode/AI_DEBUG_MODE_COMPREHENSIVE.md)
 
 The consolidated guide includes:
 - Complete architecture documentation

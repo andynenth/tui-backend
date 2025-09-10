@@ -20,9 +20,9 @@ The Liap Tui frontend uses React 19.1.0 with modern patterns including hooks, co
 
 - **React 19.1.0**: Latest React with improved performance
 - **React Router DOM**: Client-side routing
-- **TypeScript**: Type safety throughout
+- **JavaScript (ES6+)**: Modern JavaScript with JSX
 - **ESBuild**: Ultra-fast bundling
-- **CSS Modules**: Scoped styling
+- **CSS**: Scoped component styling
 
 ## Architecture Principles
 
@@ -171,22 +171,19 @@ frontend/src/
 │   ├── LobbyPage.jsx
 │   ├── RoomPage.jsx
 │   └── GamePage.jsx
-├── phases/             # Game phase components
-│   ├── PreparationPhase.jsx
-│   ├── DeclarationPhase.jsx
-│   ├── TurnPhase.jsx
-│   └── ScoringPhase.jsx
 ├── hooks/              # Custom hooks
-│   ├── useGame.js
-│   ├── useWebSocket.js
-│   └── useTheme.js
+│   ├── useGameState.ts
+│   ├── useGameActions.ts
+│   ├── useConnectionStatus.ts
+│   └── useAutoReconnect.js
 ├── contexts/           # React contexts
 │   ├── AppContext.jsx
 │   ├── GameContext.jsx
 │   └── ThemeContext.jsx
 └── services/           # External services
-    ├── NetworkService.ts
-    └── GameService.ts
+    ├── NetworkService.ts  # TypeScript service
+    ├── GameService.ts     # TypeScript service
+    └── types.ts           # TypeScript types
 ```
 
 ## Routing Architecture
@@ -408,19 +405,22 @@ const useGamePhase = () => {
   useEffect(() => {
     switch (gameState?.phase) {
       case 'PREPARATION':
-        setPhaseComponent(<PreparationPhase />);
+        setPhaseComponent(<PreparationUI />);
         break;
       case 'DECLARATION':
-        setPhaseComponent(<DeclarationPhase />);
+        setPhaseComponent(<DeclarationUI />);
         break;
       case 'TURN':
-        setPhaseComponent(<TurnPhase />);
+        setPhaseComponent(<TurnUI />);
         break;
       case 'SCORING':
-        setPhaseComponent(<ScoringPhase />);
+        setPhaseComponent(<ScoringUI />);
+        break;
+      case 'ROUND_START':
+        setPhaseComponent(<RoundStartUI />);
         break;
       default:
-        setPhaseComponent(<WaitingPhase />);
+        setPhaseComponent(<WaitingUI />);
     }
   }, [gameState?.phase]);
 
@@ -508,22 +508,21 @@ const PlayerHand = () => {
 
 ## Props Flow & Data Passing
 
-### Props Types
+### Props Documentation
 
-```typescript
-// Type-safe props with TypeScript
-interface PlayerCardProps {
-  player: {
-    id: string;
-    name: string;
-    score: number;
-    isActive: boolean;
-  };
-  onSelect?: (playerId: string) => void;
-  className?: string;
-}
-
-const PlayerCard: React.FC<PlayerCardProps> = ({
+```jsx
+// Document props with JSDoc comments
+/**
+ * @param {Object} props
+ * @param {Object} props.player - Player information
+ * @param {string} props.player.id - Player ID
+ * @param {string} props.player.name - Player name
+ * @param {number} props.player.score - Player score
+ * @param {boolean} props.player.isActive - Is player active
+ * @param {Function} [props.onSelect] - Selection handler
+ * @param {string} [props.className] - Additional CSS classes
+ */
+const PlayerCard = ({
   player,
   onSelect,
   className = ''
@@ -697,21 +696,21 @@ const GameHistory = ({ history }) => (
 import React, { memo } from 'react';
 import './PlayerCard.css';
 
-interface PlayerCardProps {
-  player: {
-    id: string;
-    name: string;
-    score: number;
-    isActive: boolean;
-    isHost: boolean;
-    pieces: number;
-  };
-  isCurrentTurn: boolean;
-  onKick?: (playerId: string) => void;
-  showKickButton?: boolean;
-}
-
-const PlayerCard = memo<PlayerCardProps>(({
+/**
+ * Player card component
+ * @param {Object} props
+ * @param {Object} props.player - Player data
+ * @param {string} props.player.id
+ * @param {string} props.player.name
+ * @param {number} props.player.score
+ * @param {boolean} props.player.isActive
+ * @param {boolean} props.player.isHost
+ * @param {number} props.player.pieces
+ * @param {boolean} props.isCurrentTurn
+ * @param {Function} [props.onKick]
+ * @param {boolean} [props.showKickButton=false]
+ */
+const PlayerCard = memo(({
   player,
   isCurrentTurn,
   onKick,
@@ -768,10 +767,10 @@ export default PlayerCard;
 
 ```jsx
 // useWebSocket.js - Custom hook for WebSocket management
-import { useEffect, useRef, useCallback } from 'react';
+import { useEffect, useRef, useCallback, useState } from 'react';
 import { NetworkService } from '../services/NetworkService';
 
-export const useWebSocket = (roomId: string) => {
+export const useWebSocket = (roomId) => {
   const networkService = useRef(NetworkService.getInstance());
   const [connectionState, setConnectionState] = useState('disconnected');
   const [lastMessage, setLastMessage] = useState(null);
@@ -802,7 +801,7 @@ export const useWebSocket = (roomId: string) => {
     };
   }, [roomId]);
 
-  const sendMessage = useCallback((event: string, data: any) => {
+  const sendMessage = useCallback((event, data) => {
     networkService.current.send(roomId, event, data);
   }, [roomId]);
 
@@ -904,7 +903,7 @@ The React architecture provides:
 
 1. **Clear Structure**: Organized component hierarchy
 2. **Reusability**: Shared components and patterns
-3. **Type Safety**: TypeScript throughout
+3. **Type Safety**: TypeScript for services, JSDoc for components
 4. **Performance**: Optimized rendering and updates
 5. **Testability**: Components designed for testing
 6. **Maintainability**: Clear patterns and conventions

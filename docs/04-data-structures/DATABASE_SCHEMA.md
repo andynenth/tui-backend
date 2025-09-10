@@ -1,4 +1,4 @@
-# Database Schema - Data Persistence Design
+# Database Schema - SQLite Event Store Implementation
 
 ## Table of Contents
 1. [Overview](#overview)
@@ -9,12 +9,12 @@
 6. [Play History](#play-history)
 7. [Performance Optimizations](#performance-optimizations)
 8. [Backup Strategy](#backup-strategy)
-9. [Future PostgreSQL Design](#future-postgresql-design)
-10. [Migration Path](#migration-path)
+9. [Migration System](#migration-system)
+10. [Monitoring](#monitoring)
 
 ## Overview
 
-Liap Tui currently uses SQLite for persistent storage of game events and play history. This document outlines the current implementation and future plans for enhanced database capabilities.
+Liap Tui uses SQLite for persistent storage of game events and play history. This document outlines the current implementation using the Event Store V2 architecture.
 
 ### Current Persistence Features
 
@@ -32,9 +32,9 @@ Liap Tui currently uses SQLite for persistent storage of game events and play hi
 # Current implementation in backend/services/event_store_v2.py
 class EventStoreV2:
     def __init__(self):
-        # SQLite database with optimizations
-        self.db_path = "/app/data/game_events.db"
-        self.connection_pool = self._create_connection_pool()
+        # SQLite database location is configurable
+        # Default: data/game_events.db (relative to project root)
+        # Environment variable: DATABASE_PATH
 
         # Performance optimizations
         self._execute_pragmas()
@@ -66,72 +66,72 @@ graph LR
     style SQLite fill:#90EE90
 ```
 
-## Future Database Design
+## SQLite Implementation
 
-### Proposed Architecture
+### Current Database Location
 
-```mermaid
-graph TB
-    subgraph "Application Layer"
-        API[FastAPI]
-        WS[WebSocket Handler]
-        Cache[Redis Cache]
-    end
-
-    subgraph "Data Layer"
-        PG[(PostgreSQL)]
-        Redis[(Redis)]
-        S3[S3/Object Storage]
-    end
-
-    API --> Cache
-    WS --> Cache
-    Cache --> Redis
-
-    API --> PG
-    Cache -->|Write-through| PG
-
-    PG -->|Large Data| S3
-
-    style PG fill:#4169E1
-    style Redis fill:#DC382D
-    style S3 fill:#FF9900
-```
-
-### Technology Choices
-
-| Component | Technology | Rationale |
-|-----------|------------|-----------|
-| Primary DB | PostgreSQL | ACID compliance, JSON support, reliability |
-| Cache | Redis | Fast access, pub/sub for real-time |
-| Object Storage | S3/MinIO | Game replays, large analytics data |
-| ORM | SQLAlchemy | Type safety, migrations, flexibility |
+The SQLite database is stored at:
+- **Default**: `data/game_events.db` (relative to project root)
+- **Docker**: `/app/data/game_events.db`
+- **Configurable**: Via `DATABASE_PATH` environment variable
 
 ## Schema Design
 
-### Core Tables
+### Event Store V2 Tables (SQLite)
 
 ```sql
--- Players table
-CREATE TABLE players (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    username VARCHAR(50) UNIQUE NOT NULL,
-    display_name VARCHAR(100) NOT NULL,
-    email VARCHAR(255) UNIQUE,
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-    last_seen TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-    is_active BOOLEAN DEFAULT true,
+-- Core events table (minimal, optimized for writes)
+CREATE TABLE game_events_v2 (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    room_id TEXT NOT NULL,
+    event_type TEXT NOT NULL,
+    round_number INTEGER,
+    timestamp REAL NOT NULL,
+    created_at TEXT NOT NULL
+);
 
-    -- Statistics
-    games_played INTEGER DEFAULT 0,
-    games_won INTEGER DEFAULT 0,
-    total_score INTEGER DEFAULT 0,
-    highest_score INTEGER DEFAULT 0,
+-- Game summaries (one row per game)
+CREATE TABLE game_summaries (
+    room_id TEXT PRIMARY KEY,
+    players JSON NOT NULL,
+    total_rounds INTEGER DEFAULT 0,
+    final_scores JSON,
+    winner TEXT,
+    started_at REAL NOT NULL,
+    completed_at REAL,
+    game_config JSON,
+    duration_seconds INTEGER,
+    total_events INTEGER DEFAULT 0
+);
 
-    -- Settings
-    settings JSONB DEFAULT '{}',
+-- Round snapshots (one row per round)
+CREATE TABLE round_snapshots (
+    room_id TEXT NOT NULL,
+    round_number INTEGER NOT NULL,
+    starter_player TEXT NOT NULL,
+    starter_reason TEXT,
+    initial_hands JSON NOT NULL,
+    declarations JSON NOT NULL,
+    turn_sequence JSON NOT NULL,
+    round_scores JSON NOT NULL,
+    cumulative_scores JSON NOT NULL,
+    created_at TEXT NOT NULL,
+    duration_seconds INTEGER,
+    total_turns INTEGER,
+    PRIMARY KEY (room_id, round_number)
+);
 
-    CONSTRAINT username_valid CHECK (username ~ '^[a-zA-Z0-9_-]{3,50}$')
+-- Turn details (for detailed analysis)
+CREATE TABLE turn_details (
+    room_id TEXT NOT NULL,
+    round_number INTEGER NOT NULL,
+    turn_number INTEGER NOT NULL,
+    starter TEXT NOT NULL,
+    plays JSON NOT NULL,
+    winner TEXT,
+    piles_won INTEGER DEFAULT 0,
+    created_at TEXT NOT NULL,
+    PRIMARY KEY (room_id, round_number, turn_number)
 );
 
 -- Rooms table

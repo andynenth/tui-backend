@@ -98,7 +98,7 @@ graph TB
 
 ```dockerfile
 # Production Dockerfile
-FROM python:3.11-slim as backend-builder
+FROM python:3.10-slim as backend-builder
 
 # Build arguments
 ARG BUILD_VERSION
@@ -123,7 +123,7 @@ COPY frontend/ .
 RUN npm run build
 
 # Final production image
-FROM python:3.11-slim
+FROM python:3.10-slim
 
 # Runtime dependencies
 RUN apt-get update && apt-get install -y \
@@ -135,7 +135,7 @@ RUN apt-get update && apt-get install -y \
 # Copy backend
 WORKDIR /app
 COPY --from=backend-builder /app /app
-COPY --from=backend-builder /usr/local/lib/python3.11/site-packages /usr/local/lib/python3.11/site-packages
+COPY --from=backend-builder /usr/local/lib/python3.10/site-packages /usr/local/lib/python3.10/site-packages
 
 # Copy frontend
 COPY --from=frontend-builder /app/dist /var/www/html

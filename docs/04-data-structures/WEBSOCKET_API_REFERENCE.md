@@ -57,28 +57,30 @@ ws.onmessage = (message) => {
 ## Message Protocol
 
 ### Request Format (Client → Server)
-```typescript
-interface ClientMessage {
-    event: string;           // Event name
-    data: Record<string, any>; // Event payload
+```javascript
+// Client message format
+{
+    event: string,           // Event name
+    data: object,            // Event payload
 
     // Optional metadata
-    sequence?: number;       // Client sequence number
-    timestamp?: number;      // Client timestamp
+    sequence?: number,       // Client sequence number
+    timestamp?: number       // Client timestamp
 }
 ```
 
 ### Response Format (Server → Client)
-```typescript
-interface ServerMessage {
-    event: string;           // Event type
-    data: Record<string, any>; // Event data
+```javascript
+// Server message format
+{
+    event: string,           // Event type
+    data: object,            // Event data
 
     // Optional fields
-    error?: ErrorInfo;       // Error details
-    room_id?: string;        // Room context
-    sequence?: number;       // Echo client sequence
-    server_time?: number;    // Server timestamp
+    error?: object,          // Error details
+    room_id?: string,        // Room context
+    sequence?: number,       // Echo client sequence
+    server_time?: number     // Server timestamp
 }
 ```
 
@@ -493,6 +495,7 @@ Primary game state update.
 **Phases:**
 - `waiting` - Waiting for players
 - `preparation` - Dealing and redeals
+- `round_start` - Setting round starter
 - `declaration` - Pile count declarations
 - `turn` - Playing pieces
 - `turn_results` - Turn outcome
@@ -550,53 +553,59 @@ Game finished.
 ## Data Models
 
 ### Player Model
-```typescript
-interface Player {
-    name: string;
-    slot: number;
-    is_bot: boolean;
-    is_host: boolean;
-    is_connected: boolean;
-    score?: number;
-    declared?: number;
-    captured_piles?: number;
-    hand_size?: number;
-}
+```javascript
+/**
+ * @typedef {Object} Player
+ * @property {string} name
+ * @property {number} slot
+ * @property {boolean} is_bot
+ * @property {boolean} is_host
+ * @property {boolean} is_connected
+ * @property {number} [score]
+ * @property {number} [declared]
+ * @property {number} [captured_piles]
+ * @property {number} [hand_size]
+ */
 ```
 
 ### Piece Model
-```typescript
-interface Piece {
-    kind: string;  // e.g., "GENERAL_RED"
-    point: number;
-    name?: string; // "GENERAL"
-    color?: string; // "RED"
-}
+```javascript
+/**
+ * @typedef {Object} Piece
+ * @property {string} kind - e.g., "GENERAL_RED"
+ * @property {number} point
+ * @property {string} [name] - "GENERAL"
+ * @property {string} [color] - "RED"
+ */
 ```
 
 ### Room Model
-```typescript
-interface Room {
-    room_id: string;
-    host_name: string;
-    players: Player[];
-    started: boolean;
-    occupied_slots: number;
-    total_slots: number;
-}
+```javascript
+/**
+ * @typedef {Object} Room
+ * @property {string} room_id
+ * @property {string} host_name
+ * @property {Player[]} players
+ * @property {boolean} started
+ * @property {number} occupied_slots
+ * @property {number} total_slots
+ */
 ```
 
 ## Integration Guide
 
-### TypeScript/JavaScript
-```typescript
+### JavaScript
+```javascript
 class GameClient {
-    private ws: WebSocket;
-    private roomId: string;
+    constructor() {
+        this.ws = null;
+        this.roomId = null;
+    }
 
-    connect(roomId: string): Promise<void> {
+    connect(roomId) {
         return new Promise((resolve, reject) => {
             this.ws = new WebSocket(`ws://localhost:8000/ws/${roomId}`);
+            this.roomId = roomId;
 
             this.ws.onopen = () => {
                 this.send('client_ready', {});
@@ -607,7 +616,7 @@ class GameClient {
         });
     }
 
-    send(event: string, data: any): void {
+    send(event, data) {
         this.ws.send(JSON.stringify({ event, data }));
     }
 }

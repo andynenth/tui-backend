@@ -86,7 +86,7 @@ LOG_LEVEL=DEBUG ./start.sh
 # Add breakpoint in code
 import pdb; pdb.set_trace()
 
-# Or use built-in breakpoint() in Python 3.7+
+# Or use built-in breakpoint()
 breakpoint()
 
 # Common pdb commands:
@@ -1080,7 +1080,7 @@ const monitor = new WebSocketMonitor();
 ## Troubleshooting Checklist
 
 ### Initial Setup Issues
-- [ ] Python 3.8+ installed
+- [ ] Python 3.10+ installed
 - [ ] Node.js 18+ installed
 - [ ] Docker running (if using containers)
 - [ ] All ports available (8000, 5050)

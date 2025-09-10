@@ -53,7 +53,7 @@ graph LR
 | Software | Version | Check Command | Installation |
 |----------|---------|---------------|--------------|
 | Node.js | 18+ | `node --version` | [nodejs.org](https://nodejs.org/) |
-| Python | 3.11+ | `python --version` | [python.org](https://python.org/) |
+| Python | 3.10+ | `python --version` | [python.org](https://python.org/) |
 | Git | 2.0+ | `git --version` | [git-scm.com](https://git-scm.com/) |
 | Docker | Optional | `docker --version` | [docker.com](https://docker.com/) |
 

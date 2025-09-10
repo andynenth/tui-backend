@@ -20,7 +20,7 @@ The Liap Tui frontend uses React Context API for state management, avoiding the 
 
 1. **Built-in**: No external dependencies
 2. **Simple**: Easy to understand and debug
-3. **Type-safe**: Full TypeScript support
+3. **JavaScript-native**: Works seamlessly with React's JSX
 4. **Sufficient**: Meets our state management needs
 5. **Performance**: Good enough with proper optimization
 
@@ -115,112 +115,162 @@ const AppWithProviders = () => {
 
 ### Context Definition
 
-```typescript
-// contexts/AppContext.tsx
-interface AppContextType {
-  // Player data
-  playerName: string | null;
-  setPlayerName: (name: string) => void;
+```jsx
+// contexts/AppContext.jsx
+// Note: This project uses JavaScript, not TypeScript
 
-  // Room management
-  currentRoomId: string | null;
-  setCurrentRoomId: (roomId: string | null) => void;
+const AppContext = createContext(null);
 
-  // Session management
-  sessionId: string;
-  isAuthenticated: boolean;
-
-  // UI state
-  isMobile: boolean;
-  isLoading: boolean;
-  setIsLoading: (loading: boolean) => void;
-
-  // Error handling
-  error: AppError | null;
-  setError: (error: AppError | null) => void;
-  clearError: () => void;
-}
-
-const AppContext = createContext<AppContextType | undefined>(undefined);
+// The context provides these values:
+// - currentScene: Current application scene ('start', 'lobby', 'room', 'game')
+// - playerName: Player's name
+// - currentRoomId: Current room ID (if in a room)
+// - isTransitioning: Whether a scene transition is happening
+// - appError: Any application-level error
+// - Navigation methods: navigateToScene, goToStart, goToLobby, goToRoom, goToGame
+// - Player management: updatePlayerName
+// - Room management: joinRoom, leaveRoom
+// - Utilities: clearError, canNavigateToScene
 ```
 
 ### AppProvider Implementation
 
 ```jsx
-export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  // Persistent state (localStorage)
-  const [playerName, setPlayerNameState] = useState<string | null>(() => {
-    return localStorage.getItem('player-name');
-  });
+export const AppProvider = ({ children }) => {
+  // Scene navigation state
+  const [currentScene, setCurrentScene] = useState('start');
+  const [playerName, setPlayerName] = useState('');
+  const [currentRoomId, setCurrentRoomId] = useState(null);
+  const [isTransitioning, setIsTransitioning] = useState(false);
+  const [appError, setAppError] = useState(null);
 
-  // Session state
-  const [currentRoomId, setCurrentRoomId] = useState<string | null>(null);
-  const [sessionId] = useState(() => generateSessionId());
-
-  // UI state
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<AppError | null>(null);
-
-  // Derived state
-  const isMobile = useMediaQuery('(max-width: 768px)');
-  const isAuthenticated = !!playerName;
-
-  // Enhanced setters with side effects
-  const setPlayerName = useCallback((name: string) => {
-    setPlayerNameState(name);
-    localStorage.setItem('player-name', name);
-
-    // Track user
-    analytics.identify(sessionId, { playerName: name });
-  }, [sessionId]);
-
-  const clearError = useCallback(() => {
-    setError(null);
-  }, []);
-
-  // Global error handler
+  // Load persisted data on mount
   useEffect(() => {
-    const handleError = (event: ErrorEvent) => {
-      setError({
-        code: 'GLOBAL_ERROR',
-        message: event.message,
-        timestamp: Date.now()
-      });
-    };
+    const savedPlayerName = localStorage.getItem('playerName');
+    if (savedPlayerName) {
+      setPlayerName(savedPlayerName);
+    }
 
-    window.addEventListener('error', handleError);
-    return () => window.removeEventListener('error', handleError);
+    const savedRoomId = localStorage.getItem('currentRoomId');
+    if (savedRoomId) {
+      setCurrentRoomId(savedRoomId);
+    }
   }, []);
 
-  const value = useMemo(() => ({
-    playerName,
-    setPlayerName,
-    currentRoomId,
-    setCurrentRoomId,
-    sessionId,
-    isAuthenticated,
-    isMobile,
-    isLoading,
-    setIsLoading,
-    error,
-    setError,
-    clearError
-  }), [
-    playerName,
-    setPlayerName,
-    currentRoomId,
-    sessionId,
-    isAuthenticated,
-    isMobile,
-    isLoading,
-    error
-  ]);
+  // Persist player name
+  useEffect(() => {
+    if (playerName) {
+      localStorage.setItem('playerName', playerName);
+    } else {
+      localStorage.removeItem('playerName');
+    }
+  }, [playerName]);
 
-  return (
-    <AppContext.Provider value={value}>
-      {children}
-    </AppContext.Provider>
-  );
+  // Persist room ID
+  useEffect(() => {
+    if (currentRoomId) {
+      localStorage.setItem('currentRoomId', currentRoomId);
+    } else {
+      localStorage.removeItem('currentRoomId');
+    }
+  }, [currentRoomId]);
+
+  // Scene navigation with validation
+  const navigateToScene = async (sceneName, options = {}) => {
+    setIsTransitioning(true);
+    setAppError(null);
+
+    try {
+      // Scene-specific validation
+      switch (sceneName) {
+        case 'start':
+          setCurrentRoomId(null);
+          break;
+        case 'lobby':
+          if (!playerName) {
+            throw new Error('Player name required for lobby');
+          }
+          break;
+        case 'room':
+          if (!playerName || !options.roomId) {
+            throw new Error('Player name and room ID required for room');
+          }
+          setCurrentRoomId(options.roomId);
+          break;
+        case 'game':
+          if (!playerName || !currentRoomId) {
+            throw new Error('Player name and room ID required for game');
+          }
+          break;
+        default:
+          throw new Error(`Unknown scene: ${sceneName}`);
+      }
+
+      setCurrentScene(sceneName);
+    } catch (error) {
+      console.error('Scene navigation failed:', error);
+      setAppError(error);
+    } finally {
+      setIsTransitioning(false);
+    }
+  };
+
+  // Player name validation
+  const updatePlayerName = (name) => {
+    const trimmedName = name.trim();
+    if (trimmedName.length < 2) {
+      throw new Error('Player name must be at least 2 characters');
+    }
+    if (trimmedName.length > 20) {
+      throw new Error('Player name must be less than 20 characters');
+    }
+    setPlayerName(trimmedName);
+  };
+
+  const value = {
+    // Current state
+    currentScene,
+    playerName,
+    currentRoomId,
+    isTransitioning,
+    appError,
+
+    // Navigation
+    navigateToScene,
+    goToStart: () => navigateToScene('start'),
+    goToLobby: () => navigateToScene('lobby'),
+    goToRoom: (roomId) => navigateToScene('room', { roomId }),
+    goToGame: () => navigateToScene('game'),
+
+    // Player management
+    updatePlayerName,
+
+    // Room management
+    joinRoom: async (roomId) => {
+      if (!playerName) {
+        throw new Error('Player name required to join room');
+      }
+      await navigateToScene('room', { roomId });
+    },
+    leaveRoom: () => {
+      setCurrentRoomId(null);
+      navigateToScene('lobby');
+    },
+
+    // Utilities
+    clearError: () => setAppError(null),
+    canNavigateToScene: (sceneName) => {
+      switch (sceneName) {
+        case 'start': return true;
+        case 'lobby': return !!playerName;
+        case 'room': return !!playerName && !!currentRoomId;
+        case 'game': return !!playerName && !!currentRoomId;
+        default: return false;
+      }
+    }
+  };
+
+  return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
 };
 ```
 
@@ -238,14 +288,14 @@ export const useApp = () => {
 
 // Usage in components
 const Header = () => {
-  const { playerName, isAuthenticated } = useApp();
+  const { playerName, currentScene } = useApp();
 
   return (
     <header>
-      {isAuthenticated ? (
-        <span>Welcome, {playerName}!</span>
+      {playerName ? (
+        <span>Welcome, {playerName}! ({currentScene})</span>
       ) : (
-        <span>Please log in</span>
+        <span>Please enter your name</span>
       )}
     </header>
   );
@@ -256,191 +306,95 @@ const Header = () => {
 
 ### Context Definition
 
-```typescript
-// contexts/GameContext.tsx
-interface GameState {
-  phase: GamePhase;
-  roundNumber: number;
-  turnNumber: number;
-  players: Player[];
-  myHand: Piece[];
-  phaseData: any;
-  scores: Record<string, number>;
-}
+```jsx
+// contexts/GameContext.jsx
+// Simplified Phase 1-4 Enterprise Architecture Context
 
-interface GameContextType {
-  // State
-  gameState: GameState | null;
-  isGameActive: boolean;
+const GameContext = createContext(null);
 
-  // Player info
-  myPlayer: Player | null;
-  isMyTurn: boolean;
-
-  // Actions
-  playPieces: (pieceIds: string[]) => Promise<void>;
-  declare: (pileCount: number) => Promise<void>;
-  acceptRedeal: () => Promise<void>;
-  declineRedeal: () => Promise<void>;
-
-  // UI state
-  selectedPieces: string[];
-  setSelectedPieces: (pieces: string[]) => void;
-
-  // Network state
-  connectionStatus: 'connected' | 'disconnected' | 'reconnecting';
-  lastError: GameError | null;
-}
+// The context provides these values:
+// - isInitialized: Whether the game context is ready
+// - error: Any initialization error
+// - playerName: Current player's name
+// - roomId: Current room ID
+// - gameState: State from Phase 1-4 services
+// - currentPhase: Current game phase ('waiting', 'preparation', etc.)
+// - isConnected: Network connection status
+// - actions: Object with available actions (e.g., leaveGame)
+// - Legacy compatibility: myHand, scores, isMyTurn
 ```
 
 ### GameProvider Implementation
 
 ```jsx
-export const GameProvider: React.FC<{ roomId: string; children: ReactNode }> = ({
-  roomId,
-  children
-}) => {
-  const { playerName } = useApp();
-  const networkService = useRef(NetworkService.getInstance());
+export const GameProvider = ({ children, roomId, playerName, initialData = {} }) => {
+  const [isInitialized, setIsInitialized] = useState(false);
+  const [error, setError] = useState(null);
+  const [gameState, setGameState] = useState(null);
 
-  // Game state
-  const [gameState, setGameState] = useState<GameState | null>(null);
-  const [connectionStatus, setConnectionStatus] = useState<ConnectionStatus>('disconnected');
-  const [lastError, setLastError] = useState<GameError | null>(null);
-
-  // UI state
-  const [selectedPieces, setSelectedPieces] = useState<string[]>([]);
-
-  // Connect to game room
+  // Initialize Phase 1-4 Enterprise Services
   useEffect(() => {
-    const service = networkService.current;
+    const initializeGame = async () => {
+      try {
+        const health = getServicesHealth();
 
-    // Connect
-    service.connectToRoom(roomId);
+        if (health.overall.healthy && roomId && playerName) {
+          console.log('🚀 GAME_CONTEXT: Phase 1-4 Enterprise Architecture initializing');
 
-    // Event handlers
-    const handlePhaseChange = (event: CustomEvent) => {
-      const { phase, phase_data, game_state } = event.detail.data;
+          // Subscribe to game service state changes
+          const unsubscribe = gameService.addListener((state) => {
+            setGameState(state);
+          });
 
-      setGameState(prev => ({
-        ...prev,
-        phase,
-        phaseData: phase_data,
-        ...game_state
-      }));
+          // Get initial state
+          setGameState(gameService.getState());
+          setIsInitialized(true);
+
+          return unsubscribe;
+        } else {
+          throw new Error('Phase 1-4 services not healthy or missing room/player data');
+        }
+      } catch (err) {
+        console.error('Failed to initialize GameContext:', err);
+        setError(err.message);
+      }
     };
 
-    const handleHandUpdate = (event: CustomEvent) => {
-      const { pieces } = event.detail.data;
-
-      setGameState(prev => ({
-        ...prev!,
-        myHand: pieces
-      }));
-    };
-
-    const handleConnectionChange = (event: CustomEvent) => {
-      setConnectionStatus(event.detail.status);
-    };
-
-    const handleError = (event: CustomEvent) => {
-      setLastError({
-        code: event.detail.code,
-        message: event.detail.message,
-        timestamp: Date.now()
-      });
-    };
-
-    // Register listeners
-    service.on('phase_change', handlePhaseChange);
-    service.on('hand_updated', handleHandUpdate);
-    service.on('connection_status', handleConnectionChange);
-    service.on('error', handleError);
-
-    // Cleanup
-    return () => {
-      service.off('phase_change', handlePhaseChange);
-      service.off('hand_updated', handleHandUpdate);
-      service.off('connection_status', handleConnectionChange);
-      service.off('error', handleError);
-      service.disconnect(roomId);
-    };
-  }, [roomId]);
-
-  // Derived state
-  const myPlayer = useMemo(() => {
-    if (!gameState || !playerName) return null;
-    return gameState.players.find(p => p.name === playerName) || null;
-  }, [gameState, playerName]);
-
-  const isMyTurn = useMemo(() => {
-    if (!gameState || !myPlayer) return false;
-    return gameState.phaseData?.current_player === myPlayer.name;
-  }, [gameState, myPlayer]);
-
-  const isGameActive = !!gameState && gameState.phase !== 'GAME_OVER';
-
-  // Actions
-  const playPieces = useCallback(async (pieceIds: string[]) => {
-    if (!isMyTurn) {
-      throw new Error('Not your turn');
+    if (roomId && playerName) {
+      initializeGame();
     }
-
-    await networkService.current.send(roomId, 'play', {
-      player_name: playerName,
-      piece_ids: pieceIds
-    });
-
-    // Clear selection after play
-    setSelectedPieces([]);
-  }, [roomId, playerName, isMyTurn]);
-
-  const declare = useCallback(async (pileCount: number) => {
-    await networkService.current.send(roomId, 'declare', {
-      player_name: playerName,
-      declaration: pileCount
-    });
   }, [roomId, playerName]);
 
-  const value = useMemo(() => ({
-    gameState,
-    isGameActive,
-    myPlayer,
-    isMyTurn,
-    playPieces,
-    declare,
-    acceptRedeal: async () => {
-      await networkService.current.send(roomId, 'accept_redeal', {
-        player_name: playerName
-      });
-    },
-    declineRedeal: async () => {
-      await networkService.current.send(roomId, 'decline_redeal', {
-        player_name: playerName
-      });
-    },
-    selectedPieces,
-    setSelectedPieces,
-    connectionStatus,
-    lastError
-  }), [
-    gameState,
-    isGameActive,
-    myPlayer,
-    isMyTurn,
-    playPieces,
-    declare,
-    selectedPieces,
-    connectionStatus,
-    lastError,
+  // Provide simple context value focused on Phase 1-4 architecture
+  const contextValue = {
+    // Basic state
+    isInitialized,
+    error,
+    playerName,
     roomId,
-    playerName
-  ]);
+
+    // Game state from Phase 1-4 services
+    gameState,
+
+    // Current phase from game state
+    currentPhase: gameState?.phase || 'waiting',
+
+    // Connection status (from services)
+    isConnected: getServicesHealth().network.healthy,
+
+    // Simple action methods that delegate to services
+    actions: {
+      leaveGame: () => gameService.disconnect(),
+    },
+
+    // Legacy compatibility properties (simplified)
+    myHand: gameState?.hand || [],
+    scores: gameState?.scores || {},
+    isMyTurn: gameState?.currentPlayer === playerName,
+  };
 
   return (
-    <GameContext.Provider value={value}>
-      {children}
-    </GameContext.Provider>
+    <GameContext.Provider value={contextValue}>{children}</GameContext.Provider>
   );
 };
 ```
@@ -457,59 +411,28 @@ export const useGame = () => {
   return context;
 };
 
-// Usage in game components
-const PlayerHand = () => {
+// Usage in game components (simplified for Phase 1-4 architecture)
+const PlayerInfo = () => {
   const {
-    gameState,
-    myPlayer,
+    isInitialized,
+    playerName,
+    currentPhase,
     isMyTurn,
-    selectedPieces,
-    setSelectedPieces,
-    playPieces
+    myHand,
+    scores
   } = useGame();
 
-  if (!gameState || !myPlayer) {
-    return <div>Loading...</div>;
+  if (!isInitialized) {
+    return <div>Loading game...</div>;
   }
 
-  const handlePieceClick = (pieceId: string) => {
-    if (!isMyTurn) return;
-
-    setSelectedPieces(prev =>
-      prev.includes(pieceId)
-        ? prev.filter(id => id !== pieceId)
-        : [...prev, pieceId]
-    );
-  };
-
-  const handlePlay = async () => {
-    try {
-      await playPieces(selectedPieces);
-    } catch (error) {
-      console.error('Play failed:', error);
-    }
-  };
-
   return (
-    <div className="player-hand">
-      <div className="pieces">
-        {gameState.myHand.map(piece => (
-          <PieceCard
-            key={piece.id}
-            piece={piece}
-            isSelected={selectedPieces.includes(piece.id)}
-            onClick={() => handlePieceClick(piece.id)}
-            disabled={!isMyTurn}
-          />
-        ))}
-      </div>
-
-      <Button
-        onClick={handlePlay}
-        disabled={!isMyTurn || selectedPieces.length === 0}
-      >
-        Play {selectedPieces.length} Pieces
-      </Button>
+    <div className="player-info">
+      <h3>{playerName}</h3>
+      <p>Phase: {currentPhase}</p>
+      <p>Turn: {isMyTurn ? 'Your turn!' : 'Waiting...'}</p>
+      <p>Hand: {myHand.length} pieces</p>
+      <p>Score: {scores[playerName] || 0}</p>
     </div>
   );
 };
@@ -519,116 +442,80 @@ const PlayerHand = () => {
 
 ### Context Definition
 
-```typescript
-// contexts/ThemeContext.tsx
-type Theme = 'light' | 'dark' | 'system';
+```jsx
+// contexts/ThemeContext.jsx
 
-interface ThemeContextType {
-  theme: Theme;
-  setTheme: (theme: Theme) => void;
-  effectiveTheme: 'light' | 'dark';
-  toggleTheme: () => void;
-}
+const ThemeContext = createContext();
+
+// The context provides these values:
+// - currentTheme: Current theme object with id, name, and colors
+// - changeTheme: Function to change theme by ID
+// - themes: Object with all available theme configurations
 ```
 
 ### ThemeProvider Implementation
 
 ```jsx
-export const ThemeProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  // Load saved theme
-  const [theme, setThemeState] = useState<Theme>(() => {
-    const saved = localStorage.getItem('theme') as Theme;
-    return saved || 'system';
-  });
+export function ThemeProvider({ children }) {
+  const [currentTheme, setCurrentTheme] = useState(() => getTheme());
 
-  // System theme detection
-  const prefersDark = useMediaQuery('(prefers-color-scheme: dark)');
-
-  // Calculate effective theme
-  const effectiveTheme = useMemo(() => {
-    if (theme === 'system') {
-      return prefersDark ? 'dark' : 'light';
-    }
-    return theme;
-  }, [theme, prefersDark]);
-
-  // Apply theme to document
   useEffect(() => {
-    const root = document.documentElement;
+    // Apply theme colors on mount
+    applyThemeColors(currentTheme);
+  }, [currentTheme]);
 
-    // Remove old theme
-    root.classList.remove('theme-light', 'theme-dark');
-
-    // Add new theme
-    root.classList.add(`theme-${effectiveTheme}`);
-
-    // Update meta theme-color
-    const metaThemeColor = document.querySelector('meta[name="theme-color"]');
-    if (metaThemeColor) {
-      metaThemeColor.content = effectiveTheme === 'dark' ? '#1a1a1a' : '#ffffff';
+  const changeTheme = (themeId) => {
+    const theme = themes[themeId];
+    if (!theme) {
+      console.error(`Theme ${themeId} not found`);
+      return;
     }
-  }, [effectiveTheme]);
 
-  // Enhanced setter
-  const setTheme = useCallback((newTheme: Theme) => {
-    setThemeState(newTheme);
-    localStorage.setItem('theme', newTheme);
+    // Update localStorage and apply colors
+    setTheme(themeId);
+    setCurrentTheme(theme);
+  };
 
-    // Track preference
-    analytics.track('theme_changed', { theme: newTheme });
-  }, []);
-
-  const toggleTheme = useCallback(() => {
-    setTheme(effectiveTheme === 'light' ? 'dark' : 'light');
-  }, [effectiveTheme, setTheme]);
-
-  const value = useMemo(() => ({
-    theme,
-    setTheme,
-    effectiveTheme,
-    toggleTheme
-  }), [theme, setTheme, effectiveTheme, toggleTheme]);
+  const value = {
+    currentTheme,
+    changeTheme,
+    themes,
+  };
 
   return (
-    <ThemeContext.Provider value={value}>
-      {children}
-    </ThemeContext.Provider>
+    <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>
   );
-};
+}
 ```
 
 ### Theme Usage
 
 ```jsx
+// Theme usage
+export const useTheme = () => {
+  const context = useContext(ThemeContext);
+  if (!context) {
+    throw new Error('useTheme must be used within a ThemeProvider');
+  }
+  return context;
+};
+
 // Theme switcher component
 const ThemeSwitcher = () => {
-  const { theme, setTheme, effectiveTheme } = useTheme();
+  const { currentTheme, changeTheme, themes } = useTheme();
 
   return (
     <div className="theme-switcher">
-      <button
-        onClick={() => setTheme('light')}
-        className={theme === 'light' ? 'active' : ''}
-        aria-label="Light theme"
+      <select
+        value={currentTheme.id}
+        onChange={(e) => changeTheme(e.target.value)}
       >
-        <SunIcon />
-      </button>
-
-      <button
-        onClick={() => setTheme('dark')}
-        className={theme === 'dark' ? 'active' : ''}
-        aria-label="Dark theme"
-      >
-        <MoonIcon />
-      </button>
-
-      <button
-        onClick={() => setTheme('system')}
-        className={theme === 'system' ? 'active' : ''}
-        aria-label="System theme"
-      >
-        <SystemIcon />
-      </button>
+        {Object.entries(themes).map(([id, theme]) => (
+          <option key={id} value={id}>
+            {theme.name}
+          </option>
+        ))}
+      </select>
     </div>
   );
 };
@@ -649,21 +536,21 @@ export const useGameSession = () => {
 
   return {
     // Combined state
-    isReady: app.isAuthenticated && game.isGameActive,
+    isReady: app.playerName && game.isInitialized,
     playerInfo: {
       name: app.playerName,
-      isHost: game.myPlayer?.isHost,
-      score: game.myPlayer?.score
+      score: game.scores[app.playerName] || 0,
+      isMyTurn: game.isMyTurn
     },
 
     // Combined actions
     leaveGame: async () => {
-      await game.leaveGame();
-      app.setCurrentRoomId(null);
+      game.actions.leaveGame();
+      app.leaveRoom();
     },
 
     // UI preferences
-    isDarkMode: theme.effectiveTheme === 'dark'
+    themeId: theme.currentTheme.id
   };
 };
 ```
@@ -700,21 +587,21 @@ Ensure context requirements:
 
 ```jsx
 // Guard component
-const RequireGame: React.FC<{ children: ReactNode }> = ({ children }) => {
-  const { isGameActive } = useGame();
-  const navigate = useNavigate();
+const RequireGame = ({ children }) => {
+  const { isInitialized } = useGame();
+  const { navigateToScene } = useApp();
 
   useEffect(() => {
-    if (!isGameActive) {
-      navigate('/lobby');
+    if (!isInitialized) {
+      navigateToScene('lobby');
     }
-  }, [isGameActive, navigate]);
+  }, [isInitialized, navigateToScene]);
 
-  if (!isGameActive) {
-    return <LoadingScreen />;
+  if (!isInitialized) {
+    return <div>Loading game...</div>;
   }
 
-  return <>{children}</>;
+  return children;
 };
 
 // Usage
@@ -870,13 +757,15 @@ Define clear boundaries:
 Provide meaningful defaults:
 
 ```jsx
-// ✅ Good: Type-safe defaults
-const GameContext = createContext<GameContextType>({
+// ✅ Good: Defaults with error handling
+const GameContext = createContext({
   gameState: null,
-  isGameActive: false,
+  isInitialized: false,
   isMyTurn: false,
-  playPieces: async () => {
-    throw new Error('GameContext not initialized');
+  actions: {
+    leaveGame: () => {
+      throw new Error('GameContext not initialized');
+    }
   },
   // ... other defaults
 });
@@ -910,16 +799,13 @@ const ContextErrorBoundary = ({ children }) => {
 
 ```jsx
 // Persist context state to localStorage
-const usePersistentState = <T,>(
-  key: string,
-  defaultValue: T
-): [T, (value: T) => void] => {
-  const [state, setState] = useState<T>(() => {
+const usePersistentState = (key, defaultValue) => {
+  const [state, setState] = useState(() => {
     const saved = localStorage.getItem(key);
     return saved ? JSON.parse(saved) : defaultValue;
   });
 
-  const setPersistentState = useCallback((value: T) => {
+  const setPersistentState = useCallback((value) => {
     setState(value);
     localStorage.setItem(key, JSON.stringify(value));
   }, [key]);
@@ -933,6 +819,8 @@ const AppProvider = ({ children }) => {
     soundEnabled: true,
     notifications: true
   });
+
+  // ... rest of provider
 };
 ```
 
@@ -940,17 +828,21 @@ const AppProvider = ({ children }) => {
 
 ```jsx
 // For complex state logic
-const gameReducer = (state: GameState, action: GameAction): GameState => {
+const gameReducer = (state, action) => {
   switch (action.type) {
     case 'PHASE_CHANGED':
       return { ...state, phase: action.payload.phase };
 
-    case 'PIECES_PLAYED':
+    case 'HAND_UPDATED':
       return {
         ...state,
-        myHand: state.myHand.filter(
-          p => !action.payload.pieceIds.includes(p.id)
-        )
+        myHand: action.payload.hand
+      };
+
+    case 'SCORE_UPDATED':
+      return {
+        ...state,
+        scores: action.payload.scores
       };
 
     default:
@@ -963,11 +855,14 @@ const GameProvider = ({ children }) => {
 
   // Actions
   const actions = useMemo(() => ({
-    updatePhase: (phase: GamePhase) => {
+    updatePhase: (phase) => {
       dispatch({ type: 'PHASE_CHANGED', payload: { phase } });
     },
-    playPieces: (pieceIds: string[]) => {
-      dispatch({ type: 'PIECES_PLAYED', payload: { pieceIds } });
+    updateHand: (hand) => {
+      dispatch({ type: 'HAND_UPDATED', payload: { hand } });
+    },
+    updateScores: (scores) => {
+      dispatch({ type: 'SCORE_UPDATED', payload: { scores } });
     }
   }), []);
 
@@ -1007,10 +902,10 @@ const DynamicGameProvider = ({ roomId, children }) => {
 
 The Context system provides:
 
-1. **Clean State Management**: Organized, type-safe state
+1. **Clean State Management**: Organized JavaScript state management
 2. **Performance**: Optimized with proper patterns
 3. **Developer Experience**: Easy to use and test
 4. **Flexibility**: Composable and extensible
 5. **Maintainability**: Clear separation of concerns
 
-This architecture scales from simple theme preferences to complex game state while maintaining clarity and performance.
+This JavaScript-based architecture scales from simple theme preferences to complex game state while maintaining clarity and performance.

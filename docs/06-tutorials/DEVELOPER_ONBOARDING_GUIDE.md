@@ -29,10 +29,10 @@ This guide will help you understand the project architecture, set up your develo
 
 ### Game Flow Summary
 ```
-WAITING → PREPARATION → DECLARATION → TURN ↔ TURN_RESULTS → SCORING → GAME_OVER
+WAITING → PREPARATION → ROUND_START → DECLARATION → TURN ↔ TURN_RESULTS → SCORING → GAME_OVER
 ```
 
-Players progress through 7 distinct phases, from room setup to final scoring, with automatic state management and real-time updates.
+Players progress through 8 distinct phases, from room setup to final scoring, with automatic state management and real-time updates.
 
 ---
 
@@ -56,7 +56,7 @@ Players progress through 7 distinct phases, from room setup to final scoring, wi
 - **React 19.1.0** - Modern UI framework
 - **ESBuild** - Fast bundling and hot reload
 - **CSS Modules** - Scoped styling
-- **TypeScript** - Type safety for services
+- **JavaScript** - Modern ES6+ with JSDoc comments
 
 #### Backend Stack
 - **FastAPI** - High-performance Python web framework
@@ -80,7 +80,7 @@ The backend uses an **Enterprise Architecture** pattern with:
 
 ### Prerequisites
 
-- **Python 3.9+**
+- **Python 3.10+**
 - **Node.js 16+**
 - **Docker** (optional, for containerized development)
 

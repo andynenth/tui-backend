@@ -28,10 +28,11 @@ This document defines the complete message contracts and formats for the Liap Tu
 ## Base Message Structure
 
 ### Client → Server Format
-```typescript
-interface ClientMessage {
+```javascript
+// Client message structure
+{
     event: string;              // Required: Event name
-    data: Record<string, any>;  // Required: Event payload
+    data: object;               // Required: Event payload
 
     // Optional metadata
     sequence?: number;          // Client-side sequence number
@@ -41,136 +42,140 @@ interface ClientMessage {
 ```
 
 ### Server → Client Format
-```typescript
-interface ServerMessage {
+```javascript
+// Server message structure
+{
     event: string;              // Required: Event type
-    data: Record<string, any>;  // Required: Event data
+    data: object;               // Required: Event data
 
     // Optional fields
-    error?: ErrorInfo;          // Error information
+    error?: {                   // Error information
+        code: string;           // Error code
+        message: string;        // Human-readable message
+        type?: string;          // Error category
+        details?: any;          // Additional context
+        field?: string;         // Field that caused error
+    };
     room_id?: string;           // Room context
     sequence?: number;          // Echo of client sequence
     server_time?: number;       // Server timestamp
     correlation_id?: string;    // Request correlation
-}
-
-interface ErrorInfo {
-    code: string;               // Error code
-    message: string;            // Human-readable message
-    type?: string;              // Error category
-    details?: any;              // Additional context
-    field?: string;             // Field that caused error
 }
 ```
 
 ## Type Definitions
 
 ### Core Types
-```typescript
-// Identifiers
-type PlayerId = string;         // Unique player ID
-type RoomId = string;          // Room identifier (6-8 chars)
-type PieceId = string;         // Piece identifier
+```javascript
+// Type definitions (JavaScript with JSDoc comments)
+/**
+ * @typedef {string} PlayerId - Unique player ID
+ * @typedef {string} RoomId - Room identifier (6-8 chars)
+ * @typedef {string} PieceId - Piece identifier
+ */
 
-// Enums
-enum PieceRank {
-    GENERAL = "GENERAL",
-    ADVISOR = "ADVISOR",
-    ELEPHANT = "ELEPHANT",
-    CHARIOT = "CHARIOT",
-    HORSE = "HORSE",
-    CANNON = "CANNON",
-    SOLDIER = "SOLDIER"
-}
+// Constants for enumerated values
+const PieceRank = {
+    GENERAL: "GENERAL",
+    ADVISOR: "ADVISOR",
+    ELEPHANT: "ELEPHANT",
+    CHARIOT: "CHARIOT",
+    HORSE: "HORSE",
+    CANNON: "CANNON",
+    SOLDIER: "SOLDIER"
+};
 
-enum PieceColor {
-    RED = "RED",
-    BLACK = "BLACK"
-}
+const PieceColor = {
+    RED: "RED",
+    BLACK: "BLACK"
+};
 
-enum GamePhase {
-    WAITING = "waiting",
-    PREPARATION = "preparation",
-    DECLARATION = "declaration",
-    TURN = "turn",
-    TURN_RESULTS = "turn_results",
-    SCORING = "scoring",
-    GAME_OVER = "game_over"
-}
+const GamePhase = {
+    WAITING: "waiting",
+    PREPARATION: "preparation",
+    ROUND_START: "round_start",  // New phase
+    DECLARATION: "declaration",
+    TURN: "turn",
+    TURN_RESULTS: "turn_results",
+    SCORING: "scoring",
+    GAME_OVER: "game_over"
+};
 
-enum PlayType {
-    SINGLE = "SINGLE",
-    PAIR = "PAIR",
-    TRIPLE = "TRIPLE",
-    STRAIGHT = "STRAIGHT",
-    DOUBLE_STRAIGHT = "DOUBLE_STRAIGHT",
-    MIXED_COLOR = "MIXED_COLOR",
-    PASS = "PASS"
-}
+const PlayType = {
+    SINGLE: "SINGLE",
+    PAIR: "PAIR",
+    TRIPLE: "TRIPLE",
+    STRAIGHT: "STRAIGHT",
+    DOUBLE_STRAIGHT: "DOUBLE_STRAIGHT",
+    MIXED_COLOR: "MIXED_COLOR",
+    PASS: "PASS"
+};
 ```
 
 ### Data Models
-```typescript
-interface Player {
-    name: string;               // Display name
-    slot: number;               // Position (1-4)
-    is_bot: boolean;            // AI player
-    is_host: boolean;           // Room host
-    is_connected: boolean;      // Connection status
+```javascript
+/**
+ * @typedef {Object} Player
+ * @property {string} name - Display name
+ * @property {number} slot - Position (1-4)
+ * @property {boolean} is_bot - AI player
+ * @property {boolean} is_host - Room host
+ * @property {boolean} is_connected - Connection status
+ * @property {number} [score] - Total score
+ * @property {number} [declared] - Declared piles
+ * @property {number} [captured_piles] - Actual piles
+ * @property {number} [hand_size] - Cards in hand
+ * @property {Piece[]} [hand] - Actual hand (private)
+ */
 
-    // Game state (when in game)
-    score?: number;             // Total score
-    declared?: number;          // Declared piles
-    captured_piles?: number;    // Actual piles
-    hand_size?: number;         // Cards in hand
-    hand?: Piece[];             // Actual hand (private)
-}
+/**
+ * @typedef {Object} Piece
+ * @property {string} id - Unique identifier
+ * @property {string} kind - e.g., "GENERAL_RED"
+ * @property {string} rank - Piece type
+ * @property {string} color - RED or BLACK
+ * @property {number} point - Point value
+ */
 
-interface Piece {
-    id: string;                 // Unique identifier
-    kind: string;               // e.g., "GENERAL_RED"
-    rank: PieceRank;            // Piece type
-    color: PieceColor;          // RED or BLACK
-    point: number;              // Point value
-}
+/**
+ * @typedef {Object} Room
+ * @property {string} room_id - Unique room ID
+ * @property {string} host_name - Host player name
+ * @property {(Player|null)[]} players - 4 slots
+ * @property {boolean} started - Game started
+ * @property {RoomSettings} [settings] - Room configuration
+ * @property {string} [created_at] - Creation timestamp
+ */
 
-interface Room {
-    room_id: string;            // Unique room ID
-    host_name: string;          // Host player name
-    players: (Player | null)[];  // 4 slots
-    started: boolean;           // Game started
-    settings?: RoomSettings;    // Room configuration
-    created_at?: string;        // Creation timestamp
-}
-
-interface RoomSettings {
-    max_players: number;        // Always 4
-    is_public: boolean;         // Public visibility
-    allow_bots: boolean;        // Bot players allowed
-    time_limit?: number;        // Turn time limit (seconds)
-}
+/**
+ * @typedef {Object} RoomSettings
+ * @property {number} max_players - Always 4
+ * @property {boolean} is_public - Public visibility
+ * @property {boolean} allow_bots - Bot players allowed
+ * @property {number} [time_limit] - Turn time limit (seconds)
+ */
 ```
 
 ## Event Categories
 
 ### Event Classification
-```typescript
-enum EventCategory {
+```javascript
+const EventCategory = {
     // Connection lifecycle
-    CONNECTION = "connection",   // ready, ping, sync
+    CONNECTION: "connection",   // ready, ping, sync
 
     // Room management
-    ROOM = "room",              // create, join, leave
+    ROOM: "room",              // create, join, leave
 
     // Game flow
-    GAME = "game",              // start, phase changes
+    GAME: "game",              // start, phase changes
 
     // Player actions
-    ACTION = "action",          // declare, play, redeal
+    ACTION: "action",          // declare, play, redeal
 
     // System events
-    SYSTEM = "system",          // errors, broadcasts
-}
+    SYSTEM: "system",          // errors, broadcasts
+};
 
 // Event naming convention: category_action
 // Examples: room_create, game_start, action_play
@@ -181,227 +186,237 @@ enum EventCategory {
 ### Connection Events
 
 #### client_ready
-```typescript
-interface ClientReady {
-    event: "client_ready";
-    data: {};
+```javascript
+// Client ready message
+{
+    event: "client_ready",
+    data: {}
 }
-```
 
 #### ping
-```typescript
-interface Ping {
-    event: "ping";
+```javascript
+// Ping message for keepalive
+{
+    event: "ping",
     data: {
-        timestamp: number;      // Client time in ms
-        sequence?: number;      // Optional sequence
-    };
+        timestamp: number,      // Client time in ms
+        sequence?: number       // Optional sequence
+    }
 }
-```
 
 ### Room Management
 
 #### create_room
-```typescript
-interface CreateRoom {
-    event: "create_room";
+```javascript
+// Create room request
+{
+    event: "create_room",
     data: {
-        player_name: string;    // 1-50 characters
+        player_name: string,    // 1-50 characters
         settings?: {
-            is_public?: boolean; // Default: true
-            allow_bots?: boolean; // Default: true
-        };
-    };
+            is_public?: boolean,   // Default: true
+            allow_bots?: boolean   // Default: true
+        }
+    }
 }
 
 // Validation
 const playerNameRegex = /^[a-zA-Z0-9 ]+$/;
 const maxNameLength = 50;
-```
 
 #### join_room
-```typescript
-interface JoinRoom {
-    event: "join_room";
+```javascript
+// Join room request
+{
+    event: "join_room",
     data: {
-        room_id: string;        // Target room
-        player_name: string;    // Player name
-        rejoin_token?: string;  // For reconnection
-    };
+        room_id: string,        // Target room
+        player_name: string,    // Player name
+        rejoin_token?: string   // For reconnection
+    }
 }
-```
 
 ### Game Actions
 
 #### declare
-```typescript
-interface Declare {
-    event: "declare";
+```javascript
+// Declaration request
+{
+    event: "declare",
     data: {
-        player_name: string;    // Must match connected player
-        value: number;          // 0-8, total ≠ 8
-    };
+        player_name: string,    // Must match connected player
+        value: number           // 0-8, total ≠ 8
+    }
 }
 
 // Validation
-const isValidDeclaration = (value: number, totalSoFar: number, isLastPlayer: boolean) => {
+const isValidDeclaration = (value, totalSoFar, isLastPlayer) => {
     if (value < 0 || value > 8) return false;
     if (isLastPlayer && totalSoFar + value === 8) return false;
     return true;
 };
-```
 
 #### play / play_pieces
-```typescript
-interface Play {
-    event: "play" | "play_pieces";
+```javascript
+// Play pieces request
+{
+    event: "play" | "play_pieces",
     data: {
-        player_name: string;    // Must match connected player
-        indices: number[];      // Hand indices (0-based)
+        player_name: string,    // Must match connected player
+        indices: number[],      // Hand indices (0-based)
         // OR
-        piece_indices?: number[]; // Alternative field name
-    };
+        piece_indices?: number[] // Alternative field name
+    }
 }
 
 // Validation
-const isValidPlay = (indices: number[], handSize: number, requiredCount: number) => {
+const isValidPlay = (indices, handSize, requiredCount) => {
     if (indices.length < 1 || indices.length > 6) return false;
     if (indices.some(i => i < 0 || i >= handSize)) return false;
     if (requiredCount && indices.length !== requiredCount) return false;
     return true;
 };
-```
 
 ## Server Messages
 
 ### Room Events
 
 #### room_created
-```typescript
-interface RoomCreated {
-    event: "room_created";
+```javascript
+// Room created response
+{
+    event: "room_created",
     data: {
-        room_id: string;        // New room ID
-        host_name: string;      // Creator name
-        success: boolean;       // Always true
-        join_token?: string;    // For direct join
-    };
+        room_id: string,        // New room ID
+        host_name: string,      // Creator name
+        success: boolean,       // Always true
+        join_token?: string     // For direct join
+    }
 }
-```
 
 #### room_update
-```typescript
-interface RoomUpdate {
-    event: "room_update";
+```javascript
+// Room state update
+{
+    event: "room_update",
     data: {
-        room_id: string;
-        host_name: string;
-        started: boolean;
+        room_id: string,
+        host_name: string,
+        started: boolean,
         players: Array<{
-            slot: number;       // 1-4
-            name: string;
-            is_bot: boolean;
-            is_host: boolean;
-            is_connected: boolean;
-        } | null>;              // null for empty slots
+            slot: number,       // 1-4
+            name: string,
+            is_bot: boolean,
+            is_host: boolean,
+            is_connected: boolean
+        } | null>,              // null for empty slots
 
         // Optional fields
-        settings?: RoomSettings;
-        spectators?: number;    // Count of spectators
-    };
+        settings?: RoomSettings,
+        spectators?: number     // Count of spectators
+    }
 }
-```
 
 ### Game State Events
 
 #### phase_change
-```typescript
-interface PhaseChange {
-    event: "phase_change";
+```javascript
+// Phase change notification
+{
+    event: "phase_change",
     data: {
         // Core fields
-        phase: GamePhase;       // Current phase
-        round: number;          // Round number (1+)
-        sequence: number;       // Event sequence
-        timestamp: number;      // Server timestamp
-        reason: string;         // Human-readable reason
+        phase: GamePhase,       // Current phase
+        round: number,          // Round number (1+)
+        sequence: number,       // Event sequence
+        timestamp: number,      // Server timestamp
+        reason: string,         // Human-readable reason
 
         // Game context
-        allowed_actions: string[]; // Available actions
-        timeout?: number;       // Phase timeout (seconds)
+        allowed_actions: string[], // Available actions
+        timeout?: number,       // Phase timeout (seconds)
 
         // Phase-specific data
-        phase_data: PhaseData;  // Varies by phase
+        phase_data: PhaseData,  // Varies by phase
 
         // Player states
-        players: Record<string, PlayerState>;
-    };
+        players: Record<string, PlayerState>
+    }
 }
 
 // Phase-specific data types
-type PhaseData =
-    | PreparationData
-    | DeclarationData
-    | TurnData
-    | TurnResultsData
-    | ScoringData
-    | GameOverData;
+// PhaseData can be one of:
+// - PreparationData
+// - RoundStartData (new)
+// - DeclarationData
+// - TurnData
+// - TurnResultsData
+// - ScoringData
+// - GameOverData
 
-interface DeclarationData {
-    current_declarer: string;   // Active player
-    declaration_order: string[]; // Turn order
-    declarations: Record<string, number | null>;
-    total_declared: number;     // Sum so far
-    redeal_multiplier: number;  // Score multiplier
-}
+/**
+ * @typedef {Object} RoundStartData
+ * @property {number} round_number - Current round
+ * @property {string} round_starter - Player who starts
+ * @property {string} starter_reason - Why they start
+ */
 
-interface TurnData {
-    turn_number: number;        // Current turn
-    current_player: string;     // Active player
-    required_piece_count: number | null;
-    current_plays: Record<string, Play>;
-    passes: string[];           // Who passed
-    pile_count: number;         // Pieces in pile
-}
-```
+/**
+ * @typedef {Object} DeclarationData
+ * @property {string} current_declarer - Active player
+ * @property {string[]} declaration_order - Turn order
+ * @property {Object.<string, number|null>} declarations
+ * @property {number} total_declared - Sum so far
+ * @property {number} redeal_multiplier - Score multiplier
+ */
+
+/**
+ * @typedef {Object} TurnData
+ * @property {number} turn_number - Current turn
+ * @property {string} current_player - Active player
+ * @property {number|null} required_piece_count
+ * @property {Object.<string, Play>} current_plays
+ * @property {string[]} passes - Who passed
+ * @property {number} pile_count - Pieces in pile
+ */
 
 ### Error Messages
 
 #### error
-```typescript
-interface ErrorMessage {
-    event: "error";
+```javascript
+// Error message
+{
+    event: "error",
     data: {
-        message: string;        // User-friendly message
-        type: ErrorType;        // Category
-        code: string;           // Error code
+        message: string,        // User-friendly message
+        type: ErrorType,        // Category
+        code: string,           // Error code
 
         // Optional context
-        details?: any;          // Additional info
-        field?: string;         // Related field
-        recovery?: string;      // Suggested action
-    };
+        details?: any,          // Additional info
+        field?: string,         // Related field
+        recovery?: string       // Suggested action
+    },
 
     // Correlation
-    sequence?: number;          // Echo request sequence
-    correlation_id?: string;    // Request correlation
+    sequence?: number,          // Echo request sequence
+    correlation_id?: string     // Request correlation
 }
 
-enum ErrorType {
-    VALIDATION = "validation_error",
-    PERMISSION = "permission_error",
-    GAME_STATE = "game_error",
-    CONNECTION = "connection_error",
-    SYSTEM = "system_error"
-}
-```
+const ErrorType = {
+    VALIDATION: "validation_error",
+    PERMISSION: "permission_error",
+    GAME_STATE: "game_error",
+    CONNECTION: "connection_error",
+    SYSTEM: "system_error"
+};
 
 ## Validation Rules
 
 ### Input Sanitization
-```typescript
+```javascript
 // Text fields
-const sanitizeText = (text: string): string => {
+const sanitizeText = (text) => {
     return text
         .replace(/[<>&"']/g, '') // Remove HTML chars
         .trim()
@@ -409,57 +424,56 @@ const sanitizeText = (text: string): string => {
 };
 
 // Arrays
-const validateArray = <T>(arr: T[], maxLength: number = 100): boolean => {
+const validateArray = (arr, maxLength = 100) => {
     return Array.isArray(arr) && arr.length <= maxLength;
 };
 ```
 
 ### Field Validation
-```typescript
-interface ValidationRules {
+```javascript
+const ValidationRules = {
     player_name: {
-        type: 'string';
-        pattern: RegExp;        // /^[a-zA-Z0-9 ]+$/
-        minLength: 1;
-        maxLength: 50;
-    };
+        type: 'string',
+        pattern: /^[a-zA-Z0-9 ]+$/,
+        minLength: 1,
+        maxLength: 50
+    },
 
     room_id: {
-        type: 'string';
-        pattern: RegExp;        // /^[A-Z0-9]{6,8}$/
-        minLength: 6;
-        maxLength: 8;
-    };
+        type: 'string',
+        pattern: /^[A-Z0-9]{6,8}$/,
+        minLength: 6,
+        maxLength: 8
+    },
 
     declaration: {
-        type: 'number';
-        min: 0;
-        max: 8;
-        integer: true;
-    };
+        type: 'number',
+        min: 0,
+        max: 8,
+        integer: true
+    },
 
     piece_indices: {
-        type: 'array';
-        minItems: 0;
-        maxItems: 6;
+        type: 'array',
+        minItems: 0,
+        maxItems: 6,
         items: {
-            type: 'number';
-            min: 0;
-            max: 31;
-        };
-    };
-}
-```
+            type: 'number',
+            min: 0,
+            max: 31
+        }
+    }
+};
 
 ### Business Rules
-```typescript
+```javascript
 // Declaration validation
 const validateDeclaration = (
-    value: number,
-    totalSoFar: number,
-    isLastPlayer: boolean,
-    previousZeros: number
-): boolean => {
+    value,
+    totalSoFar,
+    isLastPlayer,
+    previousZeros
+) => {
     // Basic range
     if (value < 0 || value > 8) return false;
 
@@ -474,21 +488,20 @@ const validateDeclaration = (
 
 // Play validation
 const validatePlay = (
-    pieces: Piece[],
-    requiredCount: number | null
-): boolean => {
+    pieces,
+    requiredCount
+) => {
     // Check count
     if (requiredCount && pieces.length !== requiredCount) return false;
 
     // Check valid combination
     return isValidCombination(pieces);
 };
-```
 
 ## Message Flow Examples
 
 ### Complete Game Creation Flow
-```typescript
+```javascript
 // 1. Alice connects to lobby
 → ws://localhost:8000/ws/lobby
 ← (connection established)
@@ -535,10 +548,13 @@ const validatePlay = (
     event: "phase_change",
     data: { phase: "preparation", ... }
 }
-```
+← {
+    event: "phase_change",
+    data: { phase: "round_start", ... }
+}
 
 ### Turn Sequence Flow
-```typescript
+```javascript
 // 1. Turn starts
 ← {
     event: "phase_change",
@@ -590,10 +606,9 @@ const validatePlay = (
         }
     }
 }
-```
 
 ### Error Handling Flow
-```typescript
+```javascript
 // 1. Invalid action
 → {
     event: "play",
@@ -631,12 +646,11 @@ const validatePlay = (
 
 // 4. Success
 ← { event: "phase_change", data: { ... } }
-```
 
 ## Contract Testing
 
 ### Schema Validation
-```typescript
+```javascript
 import Ajv from 'ajv';
 
 const ajv = new Ajv();
@@ -673,7 +687,7 @@ if (!valid) {
 ```
 
 ### Contract Tests
-```typescript
+```javascript
 describe('Message Contracts', () => {
     it('should validate create_room message', () => {
         const message = {
@@ -720,7 +734,7 @@ async def test_room_creation_contract():
 ## Version Management
 
 ### API Versioning
-```typescript
+```javascript
 // Client includes version
 {
     event: "client_ready",
@@ -737,7 +751,6 @@ async def test_room_creation_contract():
         features: ["websocket", "ai_players"]
     }
 }
-```
 
 ### Breaking Changes Policy
 1. **Minor versions** (2.0 → 2.1): Backward compatible
@@ -746,9 +759,9 @@ async def test_room_creation_contract():
 4. **Version negotiation**: Client/server agree on version
 
 ### Backward Compatibility
-```typescript
+```javascript
 // Support multiple message formats
-const handlePlay = (data: any) => {
+const handlePlay = (data) => {
     // New format
     const indices = data.indices || data.piece_indices;
 
@@ -759,7 +772,6 @@ const handlePlay = (data: any) => {
 
     return processPlay(indices);
 };
-```
 
 ## Best Practices
 

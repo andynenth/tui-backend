@@ -76,49 +76,53 @@ graph TB
 ```
 frontend/src/
 ├── pages/
-│   └── GamePage.tsx        # Main game container
-├── phases/
-│   ├── PreparationPhase.tsx
-│   ├── DeclarationPhase.tsx
-│   ├── TurnPhase.tsx
-│   └── ScoringPhase.tsx
+│   └── GamePage.jsx        # Main game container
 ├── components/
 │   ├── game/
-│   │   ├── PlayerHand.tsx
-│   │   ├── GameBoard.tsx
-│   │   ├── PieceCard.tsx
-│   │   └── TurnIndicator.tsx
+│   │   ├── GameContainer.jsx    # Main game state container
+│   │   ├── GameLayout.jsx       # Phase-based layout
+│   │   ├── PreparationUI.jsx
+│   │   ├── DeclarationUI.jsx
+│   │   ├── TurnUI.jsx
+│   │   ├── TurnResultsUI.jsx
+│   │   ├── ScoringUI.jsx
+│   │   ├── GameOverUI.jsx
+│   │   ├── WaitingUI.jsx
+│   │   └── RoundStartUI.jsx
+│   │   └── shared/
+│   │       ├── PlayerAvatar.jsx
+│   │       ├── GamePiece.jsx
+│   │       ├── PieceTray.jsx
+│   │       └── FooterTimer.jsx
 │   └── ui/
-│       ├── AnimatedCard.tsx
-│       └── GameNotification.tsx
+│       ├── Button.jsx
+│       ├── Modal.jsx
+│       └── ToastNotification.jsx
 └── styles/
-    └── game.css
+    └── components/
+        └── game/
+            ├── declaration.css
+            ├── preparation.css
+            ├── turn.css
+            └── scoring.css
 ```
 
 ## Phase Components
 
 ### Preparation Phase UI
 
-```typescript
-// frontend/src/phases/PreparationPhase.tsx
+```jsx
+// frontend/src/components/game/PreparationUI.jsx
 import React, { useState, useEffect } from 'react';
-import { useGame } from '../hooks/useGame';
-import { PlayerHand } from '../components/game/PlayerHand';
-import { WeakHandDialog } from '../components/game/WeakHandDialog';
-import { CountdownTimer } from '../components/ui/CountdownTimer';
+import { useGameState } from '../../hooks/useGameState';
+import { useGameActions } from '../../hooks/useGameActions';
+import { PieceTray } from './shared/PieceTray';
+import { Modal } from '../Modal';
 
-interface PreparationPhaseProps {
-    gameState: GameState;
-    onAction: (action: GameAction) => void;
-}
-
-export const PreparationPhase: React.FC<PreparationPhaseProps> = ({
-    gameState,
-    onAction
-}) => {
-    const { currentPlayer, pieces } = useGame();
-    const [showWeakHandDialog, setShowWeakHandDialog] = useState(false);
-    const [dealAnimation, setDealAnimation] = useState(true);
+export const PreparationUI = ({ roomId, playerName, gameState }) => {
+    const gameActions = useGameActions();
+    const [showWeakHandModal, setShowWeakHandModal] = useState(false);
+    const [weakHandDecision, setWeakHandDecision] = useState(null);
 
     useEffect(() => {
         // Check for weak hand
@@ -216,19 +220,16 @@ const DealAnimation: React.FC<{
 
 ### Declaration Phase UI
 
-```typescript
-// frontend/src/phases/DeclarationPhase.tsx
+```jsx
+// frontend/src/components/game/DeclarationUI.jsx
 import React, { useState } from 'react';
-import { useGame } from '../hooks/useGame';
-import { DeclarationSelector } from '../components/game/DeclarationSelector';
-import { PlayerDeclarations } from '../components/game/PlayerDeclarations';
+import { useGameActions } from '../../hooks/useGameActions';
+import { DeclarationContent } from './content/DeclarationContent';
+import { FooterTimer } from './shared/FooterTimer';
 
-export const DeclarationPhase: React.FC<DeclarationPhaseProps> = ({
-    gameState,
-    onAction
-}) => {
-    const { currentPlayer } = useGame();
-    const [selectedValue, setSelectedValue] = useState<number | null>(null);
+export const DeclarationUI = ({ roomId, playerName, gameState }) => {
+    const gameActions = useGameActions();
+    const [selectedValue, setSelectedValue] = useState(null);
     const [hasSubmitted, setHasSubmitted] = useState(false);
 
     const handleDeclare = () => {
@@ -336,21 +337,17 @@ const DeclarationHints: React.FC<{
 
 ### Turn Phase UI
 
-```typescript
-// frontend/src/phases/TurnPhase.tsx
+```jsx
+// frontend/src/components/game/TurnUI.jsx
 import React, { useState, useEffect } from 'react';
-import { useGame } from '../hooks/useGame';
-import { PlayerHand } from '../components/game/PlayerHand';
-import { GameBoard } from '../components/game/GameBoard';
-import { TurnIndicator } from '../components/game/TurnIndicator';
-import { PlayValidator } from '../utils/playValidator';
+import { useGameActions } from '../../hooks/useGameActions';
+import { TurnContent } from './content/TurnContent';
+import { FooterTimer } from './shared/FooterTimer';
+import { playTypeMatching } from '../../utils/playTypeMatching';
 
-export const TurnPhase: React.FC<TurnPhaseProps> = ({
-    gameState,
-    onAction
-}) => {
-    const { currentPlayer, pieces } = useGame();
-    const [selectedPieces, setSelectedPieces] = useState<string[]>([]);
+export const TurnUI = ({ roomId, playerName, gameState }) => {
+    const gameActions = useGameActions();
+    const [selectedPieces, setSelectedPieces] = useState([]);
     const [isMyTurn, setIsMyTurn] = useState(false);
 
     const phaseData = gameState.phase_data;
@@ -517,18 +514,13 @@ const GameBoard: React.FC<{
 
 ### Scoring Phase UI
 
-```typescript
-// frontend/src/phases/ScoringPhase.tsx
+```jsx
+// frontend/src/components/game/ScoringUI.jsx
 import React, { useState, useEffect } from 'react';
-import { useGame } from '../hooks/useGame';
-import { ScoreBoard } from '../components/game/ScoreBoard';
-import { RoundSummary } from '../components/game/RoundSummary';
-import { GameOverDialog } from '../components/game/GameOverDialog';
+import { ScoringContent } from './content/ScoringContent';
+import { FooterTimer } from './shared/FooterTimer';
 
-export const ScoringPhase: React.FC<ScoringPhaseProps> = ({
-    gameState,
-    onAction
-}) => {
+export const ScoringUI = ({ roomId, playerName, gameState }) => {
     const [showAnimation, setShowAnimation] = useState(true);
     const scores = gameState.phase_data.scores || {};
     const gameOver = gameState.phase_data.game_over;
@@ -649,17 +641,18 @@ const ScoreAnimation: React.FC<{
 
 ### Core Animation Framework
 
-```typescript
-// frontend/src/systems/AnimationSystem.ts
+```javascript
+// frontend/src/utils/animationSystem.js
 export class AnimationSystem {
-    private animations: Map<string, Animation> = new Map();
-    private rafId: number | null = null;
+    constructor() {
+        this.animations = new Map();
+        this.rafId = null;
 
     constructor() {
         this.startAnimationLoop();
     }
 
-    private startAnimationLoop() {
+    startAnimationLoop() {
         const animate = (timestamp: number) => {
             this.updateAnimations(timestamp);
             this.rafId = requestAnimationFrame(animate);
@@ -667,15 +660,15 @@ export class AnimationSystem {
         this.rafId = requestAnimationFrame(animate);
     }
 
-    public addAnimation(id: string, animation: Animation) {
+    addAnimation(id, animation) {
         this.animations.set(id, animation);
     }
 
-    public removeAnimation(id: string) {
+    removeAnimation(id) {
         this.animations.delete(id);
     }
 
-    private updateAnimations(timestamp: number) {
+    updateAnimations(timestamp) {
         for (const [id, animation] of this.animations) {
             if (animation.update(timestamp)) {
                 // Animation complete
@@ -687,29 +680,20 @@ export class AnimationSystem {
 }
 
 // Animation types
-interface Animation {
-    startTime: number;
-    duration: number;
-    easing: EasingFunction;
-    update: (timestamp: number) => boolean; // Returns true when complete
-    onComplete?: () => void;
-}
+// Animation: { startTime, duration, easing, update, onComplete }
 
 // Card animation
-export class CardAnimation implements Animation {
-    startTime: number;
-    duration: number = 500;
-    easing = Easing.easeOutCubic;
-
-    constructor(
-        private element: HTMLElement,
-        private from: Position,
-        private to: Position
-    ) {
+export class CardAnimation {
+    constructor(element, from, to) {
+        this.element = element;
+        this.from = from;
+        this.to = to;
         this.startTime = performance.now();
+        this.duration = 500;
+        this.easing = Easing.easeOutCubic;
     }
 
-    update(timestamp: number): boolean {
+    update(timestamp) {
         const elapsed = timestamp - this.startTime;
         const progress = Math.min(elapsed / this.duration, 1);
         const easedProgress = this.easing(progress);
@@ -726,11 +710,11 @@ export class CardAnimation implements Animation {
 
 ### React Animation Hooks
 
-```typescript
-// frontend/src/hooks/useAnimation.ts
-export const useAnimation = <T extends HTMLElement>() => {
-    const elementRef = useRef<T>(null);
-    const animationRef = useRef<AnimationSystem | null>(null);
+```javascript
+// frontend/src/hooks/useAnimation.js
+export const useAnimation = () => {
+    const elementRef = useRef(null);
+    const animationRef = useRef(null);
 
     useEffect(() => {
         animationRef.current = new AnimationSystem();
@@ -789,9 +773,9 @@ export const useAnimation = <T extends HTMLElement>() => {
 
 ### Touch and Click Handling
 
-```typescript
-// frontend/src/components/game/PieceCard.tsx
-export const PieceCard: React.FC<PieceCardProps> = ({
+```jsx
+// frontend/src/components/game/shared/GamePiece.jsx
+export const GamePiece = ({
     piece,
     selected,
     selectable,
@@ -799,9 +783,9 @@ export const PieceCard: React.FC<PieceCardProps> = ({
     highlight
 }) => {
     const [isPressed, setIsPressed] = useState(false);
-    const { elementRef, animateScale } = useAnimation<HTMLDivElement>();
+    const { elementRef, animateScale } = useAnimation();
 
-    const handlePointerDown = (e: React.PointerEvent) => {
+    const handlePointerDown = (e) => {
         if (!selectable) return;
 
         setIsPressed(true);
@@ -853,17 +837,15 @@ export const PieceCard: React.FC<PieceCardProps> = ({
 
 ### Drag and Drop Support
 
-```typescript
-// frontend/src/hooks/useDragDrop.ts
-export const useDragDrop = (
-    onDrop: (draggedId: string, targetId: string) => void
-) => {
-    const [draggedItem, setDraggedItem] = useState<string | null>(null);
+```javascript
+// frontend/src/hooks/useDragDrop.js
+export const useDragDrop = (onDrop) => {
+    const [draggedItem, setDraggedItem] = useState(null);
     const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
 
     const handleDragStart = useCallback((
-        e: React.DragEvent,
-        itemId: string
+        e,
+        itemId
     ) => {
         setDraggedItem(itemId);
 
@@ -880,7 +862,7 @@ export const useDragDrop = (
             e.dataTransfer.setData('text/plain', itemId);
 
             // Create custom drag image
-            const dragImage = e.currentTarget.cloneNode(true) as HTMLElement;
+            const dragImage = e.currentTarget.cloneNode(true);
             dragImage.style.transform = 'rotate(-5deg)';
             document.body.appendChild(dragImage);
             e.dataTransfer.setDragImage(dragImage, dragOffset.x, dragOffset.y);
@@ -893,7 +875,7 @@ export const useDragDrop = (
         setDraggedItem(null);
     }, []);
 
-    const handleDragOver = useCallback((e: React.DragEvent) => {
+    const handleDragOver = useCallback((e) => {
         e.preventDefault();
         if (e.dataTransfer) {
             e.dataTransfer.dropEffect = 'move';
@@ -901,8 +883,8 @@ export const useDragDrop = (
     }, []);
 
     const handleDrop = useCallback((
-        e: React.DragEvent,
-        targetId: string
+        e,
+        targetId
     ) => {
         e.preventDefault();
 
@@ -928,14 +910,15 @@ export const useDragDrop = (
 
 ### Real-Time Updates
 
-```typescript
-// frontend/src/hooks/useGameSync.ts
+```javascript
+// frontend/src/hooks/useGameSync.js
 export const useGameSync = () => {
-    const { gameState, updateGameState } = useGame();
+    const gameState = useGameState();
+    const { updateGameState } = useGameActions();
     const networkService = useRef(NetworkService.getInstance());
 
     useEffect(() => {
-        const handlePhaseChange = (event: CustomEvent) => {
+        const handlePhaseChange = (event) => {
             const { phase, phase_data, game_state } = event.detail.data;
 
             updateGameState({
@@ -948,12 +931,12 @@ export const useGameSync = () => {
             triggerPhaseTransition(phase);
         };
 
-        const handlePlayerAction = (event: CustomEvent) => {
+        const handlePlayerAction = (event) => {
             const { player, action, details } = event.detail.data;
 
             // Update local state optimistically
-            updateGameState(state => ({
-                ...state,
+            updateGameState(prevState => ({
+                ...prevState,
                 lastAction: { player, action, details }
             }));
 
@@ -961,10 +944,10 @@ export const useGameSync = () => {
             showActionNotification(player, action);
         };
 
-        const handleHandUpdate = (event: CustomEvent) => {
+        const handleHandUpdate = (event) => {
             const { pieces } = event.detail.data;
-            updateGameState(state => ({
-                ...state,
+            updateGameState(prevState => ({
+                ...prevState,
                 playerHand: pieces
             }));
         };
@@ -988,17 +971,19 @@ export const useGameSync = () => {
 
 ### Optimistic Updates
 
-```typescript
-// frontend/src/utils/optimisticUpdates.ts
+```javascript
+// frontend/src/utils/optimisticUpdates.js
 export class OptimisticUpdateManager {
-    private pendingUpdates: Map<string, PendingUpdate> = new Map();
+    constructor() {
+        this.pendingUpdates = new Map();
+    }
 
-    applyOptimisticUpdate<T>(
-        id: string,
-        currentState: T,
-        update: Partial<T>,
+    applyOptimisticUpdate(
+        id,
+        currentState,
+        update,
         rollbackTimeout = 5000
-    ): T {
+    ) {
         // Store original state for rollback
         this.pendingUpdates.set(id, {
             originalState: currentState,
@@ -1012,7 +997,7 @@ export class OptimisticUpdateManager {
         return { ...currentState, ...update };
     }
 
-    confirmUpdate(id: string) {
+    confirmUpdate(id) {
         const pending = this.pendingUpdates.get(id);
         if (pending) {
             clearTimeout(pending.timeout);
@@ -1020,7 +1005,7 @@ export class OptimisticUpdateManager {
         }
     }
 
-    rollback(id: string): any {
+    rollback(id) {
         const pending = this.pendingUpdates.get(id);
         if (pending) {
             clearTimeout(pending.timeout);
@@ -1032,16 +1017,16 @@ export class OptimisticUpdateManager {
 }
 
 // Usage in component
-const handlePlay = async (pieces: string[]) => {
+const handlePlay = async (pieces) => {
     const updateId = `play-${Date.now()}`;
 
     // Optimistic update
-    setGameState(state =>
+    setGameState(prevState =>
         optimisticManager.applyOptimisticUpdate(
             updateId,
-            state,
+            prevState,
             {
-                playerHand: state.playerHand.filter(p =>
+                playerHand: prevState.playerHand.filter(p =>
                     !pieces.includes(p.id)
                 ),
                 pendingPlay: true
@@ -1067,25 +1052,25 @@ const handlePlay = async (pieces: string[]) => {
 
 ### Event Bus System
 
-```typescript
-// frontend/src/systems/EventBus.ts
+```javascript
+// frontend/src/systems/EventBus.js
 export class GameEventBus extends EventTarget {
-    private static instance: GameEventBus;
+    static instance;
 
-    static getInstance(): GameEventBus {
+    static getInstance() {
         if (!GameEventBus.instance) {
             GameEventBus.instance = new GameEventBus();
         }
         return GameEventBus.instance;
     }
 
-    emit<T>(event: string, data: T) {
+    emit(event, data) {
         this.dispatchEvent(new CustomEvent(event, { detail: data }));
     }
 
-    on<T>(event: string, handler: (data: T) => void) {
-        const listener = (e: Event) => {
-            handler((e as CustomEvent<T>).detail);
+    on(event, handler) {
+        const listener = (e) => {
+            handler(e.detail);
         };
         this.addEventListener(event, listener);
         return () => this.removeEventListener(event, listener);
@@ -1108,35 +1093,20 @@ useEffect(() => {
 
 ### Context Bridge
 
-```typescript
-// frontend/src/contexts/GameUIContext.tsx
-interface GameUIContextValue {
-    selectedPieces: string[];
-    hoveredPiece: string | null;
-    animationSpeed: number;
-    soundEnabled: boolean;
-    vibrationEnabled: boolean;
+```jsx
+// frontend/src/contexts/GameUIContext.jsx
+export const GameUIContext = React.createContext(null);
 
-    selectPiece: (id: string) => void;
-    deselectPiece: (id: string) => void;
-    setHoveredPiece: (id: string | null) => void;
-    updateSettings: (settings: Partial<UISettings>) => void;
-}
-
-export const GameUIContext = React.createContext<GameUIContextValue | null>(null);
-
-export const GameUIProvider: React.FC<{ children: ReactNode }> = ({
-    children
-}) => {
-    const [selectedPieces, setSelectedPieces] = useState<string[]>([]);
-    const [hoveredPiece, setHoveredPiece] = useState<string | null>(null);
-    const [settings, setSettings] = useState<UISettings>({
+export const GameUIProvider = ({ children }) => {
+    const [selectedPieces, setSelectedPieces] = useState([]);
+    const [hoveredPiece, setHoveredPiece] = useState(null);
+    const [settings, setSettings] = useState({
         animationSpeed: 1,
         soundEnabled: true,
         vibrationEnabled: true
     });
 
-    const selectPiece = useCallback((id: string) => {
+    const selectPiece = useCallback((id) => {
         setSelectedPieces(prev => [...prev, id]);
 
         if (settings.soundEnabled) {
@@ -1220,8 +1190,8 @@ export const GameUIProvider: React.FC<{ children: ReactNode }> = ({
 
 ### Responsive Hook
 
-```typescript
-// frontend/src/hooks/useResponsive.ts
+```javascript
+// frontend/src/hooks/useResponsive.js
 export const useResponsive = () => {
     const [viewport, setViewport] = useState({
         width: window.innerWidth,
@@ -1260,7 +1230,7 @@ export const useResponsive = () => {
 };
 
 // Responsive game layout
-export const ResponsiveGameLayout: React.FC = () => {
+export const ResponsiveGameLayout = () => {
     const { isMobile, orientation } = useResponsive();
 
     if (isMobile && orientation === 'portrait') {
@@ -1277,18 +1247,18 @@ export const ResponsiveGameLayout: React.FC = () => {
 
 ### React Optimizations
 
-```typescript
+```javascript
 // Memoized components
-export const PlayerHand = React.memo<PlayerHandProps>(({
+export const PieceTray = React.memo(({
     pieces,
     selectedIds,
     onPieceClick,
     selectable
 }) => {
     return (
-        <div className="player-hand">
+        <div className="piece-tray">
             {pieces.map(piece => (
-                <PieceCard
+                <GamePiece
                     key={piece.id}
                     piece={piece}
                     selected={selectedIds.includes(piece.id)}
@@ -1309,10 +1279,7 @@ export const PlayerHand = React.memo<PlayerHandProps>(({
 });
 
 // Virtual scrolling for large lists
-export const VirtualPieceList: React.FC<{
-    pieces: Piece[];
-    height: number;
-}> = ({ pieces, height }) => {
+export const VirtualPieceList = ({ pieces, height }) => {
     const rowHeight = 80;
     const buffer = 5;
 
@@ -1336,7 +1303,7 @@ export const VirtualPieceList: React.FC<{
             <div style={{ height: pieces.length * rowHeight }}>
                 <div style={{ transform: `translateY(${offsetY}px)` }}>
                     {visiblePieces.map(piece => (
-                        <PieceCard key={piece.id} piece={piece} />
+                        <GamePiece key={piece.id} piece={piece} />
                     ))}
                 </div>
             </div>
@@ -1367,17 +1334,17 @@ const optimizedAnimation = {
 };
 
 // Batch DOM updates
-export const batchDOMUpdates = (updates: (() => void)[]) => {
+export const batchDOMUpdates = (updates) => {
     requestAnimationFrame(() => {
         updates.forEach(update => update());
     });
 };
 
 // Debounced updates
-export const useDebouncedState = <T>(
-    initialValue: T,
+export const useDebouncedState = (
+    initialValue,
     delay = 300
-): [T, T, (value: T) => void] => {
+) => {
     const [value, setValue] = useState(initialValue);
     const [debouncedValue, setDebouncedValue] = useState(initialValue);
 
@@ -1397,12 +1364,12 @@ export const useDebouncedState = <T>(
 
 ### Component Tests
 
-```typescript
-// tests/components/PieceCard.test.tsx
+```javascript
+// tests/components/GamePiece.test.jsx
 import { render, fireEvent } from '@testing-library/react';
-import { PieceCard } from '../src/components/game/PieceCard';
+import { GamePiece } from '../src/components/game/shared/GamePiece';
 
-describe('PieceCard', () => {
+describe('GamePiece', () => {
     const mockPiece = {
         id: 'p1',
         rank: 'GENERAL',
@@ -1411,7 +1378,7 @@ describe('PieceCard', () => {
     };
 
     it('renders piece information', () => {
-        const { getByText } = render(<PieceCard piece={mockPiece} />);
+        const { getByText } = render(<GamePiece piece={mockPiece} />);
 
         expect(getByText('帥')).toBeInTheDocument();
         expect(getByText('10')).toBeInTheDocument();
@@ -1420,7 +1387,7 @@ describe('PieceCard', () => {
     it('handles click when selectable', () => {
         const handleClick = jest.fn();
         const { getByRole } = render(
-            <PieceCard
+            <GamePiece
                 piece={mockPiece}
                 selectable={true}
                 onClick={handleClick}
@@ -1433,7 +1400,7 @@ describe('PieceCard', () => {
 
     it('shows selected state', () => {
         const { container } = render(
-            <PieceCard piece={mockPiece} selected={true} />
+            <GamePiece piece={mockPiece} selected={true} />
         );
 
         expect(container.firstChild).toHaveClass('selected');
@@ -1443,13 +1410,13 @@ describe('PieceCard', () => {
 
 ### Integration Tests
 
-```typescript
-// tests/phases/TurnPhase.test.tsx
+```javascript
+// tests/components/game/TurnUI.test.jsx
 import { render, fireEvent, waitFor } from '@testing-library/react';
-import { TurnPhase } from '../src/phases/TurnPhase';
+import { TurnUI } from '../src/components/game/TurnUI';
 import { GameProvider } from '../src/contexts/GameContext';
 
-describe('TurnPhase', () => {
+describe('TurnUI', () => {
     const mockGameState = {
         phase: 'TURN',
         phase_data: {
@@ -1468,9 +1435,10 @@ describe('TurnPhase', () => {
 
         const { getByLabelText } = render(
             <GameProvider initialState={{ currentPlayer: 'Alice' }}>
-                <TurnPhase
+                <TurnUI
+                    roomId="test-room"
+                    playerName="Alice"
                     gameState={mockGameState}
-                    onAction={handleAction}
                 />
             </GameProvider>
         );
@@ -1503,8 +1471,8 @@ describe('TurnPhase', () => {
 
 ### Visual Regression Tests
 
-```typescript
-// tests/visual/game-phases.visual.test.ts
+```javascript
+// tests/visual/game-phases.visual.test.js
 import { test, expect } from '@playwright/test';
 
 test.describe('Game Phase Visuals', () => {
