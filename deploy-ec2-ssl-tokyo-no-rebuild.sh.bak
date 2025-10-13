@@ -4,7 +4,7 @@
 set -e
 
 # Configuration for Tokyo
-EC2_HOST="43.207.88.153"  # Tokyo instance IP (SSH doesn't work through Cloudflare)
+EC2_HOST="54.250.35.226"  # Tokyo instance IP (SSH doesn't work through Cloudflare)
 EC2_USER="ubuntu"
 KEY_PATH="~/.ssh/liap-tui-tokyo-key.pem"  # Tokyo key
 

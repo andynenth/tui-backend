@@ -1,0 +1,42 @@
+Oracle Cloud Instance Details - Tokyo
+====================================
+
+CREATED: 2025-10-02
+
+Instance Information:
+- Instance OCID: ocid1.instance.oc1.ap-tokyo-1.anxhiljrq55pxgacitvr6a4dqg5u4mus7pkvxfgh2lgoj43gqbtnhaknm4oa
+- Name: liap-tui-tokyo-x86
+- Shape: VM.Standard.E2.1.Micro (FREE TIER)
+- Specs: 1 OCPU, 1GB RAM (AMD EPYC 2.0 GHz)
+- Public IP: 155.248.175.54
+- Region: ap-tokyo-1 (Tokyo)
+- Status: PROVISIONING → RUNNING
+
+SSH Connection:
+ssh -i ~/.ssh/oracle-tokyo-key opc@155.248.175.54
+
+Network Details:
+- VCN: liap-tui-vcn (10.0.0.0/16)
+- Subnet: public-subnet (10.0.1.0/24)
+- Security: Ports 22, 80, 443, 8080 open
+
+Important Notes:
+- ARM instances (4 cores, 24GB) NOT AVAILABLE in Tokyo due to high demand
+- Using x86 free tier as backup (still FREE for 12 months)
+- Instance may take 2-3 minutes to fully boot and accept SSH connections
+- Try SSH again in a few minutes if connection times out
+
+Next Steps:
+1. Wait for instance to fully boot (check in 5 minutes)
+2. Test SSH connection
+3. Install dependencies (Python, Node.js, Nginx)
+4. Deploy liap-tui application
+5. Configure SSL with Let's Encrypt
+6. Update DNS to point to 155.248.175.54
+
+Cost:
+- Monthly: $0 (free tier for first 12 months)
+- After free tier: ~$7/month (much cheaper than AWS)
+
+Infrastructure Setup: COMPLETE ✅
+Application Deployment: PENDING
